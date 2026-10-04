@@ -1,0 +1,66 @@
+:root {
+  --blue: #0ea5e9; --teal: #0d9488; --ink: #0f172a; --muted: #64748b;
+  --bg: #eef6fb; --card: #ffffff; --line: #dbe5ee;
+  --green: #16a34a; --green-bg: #dcfce7; --red: #dc2626; --red-bg: #fee2e2;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0; min-height: 100vh; display: flex; justify-content: center; align-items: flex-start;
+  background: linear-gradient(160deg, #e0f2fe 0%, var(--bg) 45%, #ccfbf1 100%);
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif; color: var(--ink);
+  padding: 16px;
+}
+.card {
+  width: 100%; max-width: 640px; margin: 12px auto; background: var(--card);
+  border-radius: 22px; padding: 24px; box-shadow: 0 10px 40px rgba(14, 116, 144, .15);
+}
+.logo { display: block; width: 110px; height: 110px; margin: 0 auto 8px; }
+h1 { text-align: center; margin: 4px 0 2px; font-size: 1.7rem; letter-spacing: .5px; }
+.sub { text-align: center; color: var(--muted); margin: 0 0 20px; }
+label.field { display: block; font-weight: 600; margin: 16px 0 8px; }
+select {
+  width: 100%; padding: 12px; font-size: 1rem; border-radius: 12px; border: 2px solid var(--line); background: #fff;
+}
+.sizes { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.size {
+  padding: 14px 0; font-size: 1.1rem; font-weight: 700; border-radius: 14px; cursor: pointer;
+  border: 2px solid var(--line); background: #fff; color: var(--ink);
+}
+.size small { display: block; font-weight: 500; color: var(--muted); font-size: .72rem; }
+.size.active { border-color: var(--blue); background: #e0f2fe; color: #075985; }
+.btn {
+  width: 100%; margin-top: 22px; padding: 15px; font-size: 1.05rem; font-weight: 700; color: #fff; cursor: pointer;
+  border: 0; border-radius: 14px; background: linear-gradient(135deg, var(--blue), var(--teal));
+}
+.btn:disabled { opacity: .6; cursor: default; }
+.btn.secondary { background: #fff; color: var(--ink); border: 2px solid var(--line); margin-top: 10px; }
+.error { color: var(--red); text-align: center; margin-top: 14px; }
+
+.top { display: flex; justify-content: space-between; align-items: center; color: var(--muted); font-size: .92rem; }
+.bar { height: 9px; background: var(--line); border-radius: 99px; overflow: hidden; margin: 10px 0 18px; }
+.bar > div { height: 100%; background: linear-gradient(90deg, var(--blue), var(--teal)); transition: width .3s; }
+.tag { display: inline-block; font-size: .78rem; background: #e0f2fe; color: #075985; padding: 3px 10px; border-radius: 99px; margin-bottom: 10px; }
+.q { font-size: 1.13rem; font-weight: 600; line-height: 1.5; margin: 0 0 16px; }
+.choice {
+  display: flex; gap: 12px; align-items: flex-start; width: 100%; text-align: left; margin: 0 0 10px; padding: 13px 14px;
+  font-size: 1rem; line-height: 1.4; color: var(--ink); background: #fff; border: 2px solid var(--line); border-radius: 14px; cursor: pointer;
+}
+.choice:hover:not(:disabled) { border-color: var(--blue); }
+.choice .l {
+  flex: 0 0 28px; height: 28px; border-radius: 50%; background: #f1f5f9; display: grid; place-items: center; font-weight: 700; font-size: .85rem;
+}
+.choice:disabled { cursor: default; }
+.choice.correct { background: var(--green-bg); border-color: var(--green); }
+.choice.correct .l { background: var(--green); color: #fff; }
+.choice.wrong { background: var(--red-bg); border-color: var(--red); }
+.choice.wrong .l { background: var(--red); color: #fff; }
+.explain { margin-top: 6px; padding: 12px 14px; background: #f8fafc; border-left: 4px solid var(--blue); border-radius: 8px; font-size: .95rem; line-height: 1.5; }
+
+.result { text-align: center; }
+.result h2 { font-size: 1.9rem; margin: 6px 0; }
+.score { font-size: 3rem; font-weight: 800; margin: 8px 0 0; background: linear-gradient(135deg, var(--blue), var(--teal)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.pct { color: var(--muted); margin: 0 0 8px; }
+.review { text-align: left; margin-top: 22px; }
+.review h3 { margin: 0 0 10px; }
+.rev-item { border: 1px solid var(--line); border-radius: 12px; padding: 12px; margin-bottom: 10px; font-size: .95rem; line-height: 1.45; }
+.rev-item .you { color: var(--red); } .rev-item .right { color: var(--green); font-weight: 600; }
