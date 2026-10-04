@@ -1,0 +1,49 @@
+name: Translate Question Bank
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  translate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Translate all questions
+        env:
+          GEMINI_API_KEY: \${{ secrets.GEMINI_API_KEY }}
+          GEMINI_MODEL: gemini-3.5-flash-lite
+          TRANSLATION_BATCH_SIZE: 20
+          TRANSLATION_CONCURRENCY: 2
+        run: node scripts/translate-questions.mjs
+
+      - name: Verify translations
+        run: |
+          node - <<'NODE'
+          const fs=require('fs');
+          const q=JSON.parse(fs.readFileSync('questions.json','utf8'));
+          if(!Array.isArray(q)||q.length!==1591) throw new Error('Expected 1591 questions.');
+          for(const [i,x] of q.entries()){
+            if(!x.question?.en||!x.question?.ar||!x.question?.hi) throw new Error('Question translation missing at '+i);
+            if(!Array.isArray(x.options?.en)||!Array.isArray(x.options?.ar)||!Array.isArray(x.options?.hi)) throw new Error('Options translation missing at '+i);
+            if(x.options.en.length!==x.options.ar.length||x.options.en.length!==x.options.hi.length) throw new Error('Option count mismatch at '+i);
+            if(!Number.isInteger(x.answer)) throw new Error('Invalid answer at '+i);
+            if(!x.options.ar[x.answer]||!x.options.hi[x.answer]) throw new Error('Correct answer translation missing at '+i);
+          }
+          console.log('Verified 1591 fully translated questions.');
+          NODE
+
+      - name: Commit translations
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add questions.json
+          git commit -m "Translate question bank to Arabic and Hindi" || echo "Nothing to commit"
+          git push
