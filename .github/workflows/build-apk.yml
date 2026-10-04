@@ -1,4 +1,4 @@
-name: Build DHA APK
+name: Build Gulf Nurse APK
 
 on:
   workflow_dispatch:
@@ -23,21 +23,33 @@ jobs:
       - name: Arrange web files into www folder
         run: |
           mkdir -p www
-          for f in index.html style.css app.js logo.svg questions.json; do
+          for f in index.html style.css i18n.js app.js logo.svg questions.json; do
             if [ -f "$f" ]; then cp "$f" www/; fi
           done
           ls -la www
+
+      - name: Set app name to Gulf Nurse
+        run: |
+          node -e "
+          const fs=require('fs');
+          const p='capacitor.config.json';
+          const c=JSON.parse(fs.readFileSync(p,'utf8'));
+          c.appName='Gulf Nurse';
+          fs.writeFileSync(p,JSON.stringify(c,null,2));
+          console.log(c);
+          "
 
       - name: Make app icon and splash
         run: |
           pip install pillow
           mkdir -p assets
           python3 - <<'PY'
+          import math
           from PIL import Image, ImageDraw, ImageFont
           S = 1024
           def grad(size):
               im = Image.new("RGB", (size, size)); px = im.load()
-              c1 = (14, 165, 233); c2 = (13, 148, 136)
+              c1 = (20, 184, 166); c2 = (30, 64, 175)
               for y in range(size):
                   for x in range(size):
                       t = (x + y) / (2 * size - 2)
@@ -50,22 +62,27 @@ jobs:
                   except Exception:
                       pass
               return ImageFont.load_default()
-          def mark(d, s, ox=0, oy=0):
+          def mark(d, s, ox=0, oy=0, label=True):
               k = s / 200.0
               def r(x0, y0, x1, y1, rad):
                   d.rounded_rectangle([ox + x0 * k, oy + y0 * k, ox + x1 * k, oy + y1 * k], radius=rad * k, fill="white")
-              r(84, 14, 116, 86, 8); r(64, 34, 136, 66, 8)
-              pts = [(22, 128), (66, 128), (80, 108), (96, 148), (112, 118), (124, 128), (178, 128)]
+              cx, cy, cr = 100, 74, 46
+              d.ellipse([ox + (cx - cr) * k, oy + (cy - cr) * k, ox + (cx + cr) * k, oy + (cy + cr) * k], outline="white", width=max(1, int(6 * k)))
+              r(87, 48, 113, 100, 6); r(74, 61, 126, 87, 6)
+              pts = [(26 + i * 1.85, 138 + 8 * math.sin(i * 1.85 / 37.0 * 2 * math.pi)) for i in range(0, 81)]
               d.line([(ox + x * k, oy + y * k) for x, y in pts], fill="white", width=int(7 * k), joint="curve")
-              f = font(int(30 * k)); t = "DHA"; w = d.textlength(t, font=f)
-              d.text((ox + 100 * k - w / 2, oy + 158 * k), t, font=f, fill="white")
+              if label:
+                  f = font(int(21 * k)); t = "GULF NURSE"; w = d.textlength(t, font=f)
+                  d.text((ox + 100 * k - w / 2, oy + 160 * k), t, font=f, fill="white")
           base = grad(S); mask = Image.new("L", (S, S), 0)
           ImageDraw.Draw(mask).rounded_rectangle([0, 0, S - 1, S - 1], radius=int(S * 0.21), fill=255)
           icon = Image.new("RGBA", (S, S), (0, 0, 0, 0)); icon.paste(base, (0, 0), mask)
           mark(ImageDraw.Draw(icon), S * 0.92, S * 0.04, S * 0.04); icon.save("assets/icon-only.png")
-          fg = Image.new("RGBA", (S, S), (0, 0, 0, 0)); mark(ImageDraw.Draw(fg), S * 0.62, S * 0.19, S * 0.19); fg.save("assets/icon-foreground.png")
+          fg = Image.new("RGBA", (S, S), (0, 0, 0, 0)); mark(ImageDraw.Draw(fg), S * 0.62, S * 0.19, S * 0.19, label=False); fg.save("assets/icon-foreground.png")
           grad(S).save("assets/icon-background.png")
-          W = 2732; sp = Image.new("RGB", (W, W), (224, 242, 254)); lg = icon.resize((900, 900)); sp.paste(lg, ((W - 900) // 2, (W - 900) // 2), lg)
+          W = 2732; sp = Image.new("RGB", (W, W), (224, 242, 254)); lg = icon.resize((900, 900)); sp.paste(lg, ((W - 900) // 2, (W - 900) // 2 - 120), lg)
+          d = ImageDraw.Draw(sp); f = font(150); t = "Gulf Nurse"; w = d.textlength(t, font=f)
+          d.text(((W - w) / 2, (W + 900) // 2 - 60), t, font=f, fill=(30, 64, 175))
           sp.save("assets/splash.png"); sp.save("assets/splash-dark.png")
           print("icons ok")
           PY
@@ -92,5 +109,5 @@ jobs:
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: DHA-apk
+          name: GulfNurse-apk
           path: android/app/build/outputs/apk/debug/app-debug.apk
