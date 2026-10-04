@@ -1,4 +1,5 @@
 /* Gulf Nurse app runtime — restored startup/render logic. */
+// Translation data is stored directly in questions.json (English + Arabic + Hindi).
 let lang = localStorage.getItem("gn_lang") || "en";
 let questions = [];
 let currentView = "home";
