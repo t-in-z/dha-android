@@ -1,32 +1,134 @@
-/* UI polish: click sound, animated final score, and the full Tips page. */
+/* UI polish: sound effects (with mute), animated final score, and the full Tips page. */
 (function () {
-  let audioCtx = null;
+  /* ------------------------------------------------------------------ *
+   *  SOUND ENGINE — everything is synthesized with Web Audio, so there  *
+   *  are no audio files and it works fully offline. The speaker button  *
+   *  (soundOn in app.js / "gn_sound" in localStorage) mutes all of it.  *
+   * ------------------------------------------------------------------ */
+  let ctx = null, master = null, noiseBuf = null;
 
-  function soundEnabled() {
+  function enabled() {
+    try { if (typeof soundOn === "boolean") return soundOn; } catch (_) {}
     try { return localStorage.getItem("gn_sound") !== "0"; } catch (_) { return true; }
   }
 
-  function clickSound() {
-    if (!soundEnabled()) return;
-    try {
-      audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
-      if (audioCtx.state === "suspended") audioCtx.resume();
-      const now = audioCtx.currentTime;
-      const osc = audioCtx.createOscillator();
-      const gain = audioCtx.createGain();
-      osc.type = "sine";
-      osc.frequency.setValueAtTime(520, now);
-      osc.frequency.exponentialRampToValueAtTime(760, now + 0.055);
-      gain.gain.setValueAtTime(0.0001, now);
-      gain.gain.exponentialRampToValueAtTime(0.055, now + 0.008);
-      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.075);
-      osc.connect(gain);
-      gain.connect(audioCtx.destination);
-      osc.start(now);
-      osc.stop(now + 0.08);
-    } catch (_) {}
+  function ensure() {
+    if (!ctx) {
+      const AC = window.AudioContext || window.webkitAudioContext;
+      if (!AC) return null;
+      ctx = new AC();
+      const comp = ctx.createDynamicsCompressor();
+      master = ctx.createGain();
+      master.gain.value = 0.9;
+      master.connect(comp);
+      comp.connect(ctx.destination);
+    }
+    if (ctx.state === "suspended") ctx.resume();
+    return ctx;
   }
 
+  // One synthesized note: {f, to?, dur, vol, type, at, lp?}
+  function tone(o) {
+    const c = ensure(); if (!c) return;
+    const t0 = c.currentTime + (o.at || 0), vol = o.vol || 0.25;
+    const osc = c.createOscillator(), g = c.createGain();
+    osc.type = o.type || "sine";
+    osc.frequency.setValueAtTime(o.f, t0);
+    if (o.to) osc.frequency.exponentialRampToValueAtTime(o.to, t0 + o.dur);
+    g.gain.setValueAtTime(0.0001, t0);
+    g.gain.exponentialRampToValueAtTime(vol, t0 + 0.008);
+    g.gain.exponentialRampToValueAtTime(0.0001, t0 + o.dur);
+    if (o.lp) {
+      const f = c.createBiquadFilter(); f.type = "lowpass"; f.frequency.value = o.lp;
+      osc.connect(f); f.connect(g);
+    } else osc.connect(g);
+    g.connect(master);
+    osc.start(t0); osc.stop(t0 + o.dur + 0.03);
+  }
+
+  // Soft "swish" (filtered noise) used for next / previous.
+  function swish(vol, dur) {
+    const c = ensure(); if (!c) return;
+    if (!noiseBuf) {
+      noiseBuf = c.createBuffer(1, Math.floor(c.sampleRate * 0.3), c.sampleRate);
+      const d = noiseBuf.getChannelData(0);
+      for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+    }
+    const t0 = c.currentTime;
+    const src = c.createBufferSource(); src.buffer = noiseBuf;
+    const bp = c.createBiquadFilter(); bp.type = "bandpass"; bp.Q.value = 1.2;
+    bp.frequency.setValueAtTime(500, t0);
+    bp.frequency.exponentialRampToValueAtTime(2600, t0 + dur);
+    const g = c.createGain();
+    g.gain.setValueAtTime(0.0001, t0);
+    g.gain.exponentialRampToValueAtTime(vol, t0 + dur * 0.4);
+    g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+    src.connect(bp); bp.connect(g); g.connect(master);
+    src.start(t0); src.stop(t0 + dur + 0.03);
+  }
+
+  const sfx = {
+    tap()    { tone({ f: 520, to: 820, dur: 0.07, vol: 0.3 }); tone({ f: 1040, to: 1240, dur: 0.045, vol: 0.08, type: "triangle" }); },
+    select() { tone({ f: 700, to: 920, dur: 0.07, vol: 0.28, type: "triangle" }); },
+    next()   { swish(0.14, 0.17); },
+    prev()   { swish(0.12, 0.14); },
+    start()  { [[523.25, 0], [659.25, 0.08], [783.99, 0.16], [1046.5, 0.24]].forEach(([f, at]) => tone({ f, at, dur: 0.24, vol: 0.22, type: "triangle" })); },
+    on()     { tone({ f: 660, to: 990, dur: 0.1, vol: 0.28 }); },
+    correct(){ [[659.25, 0], [880, 0.09], [1318.5, 0.18]].forEach(([f, at]) => { tone({ f, at, dur: 0.3, vol: 0.26 }); tone({ f: f * 2, at, dur: 0.18, vol: 0.05 }); }); },
+    wrong()  { tone({ f: 190, to: 120, dur: 0.28, vol: 0.3, type: "sawtooth", lp: 700 }); tone({ f: 150, to: 95, dur: 0.28, vol: 0.18, type: "square", lp: 500 }); },
+    loading(){ tone({ f: 300, to: 520, dur: 0.9, vol: 0.07, type: "sine" }); },
+    count(p) { tone({ f: 700 + p * 700, dur: 0.035, vol: 0.12 }); },
+    finishGreat() {
+      [[523.25, 0], [659.25, 0.1], [783.99, 0.2], [1046.5, 0.32]].forEach(([f, at]) => tone({ f, at, dur: 0.32, vol: 0.25, type: "triangle" }));
+      [523.25, 659.25, 783.99, 1046.5].forEach(f => tone({ f, at: 0.46, dur: 0.8, vol: 0.12 }));
+    },
+    finishGood() { tone({ f: 783.99, dur: 0.26, vol: 0.24, type: "triangle" }); tone({ f: 1046.5, at: 0.13, dur: 0.45, vol: 0.24, type: "triangle" }); },
+    finishKeep() { tone({ f: 440, dur: 0.3, vol: 0.2, type: "triangle" }); tone({ f: 587.33, at: 0.14, dur: 0.45, vol: 0.2, type: "triangle" }); }
+  };
+
+  function play(name, arg) {
+    if (!enabled()) return;
+    try { sfx[name](arg); } catch (_) {}
+  }
+
+  // Wake the audio engine on the first touch so the first sound has no delay (Android WebView needs a gesture).
+  document.addEventListener("pointerdown", function () { if (enabled()) ensure(); }, { capture: true, passive: true });
+
+  // Pick the right sound for each kind of button.
+  document.addEventListener("click", function (event) {
+    const b = event.target.closest("button");
+    if (!b || b.disabled) return;
+    if (b.classList.contains("sound-btn")) { setTimeout(function () { play("on"); }, 0); return; } // plays only if sound is ON after the toggle
+    if (b.classList.contains("choice")) return;                                                   // answer sounds come from pickAnswer below
+    if (b.classList.contains("w-btn")) return play("start");
+    if (b.closest(".navrow")) return play(b.classList.contains("secondary") ? "prev" : "next");
+    if (b.classList.contains("size") || b.classList.contains("seg-btn") || b.classList.contains("lang-opt")) return play("select");
+    play("tap");
+  }, true);
+
+  // Answer sounds: practice mode -> correct / wrong chime; exam mode -> neutral tick (never reveals the answer).
+  const origPick = window.pickAnswer;
+  if (typeof origPick === "function") {
+    window.pickAnswer = function () {
+      let q = null, before = null;
+      try { q = quiz.items[quiz.index]; before = q.picked; } catch (_) {}
+      const r = origPick.apply(this, arguments);
+      try {
+        if (q && before == null && q.picked != null) {
+          if (quiz.mode === "practice") play(q.choices[q.picked].correct ? "correct" : "wrong");
+          else play("select");
+        }
+      } catch (_) {}
+      return r;
+    };
+  }
+
+  /* ------------------------------------------------------------------ *
+   *  FINAL SCORE: loading ring -> ring fills from 0 while the number    *
+   *  counts up (with soft ticks) -> stats count up -> finish sound.     *
+   *  The existing entrance animations (title, ring pop-in, stats, etc.) *
+   *  are untouched.                                                     *
+   * ------------------------------------------------------------------ */
   function animateScore(result) {
     if (!result || result.dataset.scoreAnimated) return;
     result.dataset.scoreAnimated = "1";
@@ -35,25 +137,53 @@
     if (!ring || !pctEl) return;
 
     const target = Math.max(0, Math.min(100, parseInt(pctEl.textContent, 10) || 0));
-    const circumference = 301.59;
-    const duration = 1200;
-    const start = performance.now();
-
-    ring.style.strokeDasharray = String(circumference);
-    ring.style.strokeDashoffset = String(circumference);
-    ring.style.transition = "stroke-dashoffset 1.2s cubic-bezier(.22,1,.36,1)";
-    requestAnimationFrame(() => {
-      ring.style.strokeDashoffset = String(circumference - (circumference * target / 100));
+    const C = 301.59, LOAD_MS = 1000, COUNT_MS = 1700;
+    const stats = Array.prototype.map.call(result.querySelectorAll(".stat-val"), function (el) {
+      return { el: el, to: parseInt(el.textContent, 10) || 0 };
     });
+    const reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduce) { result.classList.add("done"); return; }          // show final values straight away
 
+    const live = function () { return result.isConnected; };       // stop if the user already left this page
+
+    // Phase 1: loading (ring is empty, spinner arc turns, number sits at 0)
+    ring.style.transition = "none";
+    ring.style.strokeDashoffset = String(C);
+    if (target === 0) ring.style.display = "none";
     pctEl.textContent = "0%";
-    function tick(now) {
-      const progress = Math.min(1, (now - start) / duration);
-      const eased = 1 - Math.pow(1 - progress, 3);
-      pctEl.textContent = Math.round(target * eased) + "%";
-      if (progress < 1) requestAnimationFrame(tick);
-    }
-    requestAnimationFrame(tick);
+    stats.forEach(function (s) { s.el.textContent = "0"; });
+    result.classList.add("is-loading");
+    play("loading");
+
+    // Phase 2: count from 0 to the real score while the ring fills
+    setTimeout(function () {
+      if (!live()) return;
+      result.classList.remove("is-loading");
+      void ring.getBoundingClientRect();                           // make the transition start from the empty ring
+      ring.style.transition = "stroke-dashoffset " + COUNT_MS + "ms cubic-bezier(.22,1,.36,1)";
+      ring.style.strokeDashoffset = String(C - (C * target / 100));
+
+      const t0 = performance.now();
+      let lastStep = -1;
+      function tick(now) {
+        if (!live()) return;
+        const p = Math.min(1, (now - t0) / COUNT_MS);
+        const e = 1 - Math.pow(1 - p, 3);
+        const v = Math.round(target * e);
+        pctEl.textContent = v + "%";
+        stats.forEach(function (s) { s.el.textContent = String(Math.round(s.to * e)); });
+        const step = Math.floor(v / 4);
+        if (p < 1 && step !== lastStep) { lastStep = step; play("count", e); }
+        if (p < 1) requestAnimationFrame(tick);
+        else {
+          pctEl.textContent = target + "%";
+          stats.forEach(function (s) { s.el.textContent = String(s.to); });
+          result.classList.add("done");
+          play(target >= 80 ? "finishGreat" : target >= 50 ? "finishGood" : "finishKeep");
+        }
+      }
+      requestAnimationFrame(tick);
+    }, LOAD_MS);
   }
 
   /* Full Tips page: all three sections + closing quotes (the content already exists in i18n.js). */
@@ -89,11 +219,6 @@
       true
     );
   };
-
-  document.addEventListener("click", function (event) {
-    const button = event.target.closest("button");
-    if (button && !button.disabled) clickSound();
-  }, true);
 
   const observer = new MutationObserver(function () {
     const result = document.querySelector(".result");
