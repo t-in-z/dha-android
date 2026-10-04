@@ -1,0 +1,7 @@
+{
+  "appId": "com.dha.nursingexam",
+  "appName": "DHA",
+  "webDir": "www",
+  "backgroundColor": "#eef6fb",
+  "android": { "allowMixedContent": false }
+}
