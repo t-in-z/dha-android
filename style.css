@@ -108,7 +108,7 @@ label.field{display:block;font-weight:700;margin:20px 0 9px;color:var(--navy);fo
 .t-text p{margin:0;font-size:.79rem;line-height:1.38;opacity:.92;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
 .t-count{display:inline-block;margin-top:9px;padding:3px 10px;border-radius:99px;font-size:.72rem;font-weight:700;background:rgba(255,255,255,.22);font-variant-numeric:tabular-nums}
 .t-icon{position:relative;z-index:1;flex:none;width:60px;height:60px;border-radius:50%;display:grid;place-items:center;background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.25)}
-.t-icon svg{width:34px;height:34px}
+.t-icon svg{width:32px;height:32px}
 
 /* Length screen */
 .back-btn{display:inline-flex;align-items:center;gap:2px;padding:8px 12px 8px 6px;margin:-4px 0 12px -6px;border:0;background:transparent;color:var(--teal);font-size:.98rem;font-weight:800;border-radius:12px;cursor:pointer}
@@ -130,6 +130,8 @@ label.field{display:block;font-weight:700;margin:20px 0 9px;color:var(--navy);fo
 /* Quiz */
 .qbar{position:sticky;top:0;z-index:20;display:flex;align-items:center;justify-content:space-between;gap:8px;margin:calc(var(--pad) * -1) calc(var(--pad) * -1) 14px;padding:10px 14px;background:rgba(255,255,255,.94);backdrop-filter:blur(8px);border-radius:28px 28px 0 0;border-bottom:1px solid var(--line)}
 .qbar-l,.qbar-r{display:flex;align-items:center;gap:8px}
+.lang-mini{flex:none;position:relative;overflow:hidden;width:36px;height:36px;border-radius:50%;border:0;cursor:pointer;display:grid;place-items:center;color:var(--teal);background:var(--soft);transition:transform .15s var(--ease)}
+.lang-mini:active{transform:scale(.9)}
 .exit-btn{display:inline-flex;align-items:center;gap:6px;padding:9px 13px 9px 10px;border:0;border-radius:12px;background:var(--red-bg);color:var(--red);font-weight:750;font-size:.92rem;cursor:pointer;transition:transform .15s var(--ease)}
 .restart-btn{display:inline-flex;align-items:center;gap:6px;padding:9px 13px 9px 10px;border:0;border-radius:12px;background:#eaf2ff;color:#12479c;font-weight:750;font-size:.92rem;cursor:pointer;transition:transform .15s var(--ease)}
 .exit-btn:active,.restart-btn:active{transform:scale(.95)}
@@ -207,6 +209,23 @@ label.field{display:block;font-weight:700;margin:20px 0 9px;color:var(--navy);fo
 .rev-item .right{color:var(--green);font-weight:700;margin-top:2px}
 .rev-exp{margin-top:9px;padding-top:9px;border-top:1px dashed var(--line);color:#475569}
 .perfect{text-align:center;padding:15px;border-radius:15px;background:var(--green-bg);color:#166534;font-weight:750;animation:pop-in .5s var(--ease) 1.2s both}
+/* Score loading + count-up */
+.ring-spin{fill:none;stroke:currentColor;stroke-width:9;stroke-linecap:round;stroke-dasharray:70 232;opacity:0;transform-origin:60px 60px;transition:opacity .3s ease}
+.result.is-loading .ring-spin{opacity:.95;animation:ringSpin .85s linear infinite}
+@keyframes ringSpin{to{transform:rotate(360deg)}}
+.result.is-loading .ring-pct{animation:loadPulse 1s ease-in-out infinite}
+@keyframes loadPulse{0%,100%{opacity:.45}50%{opacity:1}}
+.result.is-loading .ring-label{opacity:0}
+.ring-label{transition:opacity .5s ease}
+.result.done .ring-pct{animation:pctPop .55s var(--ease)}
+@keyframes pctPop{0%{transform:scale(1)}45%{transform:scale(1.18)}100%{transform:scale(1)}}
+.score-ring{transition:filter .6s ease}
+.result.done.great .score-ring{filter:drop-shadow(0 0 12px rgba(242,184,75,.75))}
+
+/* Result buttons (under the score card, above the review) */
+.r-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:18px 0 4px;animation:pop-in .5s var(--ease) .35s both}
+.r-actions .btn,.r-actions .btn.secondary{margin:0;display:flex;align-items:center;justify-content:center;gap:7px;padding:14px 8px;font-size:.93rem;line-height:1.2}
+.r-actions .btn svg{flex:none}
 .confetti{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:70}
 
 /* Tips */
