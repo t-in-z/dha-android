@@ -1,5 +1,5 @@
 /* Gulf Nurse - translations (English, Arabic, Hindi).
-   Question text stays in English (exam language); everything else is translated. */
+   Interface text. Question text comes from questions.json (English, Arabic, Hindi). */
 window.GN = (function () {
   const LANGS = [
     { id: "en", label: "English", short: "EN", dir: "ltr" },
@@ -108,7 +108,18 @@ window.GN = (function () {
 
   /* Topic names + descriptions. The English name is also the key used to match the questions. */
   const TOPIC_TXT = {
-    en: {},
+    en: {
+      fund: ["Fundamentals", "ABG, CPR and chest tube - infection control - diabetes, wounds, fluids and electrolytes - emergency and critical care - health assessment - patient safety and quality improvement"],
+      medsurg: ["Medical-Surgical Nursing", "Cardiac - respiratory - neuro - renal - appendicitis, tonsillectomy and tracheostomy - pyloric stenosis and immunizations"],
+      maternity: ["Maternity & Child Nursing", "Growth and development - newborn nursing"],
+      peds: ["Pediatrics", "Newborns and children"],
+      community: ["Community Health Nursing", "Community and public health nursing"],
+      pharm: ["Pharmacology", "Drug classes, mechanisms and side effects"],
+      research: ["Research", "Delegation and supervision - documentation and medical records - ethics and legal - leadership and management - research and evidence-based practice"],
+      meds: ["Medications", "Dosage calculation and medication administration"],
+      mental: ["Mental Health & Psychiatric Nursing", "Psychiatric conditions and therapeutic communication"],
+      random: ["Random", "Mixed test with questions from all 9 topics"],
+    },
     ar: {
       fund: ["الأساسيات", "غازات الدم الشرياني والإنعاش القلبي الرئوي وأنبوب الصدر - مكافحة العدوى - السكري والجروح والسوائل والشوارد - الطوارئ والعناية الحرجة - التقييم الصحي - سلامة المرضى وتحسين الجودة"],
       medsurg: ["التمريض الباطني والجراحي", "القلب - الجهاز التنفسي - الأعصاب - الكلى - التهاب الزائدة الدودية واستئصال اللوزتين وفغر القصبة الهوائية - تضيّق البواب واللقاحات"],
