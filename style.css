@@ -195,6 +195,7 @@ label.field{display:block;font-weight:700;margin:20px 0 9px;color:var(--navy);fo
 .ring-fg{fill:none;stroke-width:9;stroke-linecap:round;filter:drop-shadow(0 2px 6px rgba(0,0,0,.25));transition:stroke-dashoffset 1.5s cubic-bezier(.22,1,.36,1) .5s}
 .ring-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
 .ring-pct{font-size:2.6rem;font-weight:850;line-height:1;font-variant-numeric:tabular-nums}
+.ring-pct.sm{font-size:2rem}.ring-pct.xs{font-size:1.5rem}
 .ring-label{margin-top:6px;font-size:.78rem;opacity:.8}
 .stats{display:grid;grid-template-columns:repeat(var(--n,3),1fr);gap:9px;margin-top:20px}
 .stat{padding:15px 4px;border-radius:16px;background:#fff;border:1px solid var(--line);box-shadow:var(--sh-sm);animation:pop-in .5s var(--ease) both}
@@ -222,6 +223,12 @@ label.field{display:block;font-weight:700;margin:20px 0 9px;color:var(--navy);fo
 .score-ring{transition:filter .6s ease}
 .result.done.great .score-ring{filter:drop-shadow(0 0 12px rgba(242,184,75,.75))}
 
+.r-pct{display:inline-block;margin:0 auto 14px;padding:6px 20px;border-radius:99px;background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.35);font-size:1.5rem;font-weight:850;font-variant-numeric:tabular-nums;letter-spacing:.02em;animation:pop-in .6s var(--ease) .1s both}
+.result.done .r-pct{animation:pctPop .55s var(--ease)}
+.time-card{display:flex;align-items:center;gap:12px;margin-top:14px;padding:14px 18px;border-radius:18px;background:linear-gradient(135deg,#0a2540,#12479c);color:#fff;box-shadow:0 14px 26px -16px rgba(10,37,64,.8);animation:pop-in .5s var(--ease) .3s both}
+.time-ic{display:grid;place-items:center;width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,.16)}
+.time-lbl{flex:1;text-align:start;font-weight:700;font-size:.95rem;opacity:.9}
+.time-val{font-size:1.7rem;font-weight:850;font-variant-numeric:tabular-nums;letter-spacing:.03em}
 /* Result buttons (under the score card, above the review) */
 .r-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:18px 0 4px;animation:pop-in .5s var(--ease) .35s both}
 .r-actions .btn,.r-actions .btn.secondary{margin:0;display:flex;align-items:center;justify-content:center;gap:7px;padding:14px 8px;font-size:.93rem;line-height:1.2}
