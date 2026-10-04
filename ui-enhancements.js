@@ -136,7 +136,10 @@
     const pctEl = result.querySelector(".ring-pct");
     if (!ring || !pctEl) return;
 
-    const target = Math.max(0, Math.min(100, parseInt(pctEl.textContent, 10) || 0));
+    const chip = result.querySelector(".r-pct");
+    const total = Math.max(1, parseInt(pctEl.dataset.total, 10) || 1);
+    const correctN = parseInt(pctEl.dataset.correct, 10) || 0;
+    const target = Math.max(0, Math.min(100, chip ? (parseInt(chip.dataset.pct, 10) || 0) : Math.round(correctN / total * 100)));
     const C = 301.59, LOAD_MS = 1000, COUNT_MS = 1700;
     const stats = Array.prototype.map.call(result.querySelectorAll(".stat-val"), function (el) {
       return { el: el, to: parseInt(el.textContent, 10) || 0 };
@@ -150,7 +153,8 @@
     ring.style.transition = "none";
     ring.style.strokeDashoffset = String(C);
     if (target === 0) ring.style.display = "none";
-    pctEl.textContent = "0%";
+    pctEl.textContent = "0/" + total;
+    if (chip) chip.textContent = "0%";
     stats.forEach(function (s) { s.el.textContent = "0"; });
     result.classList.add("is-loading");
     play("loading");
@@ -170,13 +174,15 @@
         const p = Math.min(1, (now - t0) / COUNT_MS);
         const e = 1 - Math.pow(1 - p, 3);
         const v = Math.round(target * e);
-        pctEl.textContent = v + "%";
+        pctEl.textContent = Math.round(correctN * e) + "/" + total;
+        if (chip) chip.textContent = v + "%";
         stats.forEach(function (s) { s.el.textContent = String(Math.round(s.to * e)); });
         const step = Math.floor(v / 4);
         if (p < 1 && step !== lastStep) { lastStep = step; play("count", e); }
         if (p < 1) requestAnimationFrame(tick);
         else {
-          pctEl.textContent = target + "%";
+          pctEl.textContent = correctN + "/" + total;
+          if (chip) chip.textContent = target + "%";
           stats.forEach(function (s) { s.el.textContent = String(s.to); });
           result.classList.add("done");
           play(target >= 80 ? "finishGreat" : target >= 50 ? "finishGood" : "finishKeep");
