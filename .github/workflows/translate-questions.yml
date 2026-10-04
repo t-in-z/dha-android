@@ -2,12 +2,6 @@ name: Translate Question Bank
 
 on:
   workflow_dispatch:
-  push:
-    paths:
-      - 'app.js'
-      - 'index.html'
-      - 'style.css'
-      - 'i18n.js'
 
 permissions:
   contents: write
