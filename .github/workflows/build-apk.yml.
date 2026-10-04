@@ -1,0 +1,96 @@
+name: Build DHA APK
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main, master]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Arrange web files into www folder
+        run: |
+          mkdir -p www
+          for f in index.html style.css app.js logo.svg questions.json; do
+            if [ -f "$f" ]; then cp "$f" www/; fi
+          done
+          ls -la www
+
+      - name: Make app icon and splash
+        run: |
+          pip install pillow
+          mkdir -p assets
+          python3 - <<'PY'
+          from PIL import Image, ImageDraw, ImageFont
+          S = 1024
+          def grad(size):
+              im = Image.new("RGB", (size, size)); px = im.load()
+              c1 = (14, 165, 233); c2 = (13, 148, 136)
+              for y in range(size):
+                  for x in range(size):
+                      t = (x + y) / (2 * size - 2)
+                      px[x, y] = tuple(int(c1[i] + (c2[i] - c1[i]) * t) for i in range(3))
+              return im
+          def font(sz):
+              for p in ["/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", "/usr/share/fonts/truetype/liberation/LiberationSans-Bold.ttf"]:
+                  try:
+                      return ImageFont.truetype(p, sz)
+                  except Exception:
+                      pass
+              return ImageFont.load_default()
+          def mark(d, s, ox=0, oy=0):
+              k = s / 200.0
+              def r(x0, y0, x1, y1, rad):
+                  d.rounded_rectangle([ox + x0 * k, oy + y0 * k, ox + x1 * k, oy + y1 * k], radius=rad * k, fill="white")
+              r(84, 14, 116, 86, 8); r(64, 34, 136, 66, 8)
+              pts = [(22, 128), (66, 128), (80, 108), (96, 148), (112, 118), (124, 128), (178, 128)]
+              d.line([(ox + x * k, oy + y * k) for x, y in pts], fill="white", width=int(7 * k), joint="curve")
+              f = font(int(30 * k)); t = "DHA"; w = d.textlength(t, font=f)
+              d.text((ox + 100 * k - w / 2, oy + 158 * k), t, font=f, fill="white")
+          base = grad(S); mask = Image.new("L", (S, S), 0)
+          ImageDraw.Draw(mask).rounded_rectangle([0, 0, S - 1, S - 1], radius=int(S * 0.21), fill=255)
+          icon = Image.new("RGBA", (S, S), (0, 0, 0, 0)); icon.paste(base, (0, 0), mask)
+          mark(ImageDraw.Draw(icon), S * 0.92, S * 0.04, S * 0.04); icon.save("assets/icon-only.png")
+          fg = Image.new("RGBA", (S, S), (0, 0, 0, 0)); mark(ImageDraw.Draw(fg), S * 0.62, S * 0.19, S * 0.19); fg.save("assets/icon-foreground.png")
+          grad(S).save("assets/icon-background.png")
+          W = 2732; sp = Image.new("RGB", (W, W), (224, 242, 254)); lg = icon.resize((900, 900)); sp.paste(lg, ((W - 900) // 2, (W - 900) // 2), lg)
+          sp.save("assets/splash.png"); sp.save("assets/splash-dark.png")
+          print("icons ok")
+          PY
+          ls -la assets
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Create Android project
+        run: npx cap add android
+
+      - name: Generate icons and splash
+        run: npm run icons
+
+      - name: Sync web files into Android
+        run: npx cap sync android
+
+      - name: Build debug APK
+        working-directory: android
+        run: |
+          chmod +x gradlew
+          ./gradlew assembleDebug
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: DHA-apk
+          path: android/app/build/outputs/apk/debug/app-debug.apk
