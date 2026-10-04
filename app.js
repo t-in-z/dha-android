@@ -87,12 +87,20 @@ function topicKey(name) {
   const m={"Fundamentals":"fund","Medical-Surgical Nursing":"medsurg","Maternity & Child Nursing":"maternity","Pediatrics":"peds","Community Health Nursing":"community","Pharmacology":"pharm","Research":"research","Medications":"meds","Mental Health & Psychiatric Nursing":"mental","Random":"random"};
   return m[name]||name;
 }
+function getCategoryKey(q) {
+  if (q?.category && typeof q.category === "object" && !Array.isArray(q.category)) return q.category.en ?? Object.values(q.category)[0] ?? "";
+  return String(q?.category ?? "");
+}
+function getCategoryLabel(q) { return getLangValue(q?.category); }
+function getSubcategoryLabel(q) { return getLangValue(q?.subcategory); }
 function topicText(name,count) {
   const key=topicKey(name), t=window.GN?.TOPIC_TXT?.[lang]?.[key], e=window.GN?.TOPIC_TXT?.en?.[key];
   return {title:t?.[0]||e?.[0]||name,desc:t?.[1]||e?.[1]||"",count:tr("nQuestions",{n:count})};
 }
 function getAllTopicCounts() {
-  const map={}; questions.forEach(q=>{const c=getLangValue(q.category); if(c) map[c]=(map[c]||0)+1;}); return map;
+  const map={};
+  questions.forEach(q=>{const c=getCategoryKey(q); if(c) map[c]=(map[c]||0)+1;});
+  return map;
 }
 function renderWelcome() {
   shell('<section class="welcome" id="welcome"><button class="hbtn lang-btn on-welcome" onclick="openLanguage()">'+icon("globe")+'<span>'+escapeHtml(tr("langBtn"))+'</span></button><button class="sound-btn on-welcome '+(soundOn?"":"off")+'" onclick="toggleSound()" title="'+escapeHtml(tr("sound"))+'">'+icon(soundOn?"volume":"mute")+'</button><div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div><div class="w-inner"><div class="w-mark"><div class="ring"></div><div class="ring r2"></div><img class="w-logo" src="logo.svg" alt="'+escapeHtml(tr("logoAlt"))+'"></div><h1 class="w-title"><span>G</span><span>U</span><span>L</span><span>F</span> <span>N</span><span>U</span><span>R</span><span>S</span><span>E</span></h1><p class="w-sub">'+escapeHtml(tr("wSub"))+'</p><p class="w-tag">'+escapeHtml(tr("wTag"))+'</p><div class="w-chips"><span class="chip"><b>'+questions.length+'</b>'+escapeHtml(tr("wQuestions"))+'</span><span class="chip">'+escapeHtml(tr("w9"))+'</span><span class="chip">'+escapeHtml(tr("wOffline"))+'</span></div><button class="w-btn ripple-host" onclick="enterApp()">'+escapeHtml(tr("wGo"))+' '+icon("arrow")+'</button></div></section>');
@@ -115,7 +123,7 @@ function setCount(n){selectedCount=n;renderLength();}
 function setMode(m){selectedMode=m;renderLength();}
 function startTest(){
   try{
-    let pool=selectedTopic==="Random"?questions.slice():questions.filter(q=>getLangValue(q.category)===selectedTopic);
+    let pool=selectedTopic==="Random"?questions.slice():questions.filter(q=>getCategoryKey(q)===selectedTopic);
     if(!pool.length)throw new Error("No questions found for selected topic.");
     shuffle(pool);const count=Math.min(Number(selectedCount)||pool.length,pool.length);
     quiz={items:pool.slice(0,count).map(prepare),index:0,started:Date.now(),elapsed:0,timer:null,mode:selectedMode,selectedTopic};
@@ -135,7 +143,7 @@ function nextQuestion(){if(quiz.index<quiz.items.length-1){quiz.index++;renderQu
 function prevQuestion(){if(quiz.index>0){quiz.index--;renderQuiz("left");}}
 function confirmExit(){modal(tr("exitTitle"),tr("exitMsg"),tr("exit"),()=>{clearInterval(quiz?.timer);quiz=null;renderHome();});}
 function confirmRestart(){modal(tr("restartTitle"),tr("restartMsg"),tr("restart"),()=>restartTest());}
-function restartTest(){if(!quiz)return;clearInterval(quiz.timer);let pool=selectedTopic==="Random"?questions.slice():questions.filter(q=>getLangValue(q.category)===selectedTopic);shuffle(pool);quiz.items=pool.slice(0,Math.min(selectedCount||pool.length,pool.length)).map(prepare);quiz.index=0;quiz.started=Date.now();quiz.elapsed=0;startTimer();renderQuiz("left");}
+function restartTest(){if(!quiz)return;clearInterval(quiz.timer);let pool=selectedTopic==="Random"?questions.slice():questions.filter(q=>getCategoryKey(q)===selectedTopic);shuffle(pool);quiz.items=pool.slice(0,Math.min(selectedCount||pool.length,pool.length)).map(prepare);quiz.index=0;quiz.started=Date.now();quiz.elapsed=0;startTimer();renderQuiz("left");}
 function finishTest(){const unanswered=quiz.items.length-quiz.items.filter(q=>q.picked!=null).length;if(unanswered)modal(tr("finishTitle"),tr(unanswered===1?"finishOne":"finishMany",{n:unanswered}),tr("finishOk"),showResult);else showResult();}
 function showResult(){
   clearInterval(quiz.timer);const items=quiz.items,correct=items.reduce((a,q)=>a+(q.picked!=null&&q.choices[q.picked]?.correct?1:0),0),answered=items.filter(q=>q.picked!=null).length,skipped=items.length-answered,pct=Math.round(correct/items.length*100);
@@ -158,7 +166,8 @@ function renderTips(){currentView="tips";const T=window.GN?.TIPS?.[lang]||window
 async function loadQuestions(){
   try{
     const res=await fetch("questions.json",{cache:"no-store"});if(!res.ok)throw new Error("HTTP "+res.status);
-    const data=await res.json();questions=Array.isArray(data)?data:(Array.isArray(data.questions)?data.questions:[]);
+    const data=await res.json();
+    questions=Array.isArray(data)?data:(Array.isArray(data.questions)?data.questions:(data && data.question ? [data] : []));
     if(!questions.length)throw new Error("questions.json contains no questions.");
     applyLanguage();renderWelcome();
   }catch(e){shell('<div class="error"><h2>'+escapeHtml(tr("loadErr"))+'</h2><p>'+escapeHtml(e.message)+'</p><button class="btn" onclick="location.reload()">Retry</button></div>');}
