@@ -4,6 +4,26 @@
   const LETTERS = ["A", "B", "C", "D", "E"];
   const reduceMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
+  /* ---------- Language (English / Arabic / Hindi) ---------- */
+  const { LANGS, STR, TOPIC_TXT, TIPS } = window.GN;
+  let lang = "en";
+  try { const sv = localStorage.getItem("gn-lang"); if (LANGS.some((l) => l.id === sv)) lang = sv; } catch (e) {}
+  function T(key, vars) {
+    let str = STR[lang] && STR[lang][key] !== undefined ? STR[lang][key] : STR.en[key];
+    if (str === undefined) str = key;
+    if (vars) str = str.replace(/\{(\w+)\}/g, (m, k) => (vars[k] !== undefined ? vars[k] : m));
+    return str;
+  }
+  function applyLang() {
+    const L = LANGS.find((l) => l.id === lang) || LANGS[0];
+    document.documentElement.lang = L.id;
+    document.documentElement.dir = L.dir;
+    document.title = T("docTitle");
+  }
+  function topicName(t) { const x = TOPIC_TXT[lang] && TOPIC_TXT[lang][t.id]; return x ? x[0] : t.name; }
+  function topicDesc(t) { const x = TOPIC_TXT[lang] && TOPIC_TXT[lang][t.id]; return x ? x[1] : t.desc; }
+  applyLang();
+
   /* ---------- Icons (inline SVG, white, drawn on a 64x64 grid) ---------- */
   const SOFT = 'fill="rgba(255,255,255,.26)"';
   const ICONS = {
@@ -16,6 +36,8 @@
     research: `<circle cx="27" cy="27" r="17" ${SOFT}/><path d="M40 40l16 16" stroke-width="5"/><path d="M19 34v-5M27 34V21M35 34v-9"/>`,
     syringe: `<g transform="rotate(-45 30 32)"><rect x="14" y="24" width="30" height="16" rx="3" ${SOFT}/><path d="M22 24v6M28 24v6M34 24v6"/><path d="M14 32H3"/><path d="M44 32h10M54 25v14"/></g>`,
     brain: `<path d="M32 12C28 7 19 8 17 14 11 14 8 21 11 26 7 30 9 38 15 40 15 47 22 51 27 48 28 52 31 53 32 53 33 53 36 52 37 48 42 51 49 47 49 40 55 38 57 30 53 26 56 21 53 14 47 14 45 8 36 7 32 12z" ${SOFT}/><path d="M32 12v41M23 24c4 0 6 3 9 3M41 24c-4 0-6 3-9 3M22 38c4-1 6-4 10-4M42 38c-4-1-6-4-10-4"/>`,
+    target: `<circle cx="32" cy="32" r="22" ${SOFT}/><circle cx="32" cy="32" r="12"/><circle cx="32" cy="32" r="3" fill="#fff" stroke="none"/><path d="M32 5v9M32 50v9M5 32h9M50 32h9"/>`,
+    clock: `<circle cx="32" cy="32" r="23" ${SOFT}/><path d="M32 18v15l10 6"/>`,
     shuffle: `<g transform="translate(5 5) scale(2.2)" stroke-width="1.4"><path d="M2 18h1.4c1.3 0 2.5-.6 3.3-1.7l6.1-8.6c.7-1.1 2-1.7 3.3-1.7H22"/><path d="m18 2 4 4-4 4"/><path d="M2 6h1.9c1.5 0 2.9.9 3.6 2.2"/><path d="M22 18h-5.9c-1.3 0-2.6-.7-3.3-1.8l-.5-.8"/><path d="m18 14 4 4-4 4"/></g>`,
   };
   function iconSvg(name) {
@@ -78,16 +100,28 @@
     app.classList.add("swap");
     window.scrollTo(0, 0);
   }
+  // Uniform random integer in [0, n) - uses the device's secure RNG when available.
+  function rand(n) {
+    try {
+      if (window.crypto && crypto.getRandomValues) {
+        const buf = new Uint32Array(1), lim = Math.floor(4294967296 / n) * n;
+        let x;
+        do { crypto.getRandomValues(buf); x = buf[0]; } while (x >= lim);
+        return x % n;
+      }
+    } catch (e) {}
+    return Math.floor(Math.random() * n);
+  }
   function shuffle(a) {
     for (let i = a.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
+      const j = rand(i + 1);
       [a[i], a[j]] = [a[j], a[i]];
     }
     return a;
   }
   function logo(cls) {
     const img = el("img", cls || "logo");
-    img.src = "logo.svg"; img.alt = "DHA logo";
+    img.src = "logo.svg"; img.alt = T("logoAlt");
     return img;
   }
   function countUp(node, to, ms, suffix) {
@@ -172,7 +206,7 @@
     const b = el("button", "sound-btn " + (cls || ""));
     b.type = "button";
     b.setAttribute("data-silent", "");
-    b.setAttribute("aria-label", "Toggle sound");
+    b.setAttribute("aria-label", T("sound"));
     const paint = () => { b.innerHTML = sfx.isMuted() ? ICON_OFF : ICON_ON; b.classList.toggle("off", sfx.isMuted()); };
     b.onclick = () => { sfx.setMuted(!sfx.isMuted()); paint(); sfx.click(); };
     paint();
@@ -185,7 +219,7 @@
     const o = el("div", "modal");
     const box = el("div", "modal-box");
     box.setAttribute("role", "dialog");
-    const cancel = el("button", "btn secondary", "Cancel");
+    const cancel = el("button", "btn secondary", T("cancel"));
     const ok = el("button", "btn", okLabel);
     cancel.type = ok.type = "button";
     const close = () => { o.classList.add("out"); setTimeout(() => o.remove(), 180); };
@@ -197,6 +231,55 @@
     o.append(box);
     o.addEventListener("pointerdown", (e) => { if (e.target === o) close(); });
     document.body.append(o);
+  }
+
+  /* ---------- Language picker + header buttons ---------- */
+  const ICON_GLOBE = '<svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><path d="M12 3c2.6 2.7 3.9 5.7 3.9 9s-1.3 6.3-3.9 9c-2.6-2.7-3.9-5.7-3.9-9S9.4 5.7 12 3z"/></svg>';
+  const ICON_BULB = '<svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 0 0-3.6 10.8c.7.6 1.1 1.4 1.1 2.2h5c0-.8.4-1.6 1.1-2.2A6 6 0 0 0 12 3z"/></svg>';
+  const ICON_RESTART = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/></svg>';
+  const ICON_CHECK = '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="rgba(13,148,136,.12)"/><path d="m8 12.3 2.8 2.8L16 9.5"/></svg>';
+  const ICON_ARROW = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M6 13l6 6 6-6"/></svg>';
+  const ICON_QUOTE = '<svg viewBox="0 0 24 24" width="26" height="26" fill="currentColor" aria-hidden="true"><path d="M7.2 6C4.9 7.2 3.5 9.4 3.5 12.3V18h6v-6H6.3c0-1.7.9-3 2.4-3.8L7.2 6zm9.5 0c-2.3 1.2-3.7 3.4-3.7 6.3V18h6v-6h-3.2c0-1.7.9-3 2.4-3.8L16.7 6z"/></svg>';
+
+  function langButton(extra) {
+    const b = el("button", "hbtn lang-btn ripple-host " + (extra || ""));
+    b.type = "button";
+    b.setAttribute("aria-label", T("langBtn"));
+    const L = LANGS.find((l) => l.id === lang) || LANGS[0];
+    b.innerHTML = ICON_GLOBE + "<span>" + L.short + "</span>";
+    b.onclick = langDialog;
+    return b;
+  }
+  function langDialog() {
+    if (document.querySelector(".modal")) return;
+    const o = el("div", "modal");
+    const box = el("div", "modal-box");
+    box.setAttribute("role", "dialog");
+    const close = () => { o.classList.add("out"); setTimeout(() => o.remove(), 180); };
+    box.append(el("h3", null, T("langTitle")));
+    const list = el("div", "lang-list");
+    LANGS.forEach((l) => {
+      const b = el("button", "lang-opt ripple-host" + (l.id === lang ? " active" : ""));
+      b.type = "button";
+      b.setAttribute("lang", l.id);
+      b.append(el("span", null, l.label), el("small", null, l.id === lang ? "✓" : l.short));
+      b.onclick = () => { close(); setTimeout(() => setLang(l.id), 60); };
+      list.append(b);
+    });
+    box.append(list);
+    o.append(box);
+    o.addEventListener("pointerdown", (e) => { if (e.target === o) close(); });
+    document.body.append(o);
+  }
+  function setLang(id) {
+    if (id === lang) return;
+    lang = id;
+    try { localStorage.setItem("gn-lang", id); } catch (e) {}
+    applyLang();
+    const w = document.querySelector(".welcome");
+    if (w) { w.remove(); showWelcome(); }       // rebuilds home + welcome in the new language
+    else if (screen === "tips") showTips();
+    else showHome();
   }
 
   /* ---------- Confetti ---------- */
@@ -244,7 +327,19 @@
     if (hasSentinel) { suppressPop = true; hasSentinel = false; history.back(); }
   }
   function askExit() {
-    confirmDialog("Exit this test?", "Your answers and progress in this test will be lost.", "Exit", leaveToHome);
+    confirmDialog(T("exitTitle"), T("exitMsg"), T("exit"), leaveToHome);
+  }
+  function askRestart() {
+    confirmDialog(T("restartTitle"), T("restartMsg"), T("restart"), restartQuiz);
+  }
+  // Restart: same set of questions, back to question 1, in a brand-new random order.
+  function restartQuiz() {
+    if (!state) return;
+    stopTimer();
+    const raw = shuffle(state.raw.slice());
+    state = { idx: 0, raw, items: raw.map(prepare), t0: Date.now(), elapsed: undefined };
+    sfx.start(); buzz(15);
+    showQuiz();
   }
   window.addEventListener("popstate", () => {
     if (suppressPop) { suppressPop = false; return; }
@@ -266,27 +361,28 @@
     const w = el("div", "welcome");
     w.append(el("div", "blob b1"), el("div", "blob b2"), el("div", "blob b3"));
     w.append(soundButton("on-welcome"));
+    w.append(langButton("on-welcome"));
 
     const inner = el("div", "w-inner");
     const mark = el("div", "w-mark");
     mark.append(el("div", "ring r1"), el("div", "ring r2"), logo("w-logo"));
 
     const title = el("h1", "w-title");
-    "DHA".split("").forEach((ch, i) => {
-      const s = el("span", null, ch);
+    T("brand").split("").forEach((ch, i) => {
+      const s = el("span", null, ch === " " ? "\u00A0" : ch);
       s.style.animationDelay = 0.45 + i * 0.1 + "s";
       title.append(s);
     });
-    title.setAttribute("aria-label", "DHA");
+    title.setAttribute("aria-label", T("brand"));
 
-    const sub = el("p", "w-sub", "Nursing exam practice");
-    const tag = el("p", "w-tag", "Practise smarter. Walk into the exam ready.");
+    const sub = el("p", "w-sub", T("wSub"));
+    const tag = el("p", "w-tag", T("wTag"));
 
     const chips = el("div", "w-chips");
-    const c1 = el("div", "chip"); const num = el("b", null, "0"); c1.append(num, document.createTextNode(" questions"));
-    chips.append(c1, el("div", "chip", "9 topics"), el("div", "chip", "Works offline"));
+    const c1 = el("div", "chip"); const num = el("b", null, "0"); c1.append(num, document.createTextNode(T("wQuestions")));
+    chips.append(c1, el("div", "chip", T("w9")), el("div", "chip", T("wOffline")));
 
-    const go = el("button", "w-btn ripple-host", "Get started");
+    const go = el("button", "w-btn ripple-host", T("wGo"));
     go.type = "button";
     go.setAttribute("data-silent", "");
     go.onclick = () => {
@@ -308,10 +404,17 @@
 
     const head = el("div", "home-head");
     const brand = el("div", "brand");
-    brand.append(logo("brand-logo"), el("span", null, "DHA"));
-    head.append(brand, soundButton());
+    brand.append(logo("brand-logo"), el("span", null, T("brand")));
+    const actions = el("div", "head-actions");
+    const tips = el("button", "hbtn tips-btn ripple-host");
+    tips.type = "button";
+    tips.setAttribute("aria-label", T("tipsTitle"));
+    tips.innerHTML = ICON_BULB + "<span>" + T("tipsBtn") + "</span>";
+    tips.onclick = showTips;
+    actions.append(tips, langButton(), soundButton());
+    head.append(brand, actions);
     app.append(head);
-    app.append(el("h1", "h-title", "Nursing exams"), el("p", "h-sub", "Choose a topic to start practising"));
+    app.append(el("h1", "h-title", T("homeTitle")), el("p", "h-sub", T("homeSub")));
     if (msg) app.append(el("p", "error", msg));
 
     const counts = {};
@@ -325,7 +428,7 @@
       const text = el("div", "t-text");
       const cnt = el("span", "t-count", "…");
       counts[t.id] = cnt;
-      text.append(el("h3", null, t.name), el("p", null, t.desc), cnt);
+      text.append(el("h3", null, topicName(t)), el("p", null, topicDesc(t)), cnt);
       const icon = el("div", "t-icon");
       icon.innerHTML = iconSvg(t.icon);
       card.append(text, icon);
@@ -335,10 +438,10 @@
 
     try {
       const all = await loadAll();
-      TOPICS.forEach((t) => { counts[t.id].textContent = poolFor(all, t).length + " questions"; });
+      TOPICS.forEach((t) => { counts[t.id].textContent = T("nQuestions", { n: poolFor(all, t).length }); });
     } catch (e) {
       TOPICS.forEach((t) => { counts[t.id].textContent = ""; });
-      const err = el("p", "error", "Could not load questions.");
+      const err = el("p", "error", T("loadErr"));
       app.prepend(err);
     }
   }
@@ -352,29 +455,29 @@
 
     const back = el("button", "back-btn ripple-host");
     back.type = "button";
-    back.innerHTML = '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg><span>Topics</span>';
+    back.innerHTML = '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg><span>' + T("topics") + '</span>';
     back.onclick = leaveToHome;
     app.append(back);
 
     const hero = el("div", "len-hero");
     hero.style.setProperty("--tc", topic.color);
     const ht = el("div", "t-text");
-    ht.append(el("h3", null, topic.name), el("p", null, topic.desc));
+    ht.append(el("h3", null, topicName(topic)), el("p", null, topicDesc(topic)));
     const hi = el("div", "t-icon");
     hi.innerHTML = iconSvg(topic.icon);
     hero.append(ht, hi);
     app.append(hero);
 
-    app.append(el("label", "field", "Number of questions"));
+    app.append(el("label", "field", T("numQ")));
     const grid = el("div", "sizes");
     app.append(grid);
 
-    app.append(el("label", "field", "Test mode"));
+    app.append(el("label", "field", T("testMode")));
     const seg = el("div", "seg");
     const help = el("p", "mode-help");
     const MODES = [
-      ["exam", "Exam", "Change your answers any time. Results and explanations come at the end."],
-      ["practice", "Practice", "See the right answer and explanation straight after each question."],
+      ["exam", T("exam"), T("examHelp")],
+      ["practice", T("practice"), T("practiceHelp")],
     ];
     function paintMode() {
       seg.querySelectorAll(".seg-btn").forEach((b) => b.classList.toggle("active", b.dataset.m === settings.mode));
@@ -389,7 +492,7 @@
     app.append(seg, help);
     paintMode();
 
-    const start = el("button", "btn shine ripple-host", "Start test");
+    const start = el("button", "btn shine ripple-host", T("start"));
     start.type = "button";
     start.setAttribute("data-silent", "");
     start.disabled = true;
@@ -407,7 +510,7 @@
       sizes.forEach((n) => {
         const b = el("button", "size ripple-host" + (n === settings.count ? " active" : ""), String(n));
         b.type = "button";
-        b.append(el("small", null, SIZES.includes(n) ? "questions" : "all questions"));
+        b.append(el("small", null, SIZES.includes(n) ? T("questionsLbl") : T("allQ")));
         b.onclick = () => {
           settings.count = n;
           grid.querySelectorAll(".size").forEach((x) => x.classList.remove("active"));
@@ -416,21 +519,22 @@
         grid.append(b);
       });
       start.disabled = !sizes.length;
-    } catch (e) { err.textContent = "Could not load questions."; }
+    } catch (e) { err.textContent = T("loadErr"); }
   }
 
   async function startQuiz(btn) {
-    btn.disabled = true; btn.textContent = "Loading…";
+    btn.disabled = true; btn.textContent = T("loading");
     try {
       const all = await loadAll();
       const pool = poolFor(all, settings.topic);
+      // fresh random draw + order every single time a test starts (including "Try another test")
       const questions = shuffle(pool.slice()).slice(0, settings.count);
       if (!questions.length) throw new Error("No questions found");
       stopTimer();
-      state = { idx: 0, items: questions.map(prepare), t0: Date.now(), elapsed: undefined };
+      state = { idx: 0, raw: questions, items: questions.map(prepare), t0: Date.now(), elapsed: undefined };
       showQuiz();
     } catch (e) {
-      showHome("Could not start the test: " + e.message);
+      showHome(T("startErr") + e.message);
     }
   }
 
@@ -452,8 +556,15 @@
     const bar = el("div", "qbar");
     const exit = el("button", "exit-btn ripple-host");
     exit.type = "button";
-    exit.innerHTML = EXIT + "<span>Exit</span>";
+    exit.innerHTML = EXIT + "<span>" + T("exit") + "</span>";
     exit.onclick = askExit;
+    const restart = el("button", "restart-btn ripple-host");
+    restart.type = "button";
+    restart.setAttribute("aria-label", T("restart"));
+    restart.innerHTML = ICON_RESTART + '<span class="lbl">' + T("restart") + "</span>";
+    restart.onclick = askRestart;
+    const left = el("div", "qbar-l");
+    left.append(restart, exit);
     const right = el("div", "qbar-r");
     const timer = el("div", "timer");
     timer.innerHTML = CLOCK;
@@ -461,7 +572,7 @@
     timer.append(tText);
     timer.setAttribute("aria-label", "Elapsed time");
     right.append(soundButton("sm"), timer);
-    bar.append(exit, right);
+    bar.append(left, right);
 
     const meta = el("div", "qmeta");
     const qnum = el("span", null, "");
@@ -485,10 +596,10 @@
     const total = state.items.length;
     if (settings.mode === "exam") {
       const done = state.items.filter((i) => i.picked !== null).length;
-      ui.chip.textContent = `Answered: ${done}/${total}`;
+      ui.chip.textContent = T("answered", { d: done, n: total });
     } else {
       const ok = state.items.filter((i) => i.picked !== null && i.choices[i.picked].correct).length;
-      ui.chip.textContent = `Score: ${ok}`;
+      ui.chip.textContent = T("score", { n: ok });
     }
     if (bump) { ui.chip.classList.remove("bump"); void ui.chip.offsetWidth; ui.chip.classList.add("bump"); }
   }
@@ -498,7 +609,7 @@
     const item = state.items[state.idx];
     const body = ui.body;
 
-    ui.qnum.textContent = `Question ${state.idx + 1} of ${total}`;
+    ui.qnum.textContent = T("qOf", { i: state.idx + 1, n: total });
     ui.fill.style.width = ((state.idx + 1) / total) * 100 + "%";
     updateMeta();
 
@@ -515,11 +626,11 @@
     const buttons = [];
     const expl = el("div");
     const nav = el("div", "navrow");
-    const prev = el("button", "btn secondary ripple-host", "Previous");
+    const prev = el("button", "btn secondary ripple-host", T("prev"));
     prev.type = "button";
     prev.disabled = state.idx === 0;
     const last = state.idx === total - 1;
-    const next = el("button", "btn ripple-host", last ? "Finish test" : "Next question");
+    const next = el("button", "btn ripple-host", last ? T("finish") : T("next"));
     next.type = "button";
 
     function reveal(animate) {
@@ -574,11 +685,109 @@
       if (!last) { state.idx++; renderQuestion(1); return; }
       const skipped = state.items.filter((x) => x.picked === null).length;
       if (skipped) {
-        confirmDialog("Finish the test?", `You have ${skipped} unanswered question${skipped > 1 ? "s" : ""}. They will be counted as skipped.`, "Finish", showResult);
+        confirmDialog(T("finishTitle"), T(skipped > 1 ? "finishMany" : "finishOne", { n: skipped }), T("finishOk"), showResult);
       } else showResult();
     };
     nav.append(prev, next);
     body.append(nav);
+  }
+
+  /* ---------- Exam Preparation Tips ---------- */
+  function tipHead(icon, color, title) {
+    const h = el("div", "tip-head");
+    h.style.setProperty("--tc", color);
+    const ic = el("div", "tip-ic");
+    ic.innerHTML = iconSvg(icon);
+    h.append(ic, el("h2", null, title));
+    return h;
+  }
+  function showTips() {
+    enterSub();
+    screen = "tips";
+    clear(true);
+    const tp = TIPS[lang] || TIPS.en;
+
+    const top = el("div", "tips-top");
+    const back = el("button", "back-btn ripple-host");
+    back.type = "button";
+    back.innerHTML = '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg><span>' + T("topics") + "</span>";
+    back.onclick = leaveToHome;
+    top.append(back, langButton());
+    app.append(top);
+
+    const hero = el("div", "tips-hero");
+    const hi = el("div", "tips-hero-ic");
+    hi.innerHTML = iconSvg("target");
+    const ht = el("div", "t-text");
+    ht.append(el("h1", null, T("tipsTitle")), el("p", null, T("tipsSub")));
+    hero.append(hi, ht);
+    app.append(hero);
+
+    // 1. Numbered preparation tips
+    const s1 = el("section", "tip-sec");
+    s1.append(tipHead("target", "#0ea5e9", tp.s1));
+    const ol = el("ol", "tip-list");
+    tp.items.forEach((it, n) => {
+      const li = el("li", "tip-item");
+      li.style.animationDelay = Math.min(n, 10) * 40 + "ms";
+      const num = el("span", "tip-num", String(n + 1));
+      const tx = el("div", "tip-tx");
+      tx.append(el("b", null, it[0]), el("span", null, it[1]));
+      li.append(num, tx);
+      ol.append(li);
+    });
+    s1.append(ol);
+    app.append(s1);
+
+    // 2. While answering questions
+    const s2 = el("section", "tip-sec");
+    s2.append(tipHead("brain", "#8b5cf6", tp.s2));
+    s2.append(el("p", "tip-lead", tp.ask));
+    const ul = el("ul", "tip-bul");
+    tp.asks.forEach((a) => {
+      const li = el("li");
+      const ic = el("span", "tip-chk"); ic.innerHTML = ICON_CHECK;
+      li.append(ic, el("span", null, a));
+      ul.append(li);
+    });
+    s2.append(ul);
+    s2.append(el("p", "tip-lead", tp.prio));
+    const chain = el("div", "tip-chain");
+    tp.chain.forEach((c, n) => {
+      if (n) { const ar = el("span", "tip-arrow"); ar.innerHTML = ICON_ARROW; chain.append(ar); }
+      const chip = el("div", "tip-step");
+      chip.append(el("em", null, String(n + 1)), el("span", null, c));
+      chain.append(chip);
+    });
+    s2.append(chain);
+    s2.append(el("p", "tip-note", tp.caution));
+    app.append(s2);
+
+    // 3. Exam day
+    const s3 = el("section", "tip-sec");
+    s3.append(tipHead("clock", "#f59e0b", tp.s3));
+    const ul3 = el("ul", "tip-bul");
+    tp.day.forEach((a) => {
+      const li = el("li");
+      const ic = el("span", "tip-chk"); ic.innerHTML = ICON_CHECK;
+      li.append(ic, el("span", null, a));
+      ul3.append(li);
+    });
+    s3.append(ul3);
+    app.append(s3);
+
+    // Quotes
+    [tp.q1, tp.q2].forEach((q) => {
+      const bq = el("blockquote", "tip-quote");
+      const ic = el("span", "tip-q-ic"); ic.innerHTML = ICON_QUOTE;
+      bq.append(ic, el("p", null, q));
+      app.append(bq);
+    });
+
+    const done = el("button", "btn ripple-host", T("home"));
+    done.type = "button";
+    done.onclick = leaveToHome;
+    app.append(done);
   }
 
   /* ---------- Result ---------- */
@@ -595,14 +804,14 @@
     const secs = Math.max(1, state.elapsed || 1);
 
     const grade =
-      pct >= 80 ? { cls: "great", title: "Congratulations!", note: "Excellent work — you're exam ready!", c1: "#22c55e", c2: "#0d9488" } :
-      pct >= 60 ? { cls: "good",  title: "Congratulations!", note: "Good job! A little more practice will get you there.", c1: "#0ea5e9", c2: "#0d9488" } :
-                  { cls: "keep",  title: "Test complete",    note: "Keep practicing — every test makes you stronger.", c1: "#f59e0b", c2: "#f97316" };
+      pct >= 80 ? { cls: "great", title: T("congrats"), note: T("noteGreat"), c1: "#22c55e", c2: "#0d9488" } :
+      pct >= 60 ? { cls: "good",  title: T("congrats"), note: T("noteGood"), c1: "#0ea5e9", c2: "#0d9488" } :
+                  { cls: "keep",  title: T("complete"), note: T("noteKeep"), c1: "#f59e0b", c2: "#f97316" };
 
     const box = el("div", "result " + grade.cls);
     const hero = el("div", "r-hero");
     hero.append(el("h2", "r-title", grade.title), el("p", "r-note", grade.note));
-    hero.append(el("p", "r-topic", settings.topic.name + (settings.mode === "exam" ? " - Exam" : " - Practice")));
+    hero.append(el("p", "r-topic", topicName(settings.topic) + " - " + (settings.mode === "exam" ? T("exam") : T("practice"))));
 
     const R = 54, C = 2 * Math.PI * R;
     const wrap = el("div", "ring-wrap");
@@ -615,15 +824,15 @@
       "</svg>";
     const center = el("div", "ring-center");
     const big = el("div", "ring-pct", "0%");
-    center.append(big, el("div", "ring-label", `${correct} of ${total} correct`));
+    center.append(big, el("div", "ring-label", T("correctOf", { c: correct, t: total })));
     wrap.append(center);
     hero.append(wrap);
     box.append(hero);
 
     const stats = el("div", "stats");
-    const tiles = [["Correct", correct, "good"], ["Incorrect", wrongCount, "bad"]];
-    if (skipped) tiles.push(["Skipped", skipped, "skip"]);
-    tiles.push(["Time", fmtTime(secs), "time"]);
+    const tiles = [[T("sCorrect"), correct, "good"], [T("sIncorrect"), wrongCount, "bad"]];
+    if (skipped) tiles.push([T("sSkipped"), skipped, "skip"]);
+    tiles.push([T("sTime"), fmtTime(secs), "time"]);
     stats.style.setProperty("--n", tiles.length);
     tiles.forEach(([label, val, kind], n) => {
       const s = el("div", "stat " + kind);
@@ -633,10 +842,10 @@
     });
     box.append(stats);
 
-    const again = el("button", "btn ripple-host", "Try another test");
+    const again = el("button", "btn ripple-host", T("again"));
     again.type = "button"; again.setAttribute("data-silent", "");
     again.onclick = () => { sfx.start(); buzz(15); startQuiz(again); };
-    const home = el("button", "btn secondary ripple-host", "Back to home");
+    const home = el("button", "btn secondary ripple-host", T("home"));
     home.type = "button"; home.onclick = leaveToHome;
     box.append(again, home);
     app.append(box);
@@ -644,19 +853,19 @@
     const rev = el("div", "review");
     const bad = items.filter((i) => i.picked === null || !i.choices[i.picked].correct);
     if (bad.length) {
-      rev.append(el("h3", null, `Review your mistakes (${bad.length})`));
+      rev.append(el("h3", null, T("review", { n: bad.length })));
       bad.forEach((m, n) => {
         const d = el("div", "rev-item");
         d.style.animationDelay = Math.min(n, 8) * 0.06 + 0.9 + "s";
         if (m.sub) d.append(el("span", "tag", m.sub));
         d.append(el("div", "rev-q", m.question));
-        d.append(el("div", m.picked === null ? "skipd" : "you", m.picked === null ? "Not answered" : "Your answer: " + m.choices[m.picked].text));
-        d.append(el("div", "right", "Correct answer: " + m.choices.find((c) => c.correct).text));
+        d.append(el("div", m.picked === null ? "skipd" : "you", m.picked === null ? T("notAnswered") : T("yourAns") + m.choices[m.picked].text));
+        d.append(el("div", "right", T("correctAns") + m.choices.find((c) => c.correct).text));
         if (m.explanation) d.append(el("div", "rev-exp", m.explanation));
         rev.append(d);
       });
     } else {
-      rev.append(el("div", "perfect", "Perfect score — no mistakes to review."));
+      rev.append(el("div", "perfect", T("perfect")));
     }
     app.append(rev);
 
