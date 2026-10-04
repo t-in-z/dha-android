@@ -114,7 +114,7 @@
       try { q = quiz.items[quiz.index]; before = q.picked; } catch (_) {}
       const r = origPick.apply(this, arguments);
       try {
-        if (q && before == null && q.picked != null) {
+        if (q && q.picked != null && q.picked !== before) {
           if (quiz.mode === "practice") play(q.choices[q.picked].correct ? "correct" : "wrong");
           else play("select");
         }
