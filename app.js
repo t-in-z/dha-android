@@ -154,7 +154,7 @@ function renderHome(animate=false){
 function chooseTopic(name){selectedTopic=name;selectedCount=null;renderLength();}
 function renderLength(){
   currentView="length";const cnt=selectedTopic==="Random"?questions.length:(getAllTopicCounts()[selectedTopic]||0),t=topicText(selectedTopic,cnt),max=Math.max(1,cnt);
-  const opts=[...new Set([5,10,20,30,40,50,max].filter(n=>n<=max))];selectedCount=Math.min(max,selectedCount||opts[0]||max);
+  const opts=[5,10,20,30,40,50].filter(n=>n<=max);selectedCount=Math.min(max,selectedCount||opts[0]||max);
   shell('<button class="back-btn ripple-host" onclick="renderHome()">'+icon("back")+escapeHtml(tr("home"))+'</button><div class="len-hero" style="--tc:#0d9488"><div class="t-icon">'+icon("light")+'</div><div><h2 style="margin:0">'+escapeHtml(t.title)+'</h2><div style="opacity:.9">'+escapeHtml(t.desc)+'</div></div></div><label class="field">'+escapeHtml(tr("numQ"))+'</label><div class="sizes">'+opts.map(n=>'<button class="size '+(n===selectedCount?"active":"")+' ripple-host" onclick="setCount('+n+')">'+n+'<small>'+(n===max?escapeHtml(tr("allQ")):escapeHtml(tr("questionsLbl")))+'</small></button>').join("")+'</div><label class="field">'+escapeHtml(tr("testMode"))+'</label><div class="seg"><button class="seg-btn '+(selectedMode==="exam"?"active":"")+'" onclick="setMode(\'exam\')">'+escapeHtml(tr("exam"))+'</button><button class="seg-btn '+(selectedMode==="practice"?"active":"")+'" onclick="setMode(\'practice\')">'+escapeHtml(tr("practice"))+'</button></div><p class="mode-help">'+escapeHtml(selectedMode==="exam"?tr("examHelp"):tr("practiceHelp"))+'</p><button class="btn ripple-host shine" onclick="startTest()">'+escapeHtml(tr("start"))+'</button>');
 }
 function setCount(n){selectedCount=n;renderLength();}
