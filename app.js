@@ -196,7 +196,7 @@ function renderQuiz(dir="right"){
   const explain=(quiz.mode==="practice"&&q.picked!=null)?'<div class="explain" dir="auto"><b>'+escapeHtml(q.choices[q.picked]?.correct?tr("sCorrect"):tr("sIncorrect"))+'</b><br>'+escapeHtml(q.explanation)+'</div>':"";
   shell('<div class="qbar"><div class="qbar-l"><button class="exit-btn ripple-host" onclick="confirmExit()">'+icon("x")+'<span>'+escapeHtml(tr("exit"))+'</span></button><button class="restart-btn ripple-host" onclick="confirmRestart()">'+icon("rotate")+'<span class="lbl">'+escapeHtml(tr("restart"))+'</span></button></div><div class="qbar-r"><div class="timer" id="timer">'+formatTime(quiz.elapsed)+'</div><button class="lang-mini ripple-host" onclick="openLanguage()" title="'+escapeHtml(tr("langBtn"))+'" aria-label="'+escapeHtml(tr("langBtn"))+'">'+icon("globe")+'</button><button class="sound-btn sm '+(soundOn?"":"off")+'" onclick="toggleSound()" title="'+escapeHtml(tr("sound"))+'">'+icon(soundOn?"volume":"mute")+'</button></div></div><div class="qmeta"><span>'+escapeHtml(tr("qOf",{i:quiz.index+1,n}))+'</span><span class="score-chip">'+escapeHtml(tr("answered",{d:answered,n}))+'</span></div><div class="bar"><div style="width:'+((quiz.index+1)/n*100).toFixed(1)+'%"></div></div><div class="qbody from-'+dir+'">'+(q.category?'<span class="tag">'+escapeHtml(q.category)+'</span>':"")+'<p class="q" dir="auto">'+escapeHtml(q.question)+'</p>'+choices+explain+'<div class="navrow"><button class="btn secondary" onclick="prevQuestion()" '+(quiz.index===0?"disabled":"")+'>'+escapeHtml(tr("prev"))+'</button><button class="btn" onclick="'+(quiz.index===n-1?"finishTest()":"nextQuestion()")+'">'+escapeHtml(quiz.index===n-1?tr("finish"):tr("next"))+'</button></div></div>');
 }
-function pickAnswer(i){const q=quiz.items[quiz.index];if(q.picked!=null)return;q.picked=i;updateQuizAnswerUI(q,i);if(quiz.mode==="practice")say(q.choices[i].correct?tr("sCorrect"):tr("sIncorrect"));}
+function pickAnswer(i){const q=quiz.items[quiz.index];if(q.picked!=null&&(quiz.mode==="practice"||q.picked===i))return;q.picked=i;updateQuizAnswerUI(q,i);if(quiz.mode==="practice")say(q.choices[i].correct?tr("sCorrect"):tr("sIncorrect"));}
 function updateQuizAnswerUI(q,picked){
   document.querySelectorAll(".choice").forEach((el,index)=>{
     const isPicked=index===picked;
@@ -206,7 +206,7 @@ function updateQuizAnswerUI(q,picked){
       el.classList.toggle("wrong",isPicked&&!q.choices[index].correct);
       el.disabled=true;
     }
-    if(isPicked) el.classList.add("chosen");
+    el.classList.toggle("chosen",isPicked);
   });
   const answered=quiz.items.filter(x=>x.picked!=null).length;
   const chip=document.querySelector(".score-chip");
