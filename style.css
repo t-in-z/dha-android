@@ -244,3 +244,88 @@ select {
   *, *::before, *::after { animation-duration: .01ms !important; animation-delay: 0s !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; transition-delay: 0s !important; }
   .w-title span, .w-sub, .w-tag, .w-chips, .w-btn, .topic { opacity: 1; }
 }
+
+
+/* ===== Gulf Nurse additions ===== */
+.w-title { font-size: 2.4rem; letter-spacing: .06em; text-indent: .06em; white-space: nowrap; }
+.head-actions { display: flex; align-items: center; gap: 8px; }
+.hbtn {
+  flex: none; height: 40px; display: inline-flex; align-items: center; gap: 6px; padding: 0 13px; border: 0; border-radius: 99px;
+  background: #fff; color: var(--teal); font-weight: 700; font-size: .88rem; cursor: pointer; position: relative; overflow: hidden;
+  box-shadow: 0 3px 12px rgba(15, 23, 42, .12); transition: transform .15s var(--ease);
+}
+.hbtn:active { transform: scale(.94); }
+.hbtn.tips-btn { background: linear-gradient(135deg, #f59e0b, #f97316); color: #fff; box-shadow: 0 6px 16px rgba(249, 115, 22, .32); }
+.hbtn.lang-btn.on-welcome { position: absolute; z-index: 2; top: calc(12px + env(safe-area-inset-top, 0px)); left: 14px; color: #fff; background: rgba(255, 255, 255, .2); box-shadow: none; }
+
+.lang-list { display: grid; gap: 10px; margin-top: 14px; }
+.lang-opt { display: flex; justify-content: space-between; align-items: center; width: 100%; padding: 14px 16px; border: 2px solid var(--line); border-radius: 14px; background: #fff; color: var(--ink); font-size: 1.1rem; font-weight: 700; cursor: pointer; position: relative; overflow: hidden; }
+.lang-opt small { color: var(--muted); font-weight: 700; }
+.lang-opt.active { border-color: var(--teal); background: #ecfdf5; color: #0f766e; }
+.lang-opt.active small { color: var(--teal); font-size: 1.1rem; }
+
+.qbar-l { display: flex; align-items: center; gap: 8px; }
+.restart-btn { display: inline-flex; align-items: center; gap: 6px; padding: 9px 13px 9px 10px; border: 0; border-radius: 12px; background: #e0f2fe; color: #075985; font-weight: 700; font-size: .95rem; cursor: pointer; position: relative; overflow: hidden; transition: transform .15s var(--ease); }
+.restart-btn:active { transform: scale(.95); }
+@media (max-width: 400px) { .restart-btn .lbl { display: none; } .restart-btn { padding: 9px 10px; } .qbar { padding: 10px 10px; } }
+
+/* ----- Tips page ----- */
+.tips-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+.tips-top .back-btn { margin-bottom: 0; }
+.tips-hero { display: flex; align-items: center; gap: 14px; padding: 20px 18px; margin-bottom: 18px; border-radius: 22px; color: #fff; background: linear-gradient(135deg, var(--blue), var(--teal)); box-shadow: 0 12px 26px -12px rgba(13, 148, 136, .6); }
+.tips-hero h1 { text-align: start; margin: 0 0 4px; font-size: 1.4rem; letter-spacing: 0; line-height: 1.2; }
+.tips-hero p { margin: 0; font-size: .88rem; line-height: 1.45; opacity: .93; }
+.tips-hero-ic { flex: none; width: 60px; height: 60px; border-radius: 50%; display: grid; place-items: center; background: rgba(255, 255, 255, .2); }
+.tips-hero-ic svg { width: 36px; height: 36px; }
+.tip-sec { margin: 0 0 18px; padding: 18px 16px; border: 1px solid var(--line); border-radius: 20px; background: #fff; box-shadow: 0 6px 18px -10px rgba(15, 23, 42, .18); }
+.tip-head { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+.tip-head h2 { margin: 0; font-size: 1.15rem; line-height: 1.25; color: var(--ink); }
+.tip-ic { flex: none; width: 42px; height: 42px; border-radius: 13px; display: grid; place-items: center; background: var(--tc); }
+.tip-ic svg { width: 26px; height: 26px; }
+.tip-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.tip-item { display: flex; gap: 12px; align-items: flex-start; padding: 11px 12px; border-radius: 14px; background: #f8fafc; animation: pop-in .4s var(--ease) both; }
+.tip-num { flex: none; width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; font-size: .82rem; font-weight: 800; color: #fff; background: linear-gradient(135deg, var(--blue), var(--teal)); font-variant-numeric: tabular-nums; }
+.tip-tx { display: grid; gap: 2px; line-height: 1.45; font-size: .93rem; }
+.tip-tx b { color: var(--ink); }
+.tip-tx span { color: #475569; }
+.tip-lead { margin: 14px 0 8px; font-weight: 700; color: #6d28d9; }
+.tip-head + .tip-lead { margin-top: 0; }
+.tip-bul { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.tip-bul li { display: flex; gap: 10px; align-items: flex-start; line-height: 1.45; font-size: .94rem; color: #334155; }
+.tip-chk { flex: none; color: var(--teal); display: grid; place-items: center; margin-top: -1px; }
+.tip-chain { display: grid; gap: 4px; justify-items: center; margin: 4px 0 12px; }
+.tip-step { width: 100%; display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 12px; background: #f5f3ff; border: 1px solid #ddd6fe; color: #4c1d95; font-weight: 700; font-size: .92rem; }
+.tip-step em { flex: none; width: 24px; height: 24px; border-radius: 50%; display: grid; place-items: center; font-style: normal; font-size: .78rem; color: #fff; background: #8b5cf6; }
+.tip-arrow { color: #a78bfa; display: grid; place-items: center; line-height: 0; }
+.tip-note { margin: 0; padding: 10px 12px; border-radius: 12px; background: #fffbeb; border: 1px solid #fde68a; color: #92400e; font-size: .88rem; line-height: 1.45; }
+.tip-quote { position: relative; margin: 0 0 14px; padding: 18px 18px 18px 52px; border-radius: 18px; background: linear-gradient(135deg, #ecfeff, #ecfdf5); border: 1px solid #a7f3d0; color: #0f766e; }
+.tip-quote p { margin: 0; font-style: italic; font-weight: 600; line-height: 1.55; font-size: .98rem; }
+.tip-q-ic { position: absolute; top: 14px; left: 14px; color: #14b8a6; opacity: .8; line-height: 0; }
+
+/* ----- Arabic (right-to-left) + script-friendly spacing ----- */
+html[lang="ar"] *, html[lang="hi"] * { letter-spacing: 0 !important; }
+html[dir="rtl"] .h-title, html[dir="rtl"] .topic, html[dir="rtl"] .choice, html[dir="rtl"] .review { text-align: right; }
+html[dir="rtl"] .explain { border-left: 0; border-right: 4px solid var(--blue); }
+html[dir="rtl"] .rev-item { border-left: 1px solid var(--line); border-right: 4px solid var(--red); }
+html[dir="rtl"] .back-btn { margin: -6px -6px 12px 0; padding: 8px 6px 8px 12px; }
+html[dir="rtl"] .tips-top .back-btn { margin-bottom: 0; }
+html[dir="rtl"] .back-btn svg { transform: scaleX(-1); }
+html[dir="rtl"] .tip-quote { padding: 18px 52px 18px 18px; }
+html[dir="rtl"] .tip-q-ic { left: auto; right: 14px; }
+html[dir="rtl"] .hbtn.lang-btn.on-welcome { left: auto; right: 14px; }
+html[dir="rtl"] .sound-btn.on-welcome { right: auto; left: 14px; }
+/* question text is English: keep it left-to-right even inside the Arabic layout */
+html[dir="rtl"] .q, html[dir="rtl"] .choice span:not(.l), html[dir="rtl"] .rev-q, html[dir="rtl"] .explain, html[dir="rtl"] .rev-exp, html[dir="rtl"] .tag { direction: ltr; text-align: left; }
+html[dir="rtl"] .choice { flex-direction: row; }
+
+.brand { white-space: nowrap; }
+@media (max-width: 400px) {
+  .brand { font-size: 1rem; gap: 8px; letter-spacing: .02em; }
+  .brand-logo { width: 38px; height: 38px; border-radius: 10px; }
+  .head-actions { gap: 6px; }
+  .hbtn.lang-btn:not(.on-welcome) { width: 40px; padding: 0; justify-content: center; }
+  .hbtn.lang-btn:not(.on-welcome) span { display: none; }
+}
+.tips-top .hbtn.lang-btn span { display: inline !important; }
+.tips-top .hbtn.lang-btn { width: auto !important; padding: 0 13px !important; }
+.card.plain .tips-top { margin-top: 2px; }
