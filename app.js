@@ -17,27 +17,52 @@ const tr = (key, vars = {}) => {
   Object.keys(vars).forEach(k => value = String(value).replaceAll("{" + k + "}", vars[k]));
   return value;
 };
+// Questions can be plain English strings/arrays OR {en, ar, hi} objects.
+// If a translation is missing or incomplete we silently fall back to English, so the app never breaks.
+function enOf(value) {
+  if (value && typeof value === "object" && !Array.isArray(value)) return value.en ?? Object.values(value)[0];
+  return value;
+}
 function getLangValue(value) {
-  if (value && typeof value === "object" && !Array.isArray(value)) return value[lang] ?? value.en ?? "";
+  if (value && typeof value === "object" && !Array.isArray(value)) {
+    const v = value[lang];
+    if (typeof v === "string" && v.trim()) return v;
+    return value.en ?? Object.values(value)[0] ?? "";
+  }
   return value ?? "";
 }
 function getLangArray(value) {
-  if (value && typeof value === "object" && !Array.isArray(value)) return value[lang] ?? value.en ?? [];
+  if (value && typeof value === "object" && !Array.isArray(value)) {
+    const base = Array.isArray(value.en) ? value.en : (Object.values(value).find(Array.isArray) || []);
+    const v = value[lang];
+    // only use the translated options if every option is there, so the answer index stays correct
+    if (Array.isArray(v) && v.length === base.length && v.every(x => String(x ?? "").trim())) return v;
+    return base;
+  }
   return Array.isArray(value) ? value : [];
+}
+function isValidQuestion(q) {
+  const text = enOf(q?.question), opts = enOf(q?.options), a = Number(q?.answer);
+  return typeof text === "string" && text.trim() !== "" && Array.isArray(opts) && opts.length >= 2 && Number.isInteger(a) && a >= 0 && a < opts.length;
 }
 function shuffle(a) {
   for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; }
   return a;
 }
+function localize(item) {
+  const q = item.src, options = getLangArray(q.options);
+  item.question = getLangValue(q.question);
+  item.category = getLangValue(q.category);
+  item.sub = getLangValue(q.subcategory);
+  item.explanation = getLangValue(q.explanation);
+  item.choices.forEach(c => { c.text = options[c.idx]; });
+}
 function prepare(q) {
-  const question = getLangValue(q.question);
-  const options = getLangArray(q.options);
-  const category = getLangValue(q.category);
-  const sub = getLangValue(q.subcategory);
-  const explanation = getLangValue(q.explanation);
-  const choices = options.map((text, i) => ({ text, correct: i === Number(q.answer) }));
+  const choices = getLangArray(q.options).map((text, i) => ({ text, idx: i, correct: i === Number(q.answer) }));
   if (!q.fixedOrder) shuffle(choices);
-  return { ...q, question, category, sub, explanation, choices, picked: null };
+  const item = { src: q, choices, picked: null };
+  localize(item);
+  return item;
 }
 function escapeHtml(v) {
   return String(v ?? "").replace(/[&<>"']/g, m => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[m]));
@@ -108,7 +133,7 @@ function renderWelcome() {
 }
 function enterApp(){const el=$("#welcome");if(el){el.classList.add("leaving");setTimeout(()=>renderHome(true),420);}else renderHome(true);}
 function renderHome(animate=false){
-  currentView="home";applyLanguage();const counts=getAllTopicCounts(),names=Object.keys(counts);
+  currentView="home";applyLanguage();const counts={Random:questions.length,...getAllTopicCounts()},names=Object.keys(counts);
   const cards=names.map((name,i)=>{const t=topicText(name,counts[name]);const tc=["#0ea5e9","#0d9488","#6366f1","#8b5cf6","#f97316","#ef4444","#14b8a6","#0891b2","#a855f7"][i%9];
     return '<button class="topic ripple-host" style="--tc:'+tc+';--i:'+i+'" onclick=\'chooseTopic('+JSON.stringify(name)+')\'><div class="t-text"><h3>'+escapeHtml(t.title)+'</h3><p>'+escapeHtml(t.desc)+'</p><span class="t-count">'+escapeHtml(t.count)+'</span></div><div class="t-icon">'+icon("light")+'</div></button>';}).join("");
   shell('<div class="home-head"><div class="brand"><img class="brand-logo" src="logo.svg" alt="">'+escapeHtml(tr("brand"))+'</div><div class="head-actions"><button class="hbtn tips-btn ripple-host" onclick="renderTips()">'+icon("light")+'<span>'+escapeHtml(tr("tipsBtn"))+'</span></button><button class="hbtn lang-btn ripple-host" onclick="openLanguage()">'+icon("globe")+'<span>'+escapeHtml(tr("langBtn"))+'</span></button></div></div><h1 class="h-title">'+escapeHtml(tr("homeTitle"))+'</h1><p class="h-sub">'+escapeHtml(tr("homeSub"))+'</p>'+cards);
@@ -117,7 +142,7 @@ function renderHome(animate=false){
 function chooseTopic(name){selectedTopic=name;selectedCount=null;renderLength();}
 function renderLength(){
   currentView="length";const cnt=selectedTopic==="Random"?questions.length:(getAllTopicCounts()[selectedTopic]||0),t=topicText(selectedTopic,cnt),max=Math.max(1,cnt);
-  const opts=[...new Set([5,10,20,30,max].filter(n=>n<=max))];selectedCount=Math.min(max,selectedCount||opts[0]||max);
+  const opts=[...new Set([5,10,20,30,40,50,max].filter(n=>n<=max))];selectedCount=Math.min(max,selectedCount||opts[0]||max);
   shell('<button class="back-btn ripple-host" onclick="renderHome()">'+icon("back")+escapeHtml(tr("home"))+'</button><div class="len-hero" style="--tc:#0d9488"><div class="t-icon">'+icon("light")+'</div><div><h2 style="margin:0">'+escapeHtml(t.title)+'</h2><div style="opacity:.9">'+escapeHtml(t.desc)+'</div></div></div><label class="field">'+escapeHtml(tr("numQ"))+'</label><div class="sizes">'+opts.map(n=>'<button class="size '+(n===selectedCount?"active":"")+' ripple-host" onclick="setCount('+n+')">'+n+'<small>'+(n===max?escapeHtml(tr("allQ")):escapeHtml(tr("questionsLbl")))+'</small></button>').join("")+'</div><label class="field">'+escapeHtml(tr("testMode"))+'</label><div class="seg"><button class="seg-btn '+(selectedMode==="exam"?"active":"")+'" onclick="setMode(\'exam\')">'+escapeHtml(tr("exam"))+'</button><button class="seg-btn '+(selectedMode==="practice"?"active":"")+'" onclick="setMode(\'practice\')">'+escapeHtml(tr("practice"))+'</button></div><p class="mode-help">'+escapeHtml(selectedMode==="exam"?tr("examHelp"):tr("practiceHelp"))+'</p><button class="btn ripple-host shine" onclick="startTest()">'+escapeHtml(tr("start"))+'</button>');
 }
 function setCount(n){selectedCount=n;renderLength();}
@@ -135,9 +160,9 @@ function startTimer(){clearInterval(quiz?.timer);quiz.timer=setInterval(()=>{if(
 function formatTime(s){return String(Math.floor(s/60)).padStart(2,"0")+":"+String(s%60).padStart(2,"0");}
 function renderQuiz(dir="right"){
   const q=quiz.items[quiz.index],n=quiz.items.length,answered=quiz.items.filter(x=>x.picked!=null).length;
-  const choices=q.choices.map((c,i)=>{let cls="";if(q.picked===i)cls+=" selected";if(quiz.mode==="practice"&&q.picked!=null)cls+=c.correct?" correct":(q.picked===i?" wrong":"");return '<button class="choice ripple-host'+cls+'" '+(quiz.mode==="practice"&&q.picked!=null?"disabled":"")+' onclick="pickAnswer('+i+')"><span class="l">'+String.fromCharCode(65+i)+'</span><span>'+escapeHtml(c.text)+'</span></button>';}).join("");
-  const explain=(quiz.mode==="practice"&&q.picked!=null)?'<div class="explain"><b>'+escapeHtml(q.choices[q.picked]?.correct?tr("sCorrect"):tr("sIncorrect"))+'</b><br>'+escapeHtml(q.explanation)+'</div>':"";
-  shell('<div class="qbar"><div class="qbar-l"><button class="exit-btn ripple-host" onclick="confirmExit()">'+icon("x")+'<span>'+escapeHtml(tr("exit"))+'</span></button><button class="restart-btn ripple-host" onclick="confirmRestart()">'+icon("rotate")+'<span class="lbl">'+escapeHtml(tr("restart"))+'</span></button></div><div class="qbar-r"><div class="timer" id="timer">'+formatTime(quiz.elapsed)+'</div><button class="sound-btn sm '+(soundOn?"":"off")+'" onclick="toggleSound()" title="'+escapeHtml(tr("sound"))+'">'+icon(soundOn?"volume":"mute")+'</button></div></div><div class="qmeta"><span>'+escapeHtml(tr("qOf",{i:quiz.index+1,n}))+'</span><span class="score-chip">'+escapeHtml(tr("answered",{d:answered,n}))+'</span></div><div class="bar"><div style="width:'+((quiz.index+1)/n*100).toFixed(1)+'%"></div></div><div class="qbody from-'+dir+'">'+(q.category?'<span class="tag">'+escapeHtml(q.category)+'</span>':"")+'<p class="q" dir="ltr">'+escapeHtml(q.question)+'</p>'+choices+explain+'<div class="navrow"><button class="btn secondary" onclick="prevQuestion()" '+(quiz.index===0?"disabled":"")+'>'+escapeHtml(tr("prev"))+'</button><button class="btn" onclick="'+(quiz.index===n-1?"finishTest()":"nextQuestion()")+'">'+escapeHtml(quiz.index===n-1?tr("finish"):tr("next"))+'</button></div></div>');
+  const choices=q.choices.map((c,i)=>{let cls="";if(q.picked===i)cls+=" selected";if(quiz.mode==="practice"&&q.picked!=null)cls+=c.correct?" correct":(q.picked===i?" wrong":"");return '<button class="choice ripple-host'+cls+'" '+(quiz.mode==="practice"&&q.picked!=null?"disabled":"")+' onclick="pickAnswer('+i+')"><span class="l">'+String.fromCharCode(65+i)+'</span><span dir="auto">'+escapeHtml(c.text)+'</span></button>';}).join("");
+  const explain=(quiz.mode==="practice"&&q.picked!=null)?'<div class="explain" dir="auto"><b>'+escapeHtml(q.choices[q.picked]?.correct?tr("sCorrect"):tr("sIncorrect"))+'</b><br>'+escapeHtml(q.explanation)+'</div>':"";
+  shell('<div class="qbar"><div class="qbar-l"><button class="exit-btn ripple-host" onclick="confirmExit()">'+icon("x")+'<span>'+escapeHtml(tr("exit"))+'</span></button><button class="restart-btn ripple-host" onclick="confirmRestart()">'+icon("rotate")+'<span class="lbl">'+escapeHtml(tr("restart"))+'</span></button></div><div class="qbar-r"><div class="timer" id="timer">'+formatTime(quiz.elapsed)+'</div><button class="sound-btn sm '+(soundOn?"":"off")+'" onclick="toggleSound()" title="'+escapeHtml(tr("sound"))+'">'+icon(soundOn?"volume":"mute")+'</button></div></div><div class="qmeta"><span>'+escapeHtml(tr("qOf",{i:quiz.index+1,n}))+'</span><span class="score-chip">'+escapeHtml(tr("answered",{d:answered,n}))+'</span></div><div class="bar"><div style="width:'+((quiz.index+1)/n*100).toFixed(1)+'%"></div></div><div class="qbody from-'+dir+'">'+(q.category?'<span class="tag">'+escapeHtml(q.category)+'</span>':"")+'<p class="q" dir="auto">'+escapeHtml(q.question)+'</p>'+choices+explain+'<div class="navrow"><button class="btn secondary" onclick="prevQuestion()" '+(quiz.index===0?"disabled":"")+'>'+escapeHtml(tr("prev"))+'</button><button class="btn" onclick="'+(quiz.index===n-1?"finishTest()":"nextQuestion()")+'">'+escapeHtml(quiz.index===n-1?tr("finish"):tr("next"))+'</button></div></div>');
 }
 function pickAnswer(i){const q=quiz.items[quiz.index];if(quiz.mode==="practice"&&q.picked!=null)return;q.picked=i;renderQuiz("right");if(quiz.mode==="practice")say(q.choices[i].correct?tr("sCorrect"):tr("sIncorrect"));}
 function nextQuestion(){if(quiz.index<quiz.items.length-1){quiz.index++;renderQuiz("right");}else finishTest();}
@@ -149,7 +174,7 @@ function finishTest(){const unanswered=quiz.items.length-quiz.items.filter(q=>q.
 function showResult(){
   clearInterval(quiz.timer);const items=quiz.items,correct=items.reduce((a,q)=>a+(q.picked!=null&&q.choices[q.picked]?.correct?1:0),0),answered=items.filter(q=>q.picked!=null).length,skipped=items.length-answered,pct=Math.round(correct/items.length*100);
   const wrongCount=items.filter(q=>q.picked!=null&&!q.choices[q.picked]?.correct).length,bad=items.filter(q=>q.picked==null||!q.choices[q.picked]?.correct),cls=pct>=80?"great":pct>=50?"":"keep";
-  shell('<div class="result '+cls+'"><div class="r-hero"><h2 class="r-title">'+escapeHtml(pct>=80?tr("congrats"):tr("complete"))+'</h2><p class="r-note">'+escapeHtml(pct>=80?tr("noteGreat"):pct>=50?tr("noteGood"):tr("noteKeep"))+'</p><p class="r-topic">'+escapeHtml(items[0]?.category||"")+'</p><div class="ring-wrap"><svg class="score-ring" viewBox="0 0 120 120"><circle class="ring-bg" cx="60" cy="60" r="48"></circle><circle class="ring-fg" cx="60" cy="60" r="48" stroke="currentColor" stroke-dasharray="301.59" stroke-dashoffset="'+(301.59-(301.59*pct/100))+'"></circle></svg><div class="ring-center"><div class="ring-pct">'+pct+'%</div><div class="ring-label">'+escapeHtml(tr("score",{n:pct}))+'</div></div></div></div><div class="stats" style="--n:3"><div class="stat good"><div class="stat-val">'+correct+'</div><div class="stat-label">'+escapeHtml(tr("sCorrect"))+'</div></div><div class="stat bad"><div class="stat-val">'+wrongCount+'</div><div class="stat-label">'+escapeHtml(tr("sIncorrect"))+'</div></div><div class="stat skip"><div class="stat-val">'+skipped+'</div><div class="stat-label">'+escapeHtml(tr("sSkipped"))+'</div></div></div><p style="color:var(--muted);margin:16px 0">'+escapeHtml(tr("sTime"))+': '+formatTime(quiz.elapsed)+'</p>'+(bad.length?'<div class="review"><h3>'+escapeHtml(tr("review",{n:bad.length}))+'</h3>'+bad.map(q=>'<div class="rev-item"><div class="rev-q">'+escapeHtml(q.question)+'</div><div class="'+(q.picked==null?"skipd":"you")+'">'+escapeHtml(q.picked==null?tr("notAnswered"):tr("yourAns")+q.choices[q.picked].text)+'</div><div class="right">'+escapeHtml(tr("correctAns")+q.choices.find(c=>c.correct)?.text)+'</div><div class="rev-exp">'+escapeHtml(q.explanation)+'</div></div>').join("")+'</div>':'<div class="perfect">'+escapeHtml(tr("perfect"))+'</div>')+'<button class="btn" onclick="renderHome()">'+escapeHtml(tr("home"))+'</button><button class="btn secondary" onclick="renderHome()">'+escapeHtml(tr("again"))+'</button></div>');
+  shell('<div class="result '+cls+'"><div class="r-hero"><h2 class="r-title">'+escapeHtml(pct>=80?tr("congrats"):tr("complete"))+'</h2><p class="r-note">'+escapeHtml(pct>=80?tr("noteGreat"):pct>=50?tr("noteGood"):tr("noteKeep"))+'</p><p class="r-topic">'+escapeHtml(items[0]?.category||"")+'</p><div class="ring-wrap"><svg class="score-ring" viewBox="0 0 120 120"><circle class="ring-bg" cx="60" cy="60" r="48"></circle><circle class="ring-fg" cx="60" cy="60" r="48" stroke="currentColor" stroke-dasharray="301.59" stroke-dashoffset="'+(301.59-(301.59*pct/100))+'"></circle></svg><div class="ring-center"><div class="ring-pct">'+pct+'%</div><div class="ring-label">'+escapeHtml(tr("score",{n:pct}))+'</div></div></div></div><div class="stats" style="--n:3"><div class="stat good"><div class="stat-val">'+correct+'</div><div class="stat-label">'+escapeHtml(tr("sCorrect"))+'</div></div><div class="stat bad"><div class="stat-val">'+wrongCount+'</div><div class="stat-label">'+escapeHtml(tr("sIncorrect"))+'</div></div><div class="stat skip"><div class="stat-val">'+skipped+'</div><div class="stat-label">'+escapeHtml(tr("sSkipped"))+'</div></div></div><p style="color:var(--muted);margin:16px 0">'+escapeHtml(tr("sTime"))+': '+formatTime(quiz.elapsed)+'</p>'+(bad.length?'<div class="review"><h3>'+escapeHtml(tr("review",{n:bad.length}))+'</h3>'+bad.map(q=>'<div class="rev-item"><div class="rev-q" dir="auto">'+escapeHtml(q.question)+'</div><div class="'+(q.picked==null?"skipd":"you")+'">'+escapeHtml(q.picked==null?tr("notAnswered"):tr("yourAns")+q.choices[q.picked].text)+'</div><div class="right">'+escapeHtml(tr("correctAns")+q.choices.find(c=>c.correct)?.text)+'</div><div class="rev-exp" dir="auto">'+escapeHtml(q.explanation)+'</div></div>').join("")+'</div>':'<div class="perfect">'+escapeHtml(tr("perfect"))+'</div>')+'<button class="btn" onclick="renderHome()">'+escapeHtml(tr("home"))+'</button><button class="btn secondary" onclick="startTest()">'+escapeHtml(tr("again"))+'</button></div>');
   quiz=null;
 }
 function modal(title,msg,ok,action){
@@ -161,15 +186,17 @@ function openLanguage(){
   el.innerHTML='<div class="modal-box"><h3>'+escapeHtml(tr("langTitle"))+'</h3><div class="lang-list">'+langs.map(l=>'<button class="lang-opt '+(l.id===lang?"active":"")+'" onclick="setLang(\''+l.id+'\')"><span>'+escapeHtml(l.label)+'</span><small>'+l.short+'</small></button>').join("")+'</div></div>';
   document.body.appendChild(el);el.addEventListener("click",e=>{if(e.target===el)el.remove();});
 }
-function setLang(l){lang=l;savePrefs();applyLanguage();document.querySelector(".modal")?.remove();if(currentView==="home")renderHome();else if(currentView==="length")renderLength();else if(currentView==="quiz"&&quiz)renderQuiz();else if(currentView==="tips")renderTips();}
+function setLang(l){lang=l;savePrefs();applyLanguage();if(quiz)quiz.items.forEach(localize);document.querySelector(".modal")?.remove();if(currentView==="home")renderHome();else if(currentView==="length")renderLength();else if(currentView==="quiz"&&quiz)renderQuiz();else if(currentView==="tips")renderTips();}
 function toggleSound(){soundOn=!soundOn;savePrefs();if(currentView==="quiz"&&quiz)renderQuiz();else if(currentView==="home")renderHome();}
 function renderTips(){currentView="tips";const T=window.GN?.TIPS?.[lang]||window.GN?.TIPS?.en;const items=(T?.items||[]).map((x,i)=>'<li class="tip-item"><span class="tip-num">'+(i+1)+'</span><div class="tip-tx"><b>'+escapeHtml(x[0])+'</b><span>'+escapeHtml(x[1])+'</span></div></li>').join("");shell('<div class="tips-top"><button class="back-btn ripple-host" onclick="renderHome()">'+icon("back")+escapeHtml(tr("home"))+'</button><button class="hbtn lang-btn" onclick="openLanguage()">'+icon("globe")+'<span>'+escapeHtml(tr("langBtn"))+'</span></button></div><div class="tips-hero"><div class="tips-hero-ic">'+icon("light")+'</div><div><h1>'+escapeHtml(tr("tipsTitle"))+'</h1><p>'+escapeHtml(tr("tipsSub"))+'</p></div></div><section class="tip-sec"><div class="tip-head"><div class="tip-ic" style="--tc:#0ea5e9">'+icon("light")+'</div><h2>'+escapeHtml(T.s1)+'</h2></div><ul class="tip-list">'+items+'</ul></section>',true);}
 async function loadQuestions(){
   try{
     const res=await fetch("questions.json",{cache:"no-store"});if(!res.ok)throw new Error("HTTP "+res.status);
     const data=await res.json();
-    questions=Array.isArray(data)?data:(Array.isArray(data.questions)?data.questions:(data && data.question ? [data] : []));
-    if(!questions.length)throw new Error("questions.json contains no questions.");
+    const list=Array.isArray(data)?data:(Array.isArray(data.questions)?data.questions:(data && data.question ? [data] : []));
+    questions=list.filter(isValidQuestion);
+    if(questions.length!==list.length)console.warn("Skipped "+(list.length-questions.length)+" invalid question(s) in questions.json");
+    if(!questions.length)throw new Error("questions.json contains no valid questions.");
     applyLanguage();renderWelcome();
   }catch(e){shell('<div class="error"><h2>'+escapeHtml(tr("loadErr"))+'</h2><p>'+escapeHtml(e.message)+'</p><button class="btn" onclick="location.reload()">Retry</button></div>');}
 }
