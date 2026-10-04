@@ -133,11 +133,23 @@ function renderWelcome() {
 }
 function enterApp(){const el=$("#welcome");if(el){el.classList.add("leaving");setTimeout(()=>renderHome(true),420);}else renderHome(true);}
 function renderHome(animate=false){
-  currentView="home";applyLanguage();const counts={Random:questions.length,...getAllTopicCounts()},names=Object.keys(counts);
-  const cards=names.map((name,i)=>{const t=topicText(name,counts[name]);const tc=["#0ea5e9","#0d9488","#6366f1","#8b5cf6","#f97316","#ef4444","#14b8a6","#0891b2","#a855f7"][i%9];
-    return '<button class="topic ripple-host" style="--tc:'+tc+';--i:'+i+'" onclick=\'chooseTopic('+JSON.stringify(name)+')\'><div class="t-text"><h3>'+escapeHtml(t.title)+'</h3><p>'+escapeHtml(t.desc)+'</p><span class="t-count">'+escapeHtml(t.count)+'</span></div><div class="t-icon">'+icon("light")+'</div></button>';}).join("");
-  shell('<div class="home-head"><div class="brand"><img class="brand-logo" src="logo.svg" alt="">'+escapeHtml(tr("brand"))+'</div><div class="head-actions"><button class="hbtn tips-btn ripple-host" onclick="renderTips()">'+icon("light")+'<span>'+escapeHtml(tr("tipsBtn"))+'</span></button><button class="hbtn lang-btn ripple-host" onclick="openLanguage()">'+icon("globe")+'<span>'+escapeHtml(tr("langBtn"))+'</span></button></div></div><h1 class="h-title">'+escapeHtml(tr("homeTitle"))+'</h1><p class="h-sub">'+escapeHtml(tr("homeSub"))+'</p>'+cards);
-  if(animate)app().classList.add("swap");
+  currentView="home";applyLanguage();
+  const counts=getAllTopicCounts();
+  const preferred=["Fundamentals","Medical-Surgical Nursing","Maternity & Child Nursing","Pediatrics","Community Health Nursing","Pharmacology","Research","Medications","Mental Health & Psychiatric Nursing"];
+  const names=preferred.filter(name=>counts[name]>0).concat(Object.keys(counts).filter(name=>name!=="Random"&&!preferred.includes(name)));
+  const ordered=names.concat("Random");
+  const cards=ordered.map((name,i)=>{
+    const t=topicText(name,name==="Random"?questions.length:counts[name]);
+    const tc=["#0ea5e9","#0d9488","#6366f1","#8b5cf6","#f97316","#ef4444","#14b8a6","#0891b2","#a855f7"][i%9];
+    return '<button class="topic ripple-host" style="--tc:'+tc+';--i:'+i+'" onclick=\\'chooseTopic('+JSON.stringify(name)+')\\'><div class="t-text"><h3>'+escapeHtml(t.title)+'</h3><p>'+escapeHtml(t.desc)+'</p><span class="t-count">'+escapeHtml(t.count)+'</span></div><div class="t-icon">'+icon("light")+'</div></button>';
+  }).join("");
+  shell('<div class="home-head"><div class="brand"><img class="brand-logo" src="logo.svg" alt="">'+escapeHtml(tr("brand"))+'</div><div class="head-actions"><button class="hbtn tips-btn ripple-host" onclick="renderTips()">'+icon("light")+'<span>'+escapeHtml(tr("tipsBtn"))+'</span></button><button class="hbtn lang-btn ripple-host" onclick="openLanguage()">'+icon("globe")+'<span>'+escapeHtml(tr("langBtn"))+'</span></button></div></div><div class="search-wrap"><svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg><input id="topicSearch" class="topic-search" type="search" autocomplete="off" placeholder="'+escapeHtml(tr("homeTitle"))+'"></div><h1 class="h-title">'+escapeHtml(tr("homeTitle"))+'</h1><p class="h-sub">'+escapeHtml(tr("homeSub"))+'</p><div id="topicList">'+cards+'</div>');
+  if(animate)requestAnimationFrame(()=>app().classList.add("swap"));
+  const input=$("#topicSearch"), list=$("#topicList");
+  if(input&&list) input.addEventListener("input",()=>{
+    const needle=input.value.trim().toLocaleLowerCase();
+    list.querySelectorAll(".topic").forEach(card=>{card.hidden=needle && !card.textContent.toLocaleLowerCase().includes(needle);});
+  });
 }
 function chooseTopic(name){selectedTopic=name;selectedCount=null;renderLength();}
 function renderLength(){
@@ -164,7 +176,26 @@ function renderQuiz(dir="right"){
   const explain=(quiz.mode==="practice"&&q.picked!=null)?'<div class="explain" dir="auto"><b>'+escapeHtml(q.choices[q.picked]?.correct?tr("sCorrect"):tr("sIncorrect"))+'</b><br>'+escapeHtml(q.explanation)+'</div>':"";
   shell('<div class="qbar"><div class="qbar-l"><button class="exit-btn ripple-host" onclick="confirmExit()">'+icon("x")+'<span>'+escapeHtml(tr("exit"))+'</span></button><button class="restart-btn ripple-host" onclick="confirmRestart()">'+icon("rotate")+'<span class="lbl">'+escapeHtml(tr("restart"))+'</span></button></div><div class="qbar-r"><div class="timer" id="timer">'+formatTime(quiz.elapsed)+'</div><button class="sound-btn sm '+(soundOn?"":"off")+'" onclick="toggleSound()" title="'+escapeHtml(tr("sound"))+'">'+icon(soundOn?"volume":"mute")+'</button></div></div><div class="qmeta"><span>'+escapeHtml(tr("qOf",{i:quiz.index+1,n}))+'</span><span class="score-chip">'+escapeHtml(tr("answered",{d:answered,n}))+'</span></div><div class="bar"><div style="width:'+((quiz.index+1)/n*100).toFixed(1)+'%"></div></div><div class="qbody from-'+dir+'">'+(q.category?'<span class="tag">'+escapeHtml(q.category)+'</span>':"")+'<p class="q" dir="auto">'+escapeHtml(q.question)+'</p>'+choices+explain+'<div class="navrow"><button class="btn secondary" onclick="prevQuestion()" '+(quiz.index===0?"disabled":"")+'>'+escapeHtml(tr("prev"))+'</button><button class="btn" onclick="'+(quiz.index===n-1?"finishTest()":"nextQuestion()")+'">'+escapeHtml(quiz.index===n-1?tr("finish"):tr("next"))+'</button></div></div>');
 }
-function pickAnswer(i){const q=quiz.items[quiz.index];if(quiz.mode==="practice"&&q.picked!=null)return;q.picked=i;renderQuiz("right");if(quiz.mode==="practice")say(q.choices[i].correct?tr("sCorrect"):tr("sIncorrect"));}
+function pickAnswer(i){const q=quiz.items[quiz.index];if(q.picked!=null)return;q.picked=i;updateQuizAnswerUI(q,i);if(quiz.mode==="practice")say(q.choices[i].correct?tr("sCorrect"):tr("sIncorrect"));}
+function updateQuizAnswerUI(q,picked){
+  document.querySelectorAll(".choice").forEach((el,index)=>{
+    const isPicked=index===picked;
+    el.classList.toggle("selected",isPicked);
+    if(quiz.mode==="practice"){
+      el.classList.toggle("correct",q.choices[index].correct);
+      el.classList.toggle("wrong",isPicked&&!q.choices[index].correct);
+      el.disabled=true;
+    }
+    if(isPicked) el.classList.add("chosen");
+  });
+  const answered=quiz.items.filter(x=>x.picked!=null).length;
+  const chip=document.querySelector(".score-chip");
+  if(chip) chip.textContent=tr("answered",{d:answered,n:quiz.items.length});
+  if(quiz.mode==="practice"&&!document.querySelector(".explain")){
+    const qbody=document.querySelector(".qbody");
+    if(qbody) qbody.insertAdjacentHTML("beforeend",'<div class="explain" dir="auto"><b>'+escapeHtml(q.choices[picked]?.correct?tr("sCorrect"):tr("sIncorrect"))+'</b><br>'+escapeHtml(q.explanation)+'</div>');
+  }
+}
 function nextQuestion(){if(quiz.index<quiz.items.length-1){quiz.index++;renderQuiz("right");}else finishTest();}
 function prevQuestion(){if(quiz.index>0){quiz.index--;renderQuiz("left");}}
 function confirmExit(){modal(tr("exitTitle"),tr("exitMsg"),tr("exit"),()=>{clearInterval(quiz?.timer);quiz=null;renderHome();});}
