@@ -2,6 +2,12 @@ name: Translate Question Bank
 
 on:
   workflow_dispatch:
+  push:
+    paths:
+      - 'app.js'
+      - 'index.html'
+      - 'style.css'
+      - 'i18n.js'
 
 permissions:
   contents: write
@@ -18,7 +24,7 @@ jobs:
 
       - name: Translate all questions
         env:
-          GEMINI_API_KEY: \${{ secrets.GEMINI_API_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           GEMINI_MODEL: gemini-3.5-flash-lite
           TRANSLATION_BATCH_SIZE: 20
           TRANSLATION_CONCURRENCY: 2
@@ -40,10 +46,11 @@ jobs:
           console.log('Verified 1591 fully translated questions.');
           NODE
 
-      - name: Commit translations
+      - name: Commit translations into questions.json
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add questions.json
-          git commit -m "Translate question bank to Arabic and Hindi" || echo "Nothing to commit"
+          git diff --cached --quiet && echo "questions.json already translated" && exit 0
+          git commit -m "Add Arabic and Hindi translations to questions.json"
           git push
