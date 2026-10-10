@@ -1,0 +1,439 @@
+[
+  {
+    "question": {
+      "en": "According to the Rule of Nines, what percentage of the total body surface area (TBSA) does an adult's anterior trunk (chest and abdomen) represent?",
+      "ar": "وفقًا لقاعدة التسعات، ما النسبة المئوية من مساحة سطح الجسم الكلية التي يمثلها الجذع الأمامي (الصدر والبطن) لدى البالغ؟",
+      "hi": "नाइन्स के नियम (Rule of Nines) के अनुसार, वयस्क में सामने का धड़ (छाती और पेट) कुल शरीर सतह क्षेत्र (TBSA) का कितना प्रतिशत होता है?"
+    },
+    "options": {
+      "en": ["9%", "18%", "27%", "36%"],
+      "ar": ["9%", "18%", "27%", "36%"],
+      "hi": ["9%", "18%", "27%", "36%"]
+    },
+    "answer": 1,
+    "explanation": {
+      "en": "In adults the anterior trunk is 18% (the posterior trunk is another 18%). Head and neck are 9%, each arm 9%, each leg 18% and the perineum 1%.",
+      "ar": "لدى البالغين يمثل الجذع الأمامي 18% (والجذع الخلفي 18% أخرى). الرأس والرقبة 9%، وكل ذراع 9%، وكل ساق 18%، والعجان 1%.",
+      "hi": "वयस्कों में सामने का धड़ 18% होता है (पीछे का धड़ भी 18%)। सिर और गर्दन 9%, प्रत्येक हाथ 9%, प्रत्येक पैर 18% और पेरिनियम 1% होता है।"
+    },
+    "fixedOrder": false
+  },
+  {
+    "question": {
+      "en": "An adult has burns over the entire left arm (front and back). Using the Rule of Nines, what is the estimated TBSA burned?",
+      "ar": "لدى بالغ حروق على الذراع اليسرى بالكامل (من الأمام والخلف). باستخدام قاعدة التسعات، ما نسبة مساحة سطح الجسم المحترقة التقديرية؟",
+      "hi": "एक वयस्क का पूरा बायाँ हाथ (आगे और पीछे) जल गया है। नाइन्स के नियम से जले हुए TBSA का अनुमान क्या है?"
+    },
+    "options": {
+      "en": ["4.5%", "9%", "18%", "1%"],
+      "ar": ["4.5%", "9%", "18%", "1%"],
+      "hi": ["4.5%", "9%", "18%", "1%"]
+    },
+    "answer": 1,
+    "explanation": {
+      "en": "Each adult arm is 9% of TBSA (4.5% front + 4.5% back).",
+      "ar": "تمثل كل ذراع لدى البالغ 9% من مساحة سطح الجسم (4.5% أمامًا و4.5% خلفًا).",
+      "hi": "वयस्क में प्रत्येक हाथ TBSA का 9% होता है (4.5% आगे + 4.5% पीछे)।"
+    },
+    "fixedOrder": false
+  },
+  {
+    "question": {
+      "en": "An adult has burns over the entire right leg (front and back). What is the estimated TBSA burned?",
+      "ar": "لدى بالغ حروق على الساق اليمنى بالكامل (من الأمام والخلف). ما نسبة مساحة سطح الجسم المحترقة التقديرية؟",
+      "hi": "एक वयस्क का पूरा दायाँ पैर (आगे और पीछे) जल गया है। जले हुए TBSA का अनुमान क्या है?"
+    },
+    "options": {
+      "en": ["9%", "13.5%", "18%", "36%"],
+      "ar": ["9%", "13.5%", "18%", "36%"],
+      "hi": ["9%", "13.5%", "18%", "36%"]
+    },
+    "answer": 2,
+    "explanation": {
+      "en": "Each adult leg is 18% of TBSA (9% anterior + 9% posterior).",
+      "ar": "تمثل كل ساق لدى البالغ 18% من مساحة سطح الجسم (9% أمامًا و9% خلفًا).",
+      "hi": "वयस्क में प्रत्येक पैर TBSA का 18% होता है (9% आगे + 9% पीछे)।"
+    },
+    "fixedOrder": false
+  },
+  {
+    "question": {
+      "en": "Which description best matches a superficial (first-degree) burn, such as a mild sunburn?",
+      "ar": "أي وصف يطابق الحرق السطحي (من الدرجة الأولى) مثل حروق الشمس الخفيفة؟",
+      "hi": "कौन-सा विवरण सतही (प्रथम-डिग्री) जलन, जैसे हल्की धूप से जलन, से सबसे अच्छी तरह मेल खाता है?"
+    },
+    "options": {
+      "en": ["Red, dry, painful skin without blisters", "Moist, blistered, very painful skin", "White or leathery, painless skin", "Charred skin with exposed muscle or bone"],
+      "ar": ["جلد أحمر وجاف ومؤلم بدون فقاعات", "جلد رطب ومتقرّح بالفقاعات ومؤلم جدًا", "جلد أبيض أو جلدي القوام وغير مؤلم", "جلد متفحّم مع ظهور العضلات أو العظام"],
+      "hi": ["लाल, सूखी और दर्दनाक त्वचा, बिना छालों के", "नम, छालेदार और बहुत दर्दनाक त्वचा", "सफेद या चमड़े जैसी, दर्दरहित त्वचा", "जली हुई त्वचा जिसमें मांसपेशी या हड्डी दिखे"]
+    },
+    "answer": 0,
+    "explanation": {
+      "en": "A superficial burn involves only the epidermis: the skin is red, dry and painful, with no blisters, and it heals in about 3–7 days without scarring.",
+      "ar": "يصيب الحرق السطحي البشرة فقط: الجلد أحمر وجاف ومؤلم دون فقاعات، ويلتئم خلال نحو 3 إلى 7 أيام دون ندبة.",
+      "hi": "सतही जलन में केवल एपिडर्मिस प्रभावित होती है: त्वचा लाल, सूखी और दर्दनाक होती है, छाले नहीं होते, और यह लगभग 3–7 दिनों में बिना निशान के ठीक हो जाती है।"
+    },
+    "fixedOrder": false
+  },
+  {
+    "question": {
+      "en": "A burn appears red and moist with intact blisters and is extremely painful. How is it classified?",
+      "ar": "يبدو الحرق أحمر ورطبًا مع فقاعات سليمة ومؤلمًا جدًا. كيف يُصنَّف؟",
+      "hi": "एक जलन लाल और नम दिखती है, छाले सुरक्षित हैं और बहुत दर्द है। इसका वर्गीकरण क्या है?"
+    },
+    "options": {
+      "en": ["Superficial (first-degree)", "Superficial partial-thickness (second-degree)", "Full-thickness (third-degree)", "Fourth-degree"],
+      "ar": ["سطحي (الدرجة الأولى)", "جزئي السُّمك السطحي (الدرجة الثانية)", "كامل السُّمك (الدرجة الثالثة)", "الدرجة الرابعة"],
+      "hi": ["सतही (प्रथम-डिग्री)", "सतही आंशिक-मोटाई (द्वितीय-डिग्री)", "पूर्ण-मोटाई (तृतीय-डिग्री)", "चतुर्थ-डिग्री"]
+    },
+    "answer": 1,
+    "explanation": {
+      "en": "Blisters, a moist red or pink base and severe pain are typical of a superficial partial-thickness (second-degree) burn, because the nerve endings are exposed and irritated.",
+      "ar": "الفقاعات والقاعدة الحمراء أو الوردية الرطبة والألم الشديد من سمات الحرق الجزئي السطحي (الدرجة الثانية) لأن النهايات العصبية مكشوفة ومهيَّجة.",
+      "hi": "छाले, नम लाल या गुलाबी आधार और तेज दर्द सतही आंशिक-मोटाई (द्वितीय-डिग्री) जलन के लक्षण हैं, क्योंकि तंत्रिका सिरे खुले और उत्तेजित होते हैं।"
+    },
+    "fixedOrder": false
+  },
+  {
+    "question": {
+      "en": "Why is a full-thickness (third-degree) burn area often painless?",
+      "ar": "لماذا تكون منطقة الحرق كامل السُّمك (الدرجة الثالثة) غالبًا غير مؤلمة؟",
+      "hi": "पूर्ण-मोटाई (तृतीय-डिग्री) जले हुए हिस्से में अक्सर दर्द क्यों नहीं होता?"
+    },
+    "options": {
+      "en": ["The nerve endings in the skin have been destroyed", "The patient has received enough analgesia", "Only the epidermis is damaged", "Blood flow to the area has increased"],
+      "ar": ["لأن النهايات العصبية في الجلد قد دُمّرت", "لأن المريض تلقى مسكنات كافية", "لأن البشرة فقط هي المتضررة", "لأن تدفق الدم إلى المنطقة قد زاد"],
+      "hi": ["त्वचा के तंत्रिका सिरे नष्ट हो चुके होते हैं", "मरीज को पर्याप्त दर्द निवारक मिल चुकी है", "केवल एपिडर्मिस क्षतिग्रस्त है", "उस जगह रक्त प्रवाह बढ़ गया है"]
+    },
+    "answer": 0,
+    "explanation": {
+      "en": "Full-thickness burns destroy the epidermis, dermis and nerve endings, so the burned area is dry, leathery and painless; the surrounding partial-thickness areas are still painful.",
+      "ar": "تدمّر الحروق كاملة السُّمك البشرة والأدمة والنهايات العصبية، فتكون المنطقة جافة وجلدية القوام وغير مؤلمة، بينما تبقى المناطق المحيطة جزئية السُّمك مؤلمة.",
+      "hi": "पूर्ण-मोटाई की जलन एपिडर्मिस, डर्मिस और तंत्रिका सिरों को नष्ट कर देती है, इसलिए जला हुआ हिस्सा सूखा, चमड़े जैसा और दर्दरहित होता है; आसपास के आंशिक-मोटाई वाले हिस्से दर्दनाक रहते हैं।"
+    },
+    "fixedOrder": false
+  },
+  {
+    "question": {
+      "en": "Using the Parkland formula (4 mL × body weight in kg × %TBSA), what is the total volume of fluid needed in the first 24 hours for a 70 kg adult with 40% TBSA burns?",
+      "ar": "باستخدام معادلة باركلاند (4 مل × الوزن بالكيلوغرام × نسبة مساحة الحرق)، ما إجمالي حجم السوائل اللازم خلال أول 24 ساعة لبالغ وزنه 70 كغ وحروقه 40% من مساحة سطح الجسم؟",
+      "hi": "पार्कलैंड फॉर्मूला (4 mL × वजन kg में × %TBSA) से 70 kg वजन और 40% TBSA जलन वाले वयस्क को पहले 24 घंटों में कुल कितना तरल चाहिए?"
+    },
+    "options": {
+      "en": ["5,600 mL", "8,400 mL", "11,200 mL", "16,800 mL"],
+      "ar": ["5,600 مل", "8,400 مل", "11,200 مل", "16,800 مل"],
+      "hi": ["5,600 mL", "8,400 mL", "11,200 mL", "16,800 mL"]
+    },
+    "answer": 2,
+    "explanation": {
+      "en": "4 × 70 × 40 = 11,200 mL of lactated Ringer's in the first 24 hours after the burn.",
+      "ar": "4 × 70 × 40 = 11,200 مل من محلول رينغر لاكتات خلال أول 24 ساعة بعد الحرق.",
+      "hi": "4 × 70 × 40 = 11,200 mL लैक्टेटेड रिंगर्स, जलने के बाद पहले 24 घंटों में।"
+    },
+    "fixedOrder": false
+  },
+  {
+    "question": {
+      "en": "A patient is to receive 11,200 mL of fluid in the first 24 hours after a burn injury. How much should be given in the first 8 hours after the time of injury?",
+      "ar": "سيتلقى مريض 11,200 مل من السوائل خلال أول 24 ساعة بعد الحرق. كم يجب إعطاؤه خلال أول 8 ساعات من وقت الإصابة؟",
+      "hi": "एक मरीज को जलने के बाद पहले 24 घंटों में 11,200 mL तरल देना है। चोट के समय से पहले 8 घंटों में कितना देना चाहिए?"
+    },
+    "options": {
+      "en": ["2,800 mL", "5,600 mL", "8,400 mL", "11,200 mL"],
+      "ar": ["2,800 مل", "5,600 مل", "8,400 مل", "11,200 مل"],
+      "hi": ["2,800 mL", "5,600 mL", "8,400 mL", "11,200 mL"]
+    },
+    "answer": 1,
+    "explanation": {
+      "en": "Half of the Parkland total is given in the first 8 hours from the time of the burn (5,600 mL); the other half is given over the next 16 hours.",
+      "ar": "يُعطى نصف الحجم الكلي وفق باركلاند خلال أول 8 ساعات من وقت الحرق (5,600 مل)، ويُعطى النصف الآخر خلال الـ 16 ساعة التالية.",
+      "hi": "पार्कलैंड की कुल मात्रा का आधा चोट के समय से पहले 8 घंटों में दिया जाता है (5,600 mL); बाकी आधा अगले 16 घंटों में।"
+    },
+    "fixedOrder": false
+  },
+  {
+    "question": {
+      "en": "Which IV fluid is most commonly used for initial fluid resuscitation in a patient with major burns?",
+      "ar": "أي سائل وريدي هو الأكثر استخدامًا للإنعاش الأولي بالسوائل لدى مريض مصاب بحروق كبيرة؟",
+      "hi": "बड़ी जलन वाले मरीज में शुरुआती तरल पुनर्जीवन के लिए सबसे अधिक कौन-सा IV तरल उपयोग होता है?"
+    },
+    "options": {
+      "en": ["Lactated Ringer's solution", "5% dextrose in water", "0.45% sodium chloride", "3% sodium chloride"],
+      "ar": ["محلول رينغر لاكتات", "دكستروز 5% في الماء", "كلوريد الصوديوم 0.45%", "كلوريد الصوديوم 3%"],
+      "hi": ["लैक्टेटेड रिंगर्स घोल", "5% डेक्स्ट्रोज़ इन वॉटर", "0.45% सोडियम क्लोराइड", "3% सोडियम क्लोराइड"]
+    },
+    "answer": 0,
+    "explanation": {
+      "en": "Lactated Ringer's is the isotonic crystalloid of choice for burn resuscitation because it replaces the sodium and fluid lost into the burned tissue.",
+      "ar": "رينغر لاكتات هو المحلول البلوري المتساوي التوتر المفضّل لإنعاش الحروق لأنه يعوّض الصوديوم والسوائل المفقودة في النسيج المحترق.",
+      "hi": "बर्न रिससिटेशन के लिए लैक्टेटेड रिंगर्स पसंदीदा आइसोटोनिक क्रिस्टलॉयड है, क्योंकि यह जले हुए ऊतक में खोए सोडियम और तरल की भरपाई करता है।"
+    },
+    "fixedOrder": false
+  },
+  {
+    "question": {
+      "en": "Which urinary output indicates adequate fluid resuscitation in an adult with major burns?",
+      "ar": "أي كمية بول تدل على كفاية الإنعاش بالسوائل لدى بالغ مصاب بحروق كبيرة؟",
+      "hi": "बड़ी जलन वाले वयस्क में पर्याप्त तरल पुनर्जीवन का संकेत कौन-सा मूत्र उत्पादन है?"
+    },
+    "options": {
+      "en": ["5–10 mL/hour", "10–20 mL/hour", "30–50 mL/hour (about 0.5 mL/kg/hour)", "More than 200 mL/hour"],
+      "ar": ["5–10 مل/ساعة", "10–20 مل/ساعة", "30–50 مل/ساعة (نحو 0.5 مل/كغ/ساعة)", "أكثر من 200 مل/ساعة"],
+      "hi": ["5–10 mL/घंटा", "10–20 mL/घंटा", "30–50 mL/घंटा (लगभग 0.5 mL/kg/घंटा)", "200 mL/घंटा से अधिक"]
+    },
+    "answer": 2,
+    "explanation": {
+      "en": "Hourly urine output is the best bedside guide to resuscitation. An adult should produce about 0.5 mL/kg/hour (30–50 mL/hour); less suggests under-resuscitation, much more suggests over-resuscitation.",
+      "ar": "يُعدّ ناتج البول كل ساعة أفضل مؤشر عند سرير المريض لتوجيه الإنعاش. يجب أن ينتج البالغ نحو 0.5 مل/كغ/ساعة (30–50 مل/ساعة)؛ الأقل يدل على نقص الإنعاش، والأكثر بكثير على فرطه.",
+      "hi": "प्रति घंटा मूत्र उत्पादन बिस्तर के पास पुनर्जीवन का सबसे अच्छा मार्गदर्शक है। वयस्क में लगभग 0.5 mL/kg/घंटा (30–50 mL/घंटा) होना चाहिए; कम होना अपर्याप्त पुनर्जीवन और बहुत अधिक होना अत्यधिक पुनर्जीवन दर्शाता है।"
+    },
+    "fixedOrder": false
+  },
+  {
+    "question": {
+      "en": "A person's clothing is on fire. What is the first action the nurse should take?",
+      "ar": "اشتعلت النار في ملابس شخص. ما أول إجراء يجب أن تتخذه الممرضة؟",
+      "hi": "एक व्यक्ति के कपड़ों में आग लगी है। नर्स को सबसे पहले क्या करना चाहिए?"
+    },
+    "options": {
+      "en": ["Smother the flames (stop, drop and roll or cover with a blanket)", "Apply ice to the burned areas", "Remove all clothing that is stuck to the skin", "Give oral fluids"],
+      "ar": ["إخماد اللهب (التوقف والاستلقاء والتدحرج أو التغطية ببطانية)", "وضع الثلج على المناطق المحترقة", "نزع جميع الملابس الملتصقة بالجلد", "إعطاء سوائل عن طريق الفم"],
+      "hi": ["आग बुझाएँ (रुकें, लेटें और लुढ़कें, या कंबल से ढकें)", "जले हुए हिस्सों पर बर्फ लगाएँ", "त्वचा से चिपके सभी कपड़े उतार दें", "मुँह से तरल पिलाएँ"]
+    },
+    "answer": 0,
+    "explanation": {
+      "en": "The first priority is to stop the burning process by smothering the flames. Clothing stuck to the skin is not pulled off, and ice is never applied to a burn.",
+      "ar": "الأولوية الأولى هي إيقاف عملية الاحتراق بإخماد اللهب. لا تُنزع الملابس الملتصقة بالجلد، ولا يوضع الثلج على الحرق أبدًا.",
+      "hi": "पहली प्राथमिकता आग को बुझाकर जलने की प्रक्रिया रोकना है। त्वचा से चिपके कपड़े खींचकर नहीं उतारे जाते, और जलन पर कभी बर्फ नहीं लगाई जाती।"
+    },
+    "fixedOrder": false
+  },
+  {
+    "question": {
+      "en": "Which finding in a burn patient is most suggestive of inhalation injury?",
+      "ar": "أي من الموجودات التالية لدى مريض الحروق يرجّح إصابة الاستنشاق أكثر من غيره؟",
+      "hi": "जलन के मरीज में कौन-सा निष्कर्ष इनहेलेशन इंजरी का सबसे अधिक संकेत देता है?"
+    },
+    "options": {
+      "en": ["Hoarseness and singed nasal hairs", "Pain in the burned forearm", "Mild headache only", "Normal voice and clear sputum"],
+      "ar": ["بحّة الصوت وتفحّم شعر الأنف", "ألم في الساعد المحترق", "صداع خفيف فقط", "صوت طبيعي وبلغم صافٍ"],
+      "hi": ["आवाज़ बैठना और नाक के बाल जल जाना", "जले हुए अग्रबाहु में दर्द", "केवल हल्का सिरदर्द", "सामान्य आवाज़ और साफ बलगम"]
+    },
+    "answer": 0,
+    "explanation": {
+      "en": "Facial burns, singed nasal hairs, hoarseness, stridor and soot (carbonaceous) sputum suggest airway burns. Swelling can close the airway quickly, so these signs need urgent attention.",
+      "ar": "حروق الوجه وتفحّم شعر الأنف وبحّة الصوت والصرير والبلغم المسوَّد بالسخام تدل على حروق في المجرى الهوائي. قد يؤدي التورّم إلى انسداد المجرى بسرعة، لذا تحتاج هذه العلامات إلى عناية عاجلة.",
+      "hi": "चेहरे की जलन, नाक के बाल जलना, आवाज़ बैठना, स्ट्राइडर और कालिख वाला बलगम श्वास मार्ग की जलन का संकेत देते हैं। सूजन से श्वास मार्ग जल्दी बंद हो सकता है, इसलिए इन संकेतों पर तुरंत ध्यान देना ज़रूरी है।"
+    },
+    "fixedOrder": false
+  },
+  {
+    "question": {
+      "en": "A patient with facial burns has a hoarse voice and soot around the nose and mouth. Which is the priority nursing action?",
+      "ar": "مريض بحروق في الوجه صوته أجش وحول أنفه وفمه سخام. ما الإجراء التمريضي ذو الأولوية؟",
+      "hi": "चेहरे की जलन वाले मरीज की आवाज़ भारी है और नाक व मुँह के आसपास कालिख है। नर्सिंग की प्राथमिकता क्या है?"
+    },
+    "options": {
+      "en": ["Prepare for early intubation and give high-flow oxygen", "Encourage the patient to drink fluids", "Apply cool compresses to the face and wait", "Place the patient flat in bed"],
+      "ar": ["التحضير للتنبيب المبكر وإعطاء أكسجين بتدفق عالٍ", "تشجيع المريض على شرب السوائل", "وضع كمادات باردة على الوجه والانتظار", "وضع المريض مسطّحًا على السرير"],
+      "hi": ["जल्दी इंट्यूबेशन की तैयारी करें और उच्च प्रवाह ऑक्सीजन दें", "मरीज को तरल पीने के लिए प्रोत्साहित करें", "चेहरे पर ठंडी पट्टी लगाकर प्रतीक्षा करें", "मरीज को बिस्तर पर पीठ के बल सपाट लिटा दें"]
+    },
+    "answer": 0,
+    "explanation": {
+      "en": "Airway comes first. Swelling from inhalation injury can obstruct the airway within hours, so the airway is secured early, often by intubation, and high-flow oxygen is given.",
+      "ar": "المجرى الهوائي أولًا. قد يسدّ التورّم الناتج عن إصابة الاستنشاق المجرى الهوائي خلال ساعات، لذا يُؤمَّن المجرى مبكرًا، غالبًا بالتنبيب، ويُعطى أكسجين بتدفق عالٍ.",
+      "hi": "श्वास मार्ग सबसे पहले है। इनहेलेशन इंजरी की सूजन कुछ घंटों में श्वास मार्ग बंद कर सकती है, इसलिए श्वास मार्ग को जल्दी सुरक्षित किया जाता है, अक्सर इंट्यूबेशन से, और उच्च प्रवाह ऑक्सीजन दी जाती है।"
+    },
+    "fixedOrder": false
+  },
+  {
+    "question": {
+      "en": "Which treatment is used for a burn patient with suspected carbon monoxide poisoning?",
+      "ar": "ما العلاج المستخدم لمريض حروق يُشتبه بتسمّمه بأول أكسيد الكربون؟",
+      "hi": "कार्बन मोनोऑक्साइड विषाक्तता के संदेह वाले जलन के मरीज में कौन-सा उपचार दिया जाता है?"
+    },
+    "options": {
+      "en": ["100% oxygen by non-rebreather mask", "Room air", "Oxygen at 2 L/min by nasal cannula", "Bronchodilators only"],
+      "ar": ["أكسجين 100% بقناع غير معيد للتنفس", "هواء الغرفة", "أكسجين بمعدل 2 لتر/دقيقة عبر قنية أنفية", "موسِّعات القصبات فقط"],
+      "hi": ["नॉन-रीब्रीदर मास्क से 100% ऑक्सीजन", "कमरे की हवा", "नेज़ल कैन्युला से 2 L/मिनट ऑक्सीजन", "केवल ब्रोंकोडायलेटर"]
+    },
+    "answer": 0,
+    "explanation": {
+      "en": "Carbon monoxide binds to hemoglobin much more strongly than oxygen. 100% oxygen shortens its half-life, and pulse oximetry can read falsely normal.",
+      "ar": "يرتبط أول أكسيد الكربون بالهيموغلوبين بقوة أكبر بكثير من الأكسجين. يقصّر الأكسجين 100% من عمر النصف له، وقد يعطي مقياس التأكسج النبضي قراءة طبيعية خاطئة.",
+      "hi": "कार्बन मोनोऑक्साइड हीमोग्लोबिन से ऑक्सीजन की तुलना में कहीं अधिक मजबूती से जुड़ती है। 100% ऑक्सीजन उसका हाफ-लाइफ घटाती है, और पल्स ऑक्सीमीटर गलत रूप से सामान्य रीडिंग दे सकता है।"
+    },
+    "fixedOrder": false
+  },
+  {
+    "question": {
+      "en": "What is the recommended first aid for a minor thermal burn?",
+      "ar": "ما الإسعاف الأولي الموصى به للحرق الحراري البسيط؟",
+      "hi": "हल्की थर्मल जलन के लिए अनुशंसित प्राथमिक उपचार क्या है?"
+    },
+    "options": {
+      "en": ["Cool the area under running water for about 20 minutes", "Apply butter or oil to the area", "Place ice directly on the burn", "Break the blisters to drain them"],
+      "ar": ["تبريد المنطقة بالماء الجاري نحو 20 دقيقة", "وضع الزبدة أو الزيت على المنطقة", "وضع الثلج مباشرة على الحرق", "فتح الفقاعات لتصريفها"],
+      "hi": ["जगह को लगभग 20 मिनट बहते पानी के नीचे ठंडा करें", "जगह पर मक्खन या तेल लगाएँ", "जलन पर सीधे बर्फ रखें", "छालों को फोड़कर पानी निकालें"]
+    },
+    "answer": 0,
+    "explanation": {
+      "en": "Cool running water limits tissue damage and relieves pain. Ice can cause further tissue injury, and butter, oil and breaking blisters increase the risk of infection.",
+      "ar": "يحدّ الماء الجاري البارد من تلف النسيج ويخفف الألم. قد يسبب الثلج أذى إضافيًا للنسيج، وتزيد الزبدة والزيت وفتح الفقاعات من خطر العدوى.",
+      "hi": "ठंडा बहता पानी ऊतक की क्षति सीमित करता है और दर्द कम करता है। बर्फ से ऊतक को और चोट लग सकती है, और मक्खन, तेल या छाले फोड़ने से संक्रमण का खतरा बढ़ता है।"
+    },
+    "fixedOrder": false
+  },
+  {
+    "question": {
+      "en": "A worker has dry chemical powder on his skin. What should the nurse do first?",
+      "ar": "عامل لديه مسحوق كيميائي جاف على جلده. ماذا يجب أن تفعل الممرضة أولًا؟",
+      "hi": "एक कर्मचारी की त्वचा पर सूखा रासायनिक पाउडर लगा है। नर्स को सबसे पहले क्या करना चाहिए?"
+    },
+    "options": {
+      "en": ["Brush off the excess powder, then flush with large amounts of water", "Apply a neutralizing agent to the skin", "Cover the area with a dry dressing", "Apply an antibiotic ointment"],
+      "ar": ["إزالة المسحوق الزائد بالنفض ثم الغسل بكميات كبيرة من الماء", "وضع مادة مُعادِلة على الجلد", "تغطية المنطقة بضمادة جافة", "وضع مرهم مضاد حيوي"],
+      "hi": ["अतिरिक्त पाउडर झाड़ें, फिर बहुत सारे पानी से धोएँ", "त्वचा पर न्यूट्रलाइज़िंग एजेंट लगाएँ", "जगह को सूखी ड्रेसिंग से ढकें", "एंटीबायोटिक मरहम लगाएँ"]
+    },
+    "answer": 0,
+    "explanation": {
+      "en": "Dry chemicals are brushed off first (so water does not activate them), then the skin is flushed with copious water. Neutralizing agents can cause heat-producing reactions and further injury.",
+      "ar": "تُنفَض المواد الكيميائية الجافة أولًا (حتى لا يفعّلها الماء) ثم يُغسل الجلد بكمية وفيرة من الماء. قد تسبب المواد المُعادِلة تفاعلات مولّدة للحرارة وإصابة إضافية.",
+      "hi": "सूखे रसायन पहले झाड़े जाते हैं (ताकि पानी उन्हें सक्रिय न करे), फिर त्वचा को भरपूर पानी से धोया जाता है। न्यूट्रलाइज़िंग एजेंट गर्मी पैदा करने वाली प्रतिक्रिया और अतिरिक्त चोट कर सकते हैं।"
+    },
+    "fixedOrder": false
+  },
+  {
+    "question": {
+      "en": "Which monitoring is a priority for a patient with a high-voltage electrical burn?",
+      "ar": "أي مراقبة تُعدّ أولوية لمريض مصاب بحرق كهربائي عالي الجهد؟",
+      "hi": "उच्च-वोल्टेज बिजली से जले मरीज में कौन-सी निगरानी प्राथमिकता है?"
+    },
+    "options": {
+      "en": ["Continuous cardiac rhythm monitoring (ECG)", "Blood glucose monitoring", "Bowel sound assessment", "Skin turgor assessment"],
+      "ar": ["المراقبة المستمرة لنظم القلب (تخطيط القلب)", "مراقبة سكر الدم", "تقييم أصوات الأمعاء", "تقييم مرونة الجلد"],
+      "hi": ["लगातार हृदय गति/लय की निगरानी (ECG)", "रक्त शर्करा की निगरानी", "आंत की आवाज़ों का मूल्यांकन", "त्वचा की लोच का मूल्यांकन"]
+    },
+    "answer": 0,
+    "explanation": {
+      "en": "Electrical current can cause dysrhythmias and cardiac arrest, and the visible skin burn often underestimates the deep tissue damage. Cardiac monitoring is a priority, along with watching for dark urine from muscle breakdown.",
+      "ar": "قد يسبب التيار الكهربائي اضطراب نظم القلب وتوقفه، وغالبًا ما يقلّل الحرق الجلدي الظاهر من حجم التلف العميق في الأنسجة. مراقبة القلب أولوية، مع ملاحظة البول الداكن الناتج عن تحلل العضلات.",
+      "hi": "बिजली का करंट डिसरिद्मिया और हृदय गति रुकने का कारण बन सकता है, और त्वचा पर दिखने वाली जलन अक्सर गहरे ऊतक की क्षति को कम दिखाती है। हृदय की निगरानी प्राथमिकता है, साथ ही मांसपेशियों के टूटने से गहरे रंग के मूत्र पर नज़र रखें।"
+    },
+    "fixedOrder": false
+  },
+  {
+    "question": {
+      "en": "Before applying silver sulfadiazine cream to a burn, the nurse should ask the patient about an allergy to which type of drug?",
+      "ar": "قبل وضع كريم سلفاديازين الفضة على حرق، عن حساسية تجاه أي نوع من الأدوية يجب أن تسأل الممرضة المريض؟",
+      "hi": "जलन पर सिल्वर सल्फाडायज़ीन क्रीम लगाने से पहले नर्स को मरीज से किस प्रकार की दवा की एलर्जी के बारे में पूछना चाहिए?"
+    },
+    "options": {
+      "en": ["Sulfonamides (sulfa drugs)", "Penicillins", "Cephalosporins", "Opioids"],
+      "ar": ["السلفوناميدات (أدوية السلفا)", "البنسلينات", "السيفالوسبورينات", "المواد الأفيونية"],
+      "hi": ["सल्फोनामाइड (सल्फा दवाएँ)", "पेनिसिलिन", "सेफालोस्पोरिन", "ओपिओइड"]
+    },
+    "answer": 0,
+    "explanation": {
+      "en": "Silver sulfadiazine contains a sulfonamide, so it is contraindicated in patients allergic to sulfa drugs. It can also cause a temporary drop in white blood cell count.",
+      "ar": "يحتوي سلفاديازين الفضة على سلفوناميد، لذا يُمنع استخدامه لدى المرضى الذين لديهم حساسية من أدوية السلفا. وقد يسبب أيضًا انخفاضًا مؤقتًا في عدد كريات الدم البيضاء.",
+      "hi": "सिल्वर सल्फाडायज़ीन में सल्फोनामाइड होता है, इसलिए सल्फा दवाओं से एलर्जी वाले मरीजों में यह वर्जित है। यह श्वेत रक्त कोशिकाओं की संख्या में अस्थायी कमी भी ला सकता है।"
+    },
+    "fixedOrder": false
+  },
+  {
+    "question": {
+      "en": "Which complication of major burns is a stress ulcer of the stomach or duodenum that is prevented with H2-receptor blockers or proton pump inhibitors?",
+      "ar": "أي من مضاعفات الحروق الكبيرة هي قرحة إجهاد في المعدة أو الاثني عشر يُوقى منها بمضادات مستقبلات H2 أو مثبطات مضخة البروتون؟",
+      "hi": "बड़ी जलन की कौन-सी जटिलता पेट या ग्रहणी का स्ट्रेस अल्सर है, जिसकी रोकथाम H2-रिसेप्टर ब्लॉकर या प्रोटॉन पंप इनहिबिटर से होती है?"
+    },
+    "options": {
+      "en": ["Curling's ulcer", "Contracture", "Pressure injury", "Paralytic ileus"],
+      "ar": ["قرحة كيرلنغ", "التقلّص (التليّف المقيِّد للمفصل)", "إصابة الضغط", "الانسداد المعوي الشللي"],
+      "hi": ["कर्लिंग अल्सर", "संकुचन (कॉन्ट्रैक्चर)", "प्रेशर इंजरी", "पैरालिटिक इलियस"]
+    },
+    "answer": 0,
+    "explanation": {
+      "en": "Curling's ulcer is a stress ulcer that develops after major burns because of reduced blood flow to the gut. Acid-reducing drugs such as famotidine or pantoprazole are given to prevent it.",
+      "ar": "قرحة كيرلنغ هي قرحة إجهاد تظهر بعد الحروق الكبيرة بسبب نقص تدفق الدم إلى الأمعاء. تُعطى أدوية خافضة للحموضة مثل الفاموتيدين أو البانتوبرازول للوقاية منها.",
+      "hi": "कर्लिंग अल्सर बड़ी जलन के बाद आंतों में रक्त प्रवाह घटने से होने वाला स्ट्रेस अल्सर है। इसकी रोकथाम के लिए फैमोटिडीन या पैंटोप्राज़ोल जैसी एसिड घटाने वाली दवाएँ दी जाती हैं।"
+    },
+    "fixedOrder": false
+  },
+  {
+    "question": {
+      "en": "Which laboratory finding is expected in the first 24–48 hours after a major burn, because of cell destruction and fluid shifts?",
+      "ar": "أي من نتائج المختبر يُتوقَّع خلال أول 24–48 ساعة بعد حرق كبير بسبب تلف الخلايا وانتقال السوائل؟",
+      "hi": "बड़ी जलन के बाद पहले 24–48 घंटों में कोशिका क्षति और तरल के स्थानांतरण के कारण कौन-सा प्रयोगशाला निष्कर्ष अपेक्षित है?"
+    },
+    "options": {
+      "en": ["Hyperkalemia", "Hypokalemia", "Hypernatremia", "Hypercalcemia"],
+      "ar": ["فرط بوتاسيوم الدم", "نقص بوتاسيوم الدم", "فرط صوديوم الدم", "فرط كالسيوم الدم"],
+      "hi": ["हाइपरकैलेमिया", "हाइपोकैलेमिया", "हाइपरनेट्रेमिया", "हाइपरकैल्सीमिया"]
+    },
+    "answer": 0,
+    "explanation": {
+      "en": "Damaged cells release potassium, so hyperkalemia is expected in the emergent phase, while sodium is usually low (hyponatremia) as fluid shifts into the tissues. Hematocrit rises from hemoconcentration.",
+      "ar": "تُطلق الخلايا التالفة البوتاسيوم، لذا يُتوقَّع فرط بوتاسيوم الدم في المرحلة الإسعافية، بينما ينخفض الصوديوم عادةً (نقص صوديوم الدم) مع انتقال السوائل إلى الأنسجة. ويرتفع الهيماتوكريت بسبب تركّز الدم.",
+      "hi": "क्षतिग्रस्त कोशिकाएँ पोटैशियम छोड़ती हैं, इसलिए इमरजेंट फेज़ में हाइपरकैलेमिया अपेक्षित है, जबकि तरल के ऊतकों में चले जाने से सोडियम आमतौर पर कम (हाइपोनेट्रेमिया) होता है। रक्त के गाढ़ा होने से हेमाटोक्रिट बढ़ता है।"
+    },
+    "fixedOrder": false
+  },
+  {
+    "question": {
+      "en": "Which diet is most appropriate for a patient recovering from major burns?",
+      "ar": "ما النظام الغذائي الأنسب لمريض يتعافى من حروق كبيرة؟",
+      "hi": "बड़ी जलन से उबर रहे मरीज के लिए कौन-सा आहार सबसे उपयुक्त है?"
+    },
+    "options": {
+      "en": ["High-calorie, high-protein diet", "Low-protein, low-calorie diet", "Clear liquids only", "Low-calorie, high-fat diet"],
+      "ar": ["نظام عالي السعرات وعالي البروتين", "نظام منخفض البروتين ومنخفض السعرات", "سوائل صافية فقط", "نظام منخفض السعرات وعالي الدهون"],
+      "hi": ["उच्च कैलोरी, उच्च प्रोटीन आहार", "कम प्रोटीन, कम कैलोरी आहार", "केवल साफ तरल", "कम कैलोरी, उच्च वसा आहार"]
+    },
+    "answer": 0,
+    "explanation": {
+      "en": "Burns cause a large increase in metabolic rate and protein loss, so the patient needs a high-calorie, high-protein diet (often with supplements or tube feeding) to support wound healing.",
+      "ar": "تسبب الحروق ارتفاعًا كبيرًا في معدل الاستقلاب وفقدانًا للبروتين، لذا يحتاج المريض إلى نظام عالي السعرات وعالي البروتين (غالبًا مع مكملات أو تغذية أنبوبية) لدعم التئام الجروح.",
+      "hi": "जलन से मेटाबोलिक दर बहुत बढ़ जाती है और प्रोटीन की हानि होती है, इसलिए घाव भरने में मदद के लिए मरीज को उच्च कैलोरी, उच्च प्रोटीन आहार (अक्सर सप्लीमेंट या ट्यूब फीडिंग के साथ) चाहिए।"
+    },
+    "fixedOrder": false
+  },
+  {
+    "question": {
+      "en": "When should the nurse give an analgesic to a burn patient who needs a dressing change?",
+      "ar": "متى يجب أن تعطي الممرضة مسكنًا لمريض حروق يحتاج إلى تغيير الضمادة؟",
+      "hi": "जलन के मरीज को ड्रेसिंग बदलनी हो तो नर्स को दर्द निवारक कब देनी चाहिए?"
+    },
+    "options": {
+      "en": ["Before the dressing change", "After the dressing change is finished", "Only if the patient asks during the procedure", "Analgesics should be avoided to prevent dependence"],
+      "ar": ["قبل تغيير الضمادة", "بعد انتهاء تغيير الضمادة", "فقط إذا طلب المريض ذلك أثناء الإجراء", "يجب تجنب المسكنات لمنع الاعتماد عليها"],
+      "hi": ["ड्रेसिंग बदलने से पहले", "ड्रेसिंग बदलने के बाद", "केवल तब जब मरीज प्रक्रिया के दौरान माँगे", "निर्भरता से बचने के लिए दर्द निवारक से बचना चाहिए"]
+    },
+    "answer": 0,
+    "explanation": {
+      "en": "Dressing changes are very painful. Giving an IV analgesic before the procedure, timed to its peak effect, keeps the patient comfortable and helps cooperation.",
+      "ar": "تغيير الضمادات مؤلم جدًا. إعطاء مسكن وريدي قبل الإجراء، بتوقيت يتوافق مع ذروة تأثيره، يحافظ على راحة المريض ويساعد على تعاونه.",
+      "hi": "ड्रेसिंग बदलना बहुत दर्दनाक होता है। प्रक्रिया से पहले IV दर्द निवारक देना, जिसका समय उसके चरम प्रभाव के अनुसार हो, मरीज को आराम देता है और सहयोग बढ़ाता है।"
+    },
+    "fixedOrder": false
+  },
+  {
+    "question": {
+      "en": "Which nursing intervention helps prevent contractures in a patient with burns over the elbow and knee joints?",
+      "ar": "أي من التدخلات التمريضية تساعد على منع التقلّصات لدى مريض حروقه تشمل مفصلَي المرفق والركبة؟",
+      "hi": "कोहनी और घुटने के जोड़ों पर जलन वाले मरीज में कॉन्ट्रैक्चर रोकने में कौन-सा नर्सिंग हस्तक्षेप मदद करता है?"
+    },
+    "options": {
+      "en": ["Positioning, splinting and early range-of-motion exercises", "Keeping the joints flexed for comfort", "Complete bed rest without movement", "Placing a pillow under the knees"],
+      "ar": ["الوضعية الصحيحة والجبائر وتمارين الحركة المبكرة", "إبقاء المفاصل مثنية للراحة", "الراحة التامة في السرير دون حركة", "وضع وسادة تحت الركبتين"],
+      "hi": ["सही स्थिति, स्प्लिंट और जल्दी रेंज-ऑफ-मोशन व्यायाम", "आराम के लिए जोड़ों को मुड़ा हुआ रखना", "बिना हिलाए पूर्ण बिस्तर आराम", "घुटनों के नीचे तकिया रखना"]
+    },
+    "answer": 0,
+    "explanation": {
+      "en": "Burn scars shorten as they heal and can fix a joint in a bent position. Proper positioning in extension, splints and early range-of-motion exercises help keep the joints mobile.",
+      "ar": "تنكمش ندبات الحروق أثناء الالتئام وقد تثبّت المفصل في وضع منحنٍ. تساعد الوضعية الصحيحة بالبسط والجبائر وتمارين الحركة المبكرة على إبقاء المفاصل متحركة.",
+      "hi": "जलन के निशान भरते समय सिकुड़ते हैं और जोड़ को मुड़ी स्थिति में जकड़ सकते हैं। जोड़ों को सीधा रखने वाली सही स्थिति, स्प्लिंट और जल्दी रेंज-ऑफ-मोशन व्यायाम जोड़ों को गतिशील रखते हैं।"
+    },
+    "fixedOrder": false
+  }
+]
