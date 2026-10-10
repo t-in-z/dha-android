@@ -24,6 +24,10 @@ html[dir="ltr"] .rev-exp[dir="rtl"]{text-align:right}
 /* Topic search: empty state */
 .topic-empty{margin:28px 8px;text-align:center;color:var(--muted);font-weight:650;line-height:1.5}
 
+/* Home topic cards: title + question count only, so they can be shorter */
+.topic.compact{min-height:88px}
+.topic.compact .t-text h3{margin-bottom:0}
+
 /* Selected "All questions" button gets a clear selected look (it only changed the count badge before). */
 .all-questions-cta.selected{box-shadow:0 0 0 3px rgba(242,184,75,.9),0 14px 26px -13px rgba(180,83,9,.8)}
 .all-questions-cta.selected .all-questions-count{background:#f2b84b;color:#7c2d12}
@@ -53,8 +57,3 @@ html[dir="ltr"] .rev-exp[dir="rtl"]{text-align:right}
 /* Tips page: keep the content away from the screen edges (the page had no side padding at all on phones). */
 .card.plain{padding:var(--pad)}
 .card.plain .tips-top{margin-top:2px}
-
-/* Home screen: main topic cards show the heading and question count only (no description text). */
-.search-wrap ~ #topicList .t-text p{display:none}
-.search-wrap ~ #topicList .topic{min-height:92px}
-.search-wrap ~ #topicList .t-count{margin-top:6px}

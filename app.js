@@ -179,7 +179,7 @@ function topicIcon(name) {
   const body = TOPIC_ICONS[topicKey(name)] || TOPIC_ICONS.default;
   return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + body + '</svg>';
 }
-// Chapter cards use meaning-based SVGs so neighbouring subchapters don't all show the same topic icon.
+// Chapter cards use meaning-based SVGs, one different icon for every chapter.
 const CHAPTER_ICON_BODIES = {
   heart: '<path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1.1L12 21l7.7-7.5 1.1-1.1a5.5 5.5 0 0 0 0-7.8Z"/><path d="M3.5 12h4l2-3 3.1 6 2-3h5.9"/>',
   lungs: '<path d="M12 12V4"/><path d="M10 5c-2 1-3 4-4 7-1 2-2 3-2 5 0 2 2 3 4 2 3-1 4-4 4-7V8"/><path d="M14 5c2 1 3 4 4 7 1 2 2 3 2 5 0 2-2 3-4 2-3-1-4-4-4-7V8"/>',
@@ -199,32 +199,72 @@ const CHAPTER_ICON_BODIES = {
   book: '<path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H20v18H6.5A2.5 2.5 0 0 0 4 22Z"/><path d="M4 4.5v15A2.5 2.5 0 0 1 6.5 17H20M8 6h8M8 10h8"/>',
   home: '<path d="m3 10 9-7 9 7M5 9v12h14V9M9 21v-6h6v6"/>',
   cross: '<path d="M10 3h4v7h7v4h-7v7h-4v-7H3v-4h7Z"/>',
-  chart: '<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>'
+  chart: '<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>',
+  scalpel: '<path d="M4 20 18 6a2.5 2.5 0 0 1 3.5 3.5L9 19z"/><path d="m4 20 5-1"/>',
+  vial: '<path d="M9 3h6"/><path d="M10 3v3l-1 2v11a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2V8l-1-2V3"/><path d="M9 12h6"/>',
+  flame: '<path d="M12 3c1 3 5 5 5 10a5 5 0 0 1-10 0c0-2 1-3 2-4 0 2 1 3 2 3 0-3-1-5 1-9z"/>',
+  germ: '<circle cx="12" cy="12" r="4"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M18.4 5.6l-2.1 2.1M7.7 16.3l-2.1 2.1"/>',
+  bed: '<path d="M3 18V7"/><path d="M3 14h18v4"/><path d="M21 14v-2a3 3 0 0 0-3-3h-7v5"/><circle cx="7" cy="11" r="1.6"/>',
+  alert: '<path d="M12 3 2.5 20h19z"/><path d="M12 10v4M12 17h.01"/>',
+  thermometer: '<path d="M14 14.8V5a2 2 0 0 0-4 0v9.8a4 4 0 1 0 4 0z"/><path d="M12 9v8"/>',
+  sprout: '<path d="M12 21v-8"/><path d="M12 13c0-4 3-6 7-6 0 4-3 6-7 6z"/><path d="M12 15c0-3-2-5-6-5 0 3 2 5 6 5z"/>',
+  family: '<circle cx="9" cy="6" r="3"/><path d="M3 21v-3a5 5 0 0 1 10 0v3"/><circle cx="18" cy="13" r="2.2"/><path d="M15.5 21v-1.5a2.5 2.5 0 0 1 5 0V21"/>',
+  bottle: '<path d="M10 3h4v2h-4z"/><path d="M9 5h6l1 3v11a2 2 0 0 1-2 2h-4a2 2 0 0 1-2-2V8z"/><path d="M8 12h4M8 16h4"/>',
+  footprints: '<path d="M8 4c2 0 3 2 3 4.5S9.7 12 8 12s-3-1-3-3.5S6 4 8 4z"/><path d="M7 15h2v2a1 1 0 0 1-2 0z"/><path d="M16 9c2 0 3 2 3 4.5S17.7 17 16 17s-3-1-3-3.5S14 9 16 9z"/><path d="M15 20h2v1h-2z"/>',
+  blocks: '<rect x="3" y="12" width="8" height="8" rx="1"/><rect x="13" y="12" width="8" height="8" rx="1"/><rect x="8" y="3" width="8" height="8" rx="1"/>',
+  balloon: '<path d="M12 3a6 6 0 0 1 6 6c0 4-3 7-6 7s-6-3-6-7a6 6 0 0 1 6-6z"/><path d="M12 16l-1.5 2.5h3z"/><path d="M12 18.5c0 1.5 1 2 1 3"/>',
+  crowd: '<circle cx="12" cy="7" r="3"/><circle cx="5" cy="9" r="2"/><circle cx="19" cy="9" r="2"/><path d="M7 21v-3a5 5 0 0 1 10 0v3"/><path d="M1 19v-2a3 3 0 0 1 4-2.8M23 19v-2a3 3 0 0 0-4-2.8"/>',
+  eye: '<path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>',
+  magnifier: '<circle cx="11" cy="11" r="6.5"/><path d="m20 20-4.2-4.2"/><path d="M8.5 11h5M11 8.5v5"/>',
+  scales: '<path d="M12 3v18M7 21h10"/><path d="M5 7h14"/><path d="m5 7-3 7a3 3 0 0 0 6 0z"/><path d="m19 7-3 7a3 3 0 0 0 6 0z"/>',
+  file: '<path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h6"/>',
+  org: '<rect x="9" y="3" width="6" height="5" rx="1"/><rect x="3" y="16" width="6" height="5" rx="1"/><rect x="15" y="16" width="6" height="5" rx="1"/><path d="M12 8v4M6 16v-4h12v4"/>',
+  calculator: '<rect x="5" y="3" width="14" height="18" rx="2"/><path d="M8 7h8M8 12h.01M12 12h.01M16 12h.01M8 16h.01M12 16h.01M16 16h.01"/>',
+  pillbottle: '<path d="M7 3h10v3H7z"/><path d="M8 6h8v14a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1z"/><path d="M8 11h8M12 14v3M10.5 15.5h3"/>',
+  chat: '<path d="M4 5h12a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H9l-4 3v-3H4a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2z"/><path d="M7 10h.01M10 10h.01M13 10h.01"/>',
+  head: '<path d="M9 21v-4.5C6.5 15 5 13 5 10a7 7 0 0 1 14 0c0 2-1 3-2 4v2h-3v5"/><path d="M12 7v4M10 9h4"/>',
+  bowl: '<path d="M3 11h18a9 9 0 0 1-18 0z"/><path d="M8 11c0-3 2-5 4-5M12 11c0-4 3-6 6-5"/>'
 };
+// Exact icon for every known chapter (English chapter name), so no two chapters share an icon.
+const CHAPTER_ICON_BY_NAME = {
+  "Cardiac System": "heart", "Respiratory System": "lungs", "Neurology System": "brain", "Renal System": "kidney",
+  "Appendicitis, Tonsillectomy & Tracheostomy": "scalpel", "Pyloric Stenosis & Vaccinations": "vial", "GCS & Burns": "flame", "General Medical-Surgical Nursing": "stethoscope",
+  "ABG, CPR & Chest Tube": "activity", "Infection Control": "germ", "Diabetes & Wounds": "droplet", "Pressure Injury & Electrolytes": "bed",
+  "Emergency & Critical Nursing": "alert", "Health Assessment": "thermometer", "Patient Safety & Quality Improvement": "shield", "General Fundamentals": "book",
+  "Child Health": "baby", "Growth & Development": "sprout", "Maternity": "family", "LMP Calculation": "calendar", "General Maternity & Child Health Nursing": "bottle",
+  "Neonatal Nursing": "footprints", "Neonatal & Pediatrics": "blocks", "Pediatrics": "balloon",
+  "General Community Nursing": "crowd", "General Pharmacology": "flask",
+  "Leadership & Management": "users", "Delegation & Supervision": "eye", "Research & Evidence-Based Practice": "magnifier", "Ethics & Legal Aspects of Nursing": "scales",
+  "Documentation & Medical Records": "file", "Research, Leadership & Delegation": "org",
+  "Medication Dose & Calculations": "calculator", "Medication - General": "pillbottle",
+  "Communication & Therapeutic": "chat", "General Mental Health & Psychiatric Nursing": "head", "General Nutrition": "bowl"
+};
+// Fallback for a new chapter name that is not in the table above: keyword match, then a stable pick.
 const CHAPTER_ICON_RULES = [
   [/cardiac|heart|vascular|circulat|ecg|ekg|blood pressure/, "heart"],
   [/respirat|lung|airway|tracheostomy|chest tube/, "lungs"],
   [/neuro|brain|gcs|seizure|stroke/, "brain"],
   [/renal|kidney|urinary|dialysis/, "kidney"],
-  [/infection|sterili|isolation|patient safety|quality improvement|ethic|legal/, "shield"],
+  [/infection|sterili|isolation/, "germ"],
+  [/patient safety|quality improvement|ethic|legal/, "shield"],
   [/diabet|glucose|electrolyte|fluid|nutrition|diet|vitamin|mineral/, "droplet"],
   [/wound|pressure injury|burn|dressing|injur/, "bandage"],
   [/medication|pharmac|drug|dose|calculation|prescri|administr/, "pill"],
   [/matern|pregnan|obstetric|lmp|newborn|neonatal|child|pediatr|growth|vaccin/, "baby"],
   [/research|evidence|documentation|medical records|assessment|abg|cpr|emergency|critical|fundamental/, "clipboard"],
   [/leadership|delegation|supervision|management|team/, "users"],
-  [/communication|therapeutic|mental|psychiatr|psycholog/, "brain"],
-  [/community|public health|environment|family planning/, "home"],
+  [/communication|therapeutic|mental|psychiatr|psycholog/, "chat"],
+  [/community|public health|environment|family planning/, "crowd"],
   [/general|miscellaneous|other/, "book"]
 ];
 function chapterIcon(topic, chapter) {
   const label = String(chapter || "");
-  const match = CHAPTER_ICON_RULES.find(([pattern]) => pattern.test(label));
-  const fallback = ["activity", "stethoscope", "calendar", "flask", "chart", "cross", "book", "clipboard"];
+  const match = CHAPTER_ICON_RULES.find(([pattern]) => pattern.test(label.toLowerCase()));
+  const fallback = ["activity", "stethoscope", "calendar", "flask", "chart", "cross", "book", "clipboard", "eye", "file", "org", "blocks"];
   let hash = 0;
   for (let i = 0; i < label.length; i++) hash = (hash * 31 + label.charCodeAt(i)) >>> 0;
-  const name = match ? match[1] : fallback[hash % fallback.length];
-  return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + CHAPTER_ICON_BODIES[name] + '</svg>';
+  const name = CHAPTER_ICON_BY_NAME[label] || (match ? match[1] : fallback[hash % fallback.length]);
+  return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + (CHAPTER_ICON_BODIES[name] || CHAPTER_ICON_BODIES.book) + '</svg>';
 }
 function applyLanguage() {
   document.documentElement.lang = lang;
@@ -314,12 +354,14 @@ function renderHome(animate=false){
   const preferred=["Fundamentals","Medical-Surgical Nursing","Maternity & Child Nursing","Pediatrics","Community Health Nursing","Pharmacology","Research","Medications","Mental Health & Psychiatric Nursing","Nutrition"];
   const names=preferred.filter(name=>counts[name]>0).concat(Object.keys(counts).filter(name=>name!=="Random"&&!preferred.includes(name)));
   const ordered=names.concat("Random");
+  // Home cards show only the topic title and its question count (no description line).
   const cards=ordered.map((name,i)=>{
     const t=topicText(name,name==="Random"?questions.length:counts[name]);
     const tc=TOPIC_COLORS[i%TOPIC_COLORS.length];
-    return '<button class="topic ripple-host" style="--tc:'+tc+';--i:'+i+'" onclick="chooseTopic('+jsArg(name)+')"><div class="t-text"><h3>'+escapeHtml(t.title)+'</h3><p>'+escapeHtml(t.desc)+'</p><span class="t-count">'+escapeHtml(t.count)+'</span></div><div class="t-icon">'+topicIcon(name)+'</div></button>';
+    return '<button class="topic compact ripple-host" style="--tc:'+tc+';--i:'+i+'" onclick="chooseTopic('+jsArg(name)+')"><div class="t-text"><h3>'+escapeHtml(t.title)+'</h3><span class="t-count">'+escapeHtml(t.count)+'</span></div><div class="t-icon">'+topicIcon(name)+'</div></button>';
   }).join("");
-  shell('<div class="home-head"><div class="brand"><img class="brand-logo" src="logo.svg" alt="">'+escapeHtml(tr("brand"))+'</div><div class="head-actions"><button class="hbtn index-btn ripple-host" onclick="renderChapterIndex()" aria-label="'+escapeHtml(tr("chapterIndex"))+'">'+icon("index")+'<span>'+escapeHtml(tr("chapterIndex"))+'</span></button><button class="hbtn tips-btn ripple-host" onclick="renderTips()" aria-label="'+escapeHtml(tr("tipsBtn"))+'">'+icon("light")+'<span>'+escapeHtml(tr("tipsBtn"))+'</span></button><button class="hbtn lang-btn ripple-host" onclick="openLanguage()" aria-label="'+escapeHtml(tr("langBtn"))+'">'+icon("globe")+'<span>'+escapeHtml(tr("langBtn"))+'</span></button></div></div><h1 class="h-title">'+escapeHtml(tr("homeTitle"))+'</h1><p class="h-sub">'+escapeHtml(tr("homeSub"))+'</p><div class="search-wrap"><svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg><input id="topicSearch" class="topic-search" type="search" autocomplete="off" enterkeyhint="search" aria-label="'+escapeHtml(tr("searchTopics"))+'" placeholder="'+escapeHtml(tr("searchTopics"))+'"></div><div id="topicList">'+cards+'</div><p id="topicEmpty" class="topic-empty" hidden>'+escapeHtml(tr("noTopics"))+'</p>');
+  // Header buttons, in this order: Language, Tips, Chapters (index).
+  shell('<div class="home-head"><div class="brand"><img class="brand-logo" src="logo.svg" alt="">'+escapeHtml(tr("brand"))+'</div><div class="head-actions"><button class="hbtn lang-btn ripple-host" onclick="openLanguage()" aria-label="'+escapeHtml(tr("langBtn"))+'">'+icon("globe")+'<span>'+escapeHtml(tr("langBtn"))+'</span></button><button class="hbtn tips-btn ripple-host" onclick="renderTips()" aria-label="'+escapeHtml(tr("tipsBtn"))+'">'+icon("light")+'<span>'+escapeHtml(tr("tipsBtn"))+'</span></button><button class="hbtn index-btn ripple-host" onclick="renderChapterIndex()" aria-label="'+escapeHtml(tr("chapterIndex"))+'">'+icon("index")+'<span>'+escapeHtml(tr("chapterIndex"))+'</span></button></div></div><h1 class="h-title">'+escapeHtml(tr("homeTitle"))+'</h1><p class="h-sub">'+escapeHtml(tr("homeSub"))+'</p><div class="search-wrap"><svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg><input id="topicSearch" class="topic-search" type="search" autocomplete="off" enterkeyhint="search" aria-label="'+escapeHtml(tr("searchTopics"))+'" placeholder="'+escapeHtml(tr("searchTopics"))+'"></div><div id="topicList">'+cards+'</div><p id="topicEmpty" class="topic-empty" hidden>'+escapeHtml(tr("noTopics"))+'</p>');
   if(animate)requestAnimationFrame(()=>app().classList.add("swap"));
   const input=$("#topicSearch"), list=$("#topicList"), empty=$("#topicEmpty");
   if(input&&list) input.addEventListener("input",()=>{
