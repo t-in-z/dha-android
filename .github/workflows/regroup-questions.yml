@@ -1,14 +1,16 @@
 name: Regroup Question Bank
 
-# Sorts every question into the main topics and chapters (see scripts/regroup-questions.mjs).
-# Step 1: run with "Dry run" ticked (default) -> only a report, nothing changes.
-# Step 2: if the numbers look right, run again with "Dry run" un-ticked -> questions.json is updated.
+# 1) Sorts every question into the main topics and chapters (scripts/regroup-questions.mjs)
+# 2) Adds 23 new burns questions and removes 23 from the Pediatrics chapter (scripts/curate-questions.mjs)
+#
+# Step 1: run with "Dry run" ticked (default) -> reports only, nothing is saved to the repo.
+# Step 2: if the numbers look right, run again with "Dry run" un-ticked -> questions.json is updated and saved.
 
 on:
   workflow_dispatch:
     inputs:
       dry_run:
-        description: "Dry run (report only, do not change questions.json)"
+        description: "Dry run (report only, do not save anything to the repo)"
         type: boolean
         default: true
 
@@ -25,23 +27,30 @@ jobs:
         with:
           node-version: 20
 
+      # The scripts always work on the runner's copy; the repo only changes in the last step (and only if Dry run is off).
       - name: Regroup questions
         env:
-          DRY_RUN: ${{ inputs.dry_run && '1' || '0' }}
+          DRY_RUN: "0"
         run: node scripts/regroup-questions.mjs
 
-      - name: Upload report
+      - name: Add burns questions and remove from Pediatrics
+        run: node scripts/curate-questions.mjs
+
+      - name: Upload reports
         uses: actions/upload-artifact@v4
         with:
-          name: regroup-report
-          path: regroup-report.json
+          name: regroup-reports
+          path: |
+            regroup-report.json
+            curation-report.json
+            removed-questions.json
 
-      - name: Commit regrouped questions
+      - name: Save changes to the repo
         if: ${{ !inputs.dry_run }}
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add questions.json regroup-report.json
+          git add questions.json regroup-report.json curation-report.json removed-questions.json
           git diff --cached --quiet && echo "Nothing to commit" && exit 0
-          git commit -m "Regroup questions into main topics and chapters"
+          git commit -m "Regroup questions into chapters, add burns questions, trim Pediatrics"
           git push
