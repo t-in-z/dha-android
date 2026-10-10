@@ -352,19 +352,14 @@ function renderLength(){
   const opts=[5,10,20,30,40,50].filter(n=>n<=max);
   if(!opts.length&&max>0)opts.push(max);
   selectedCount=opts.includes(Number(selectedCount))?Number(selectedCount):(opts[0]||max);
-  const sizes=opts.map(n=>'<button class="size '+(n===selectedCount?"active":"")+' ripple-host" onclick="setCount('+n+')">'+n+'<small>'+escapeHtml(tr("questionsLbl"))+'</small></button>').join("");
-  const allButton='<button class="all-questions-cta ripple-host" onclick="openAllQuestions()"><span class="all-questions-icon">'+icon("layers")+'</span><span class="all-questions-copy"><strong>'+escapeHtml(tr("allQuestions"))+'</strong><small>'+escapeHtml(tr("allQuestionsHelp",{n:cnt}))+'</small><em>'+escapeHtml(tr("fixedOrder"))+'</em></span><span class="all-questions-count">'+cnt+'</span></button>';
-  shell('<button class="back-btn ripple-host" onclick="backFromLength()">'+icon("back")+escapeHtml(backLabel)+'</button><div class="len-hero" style="--tc:#0d9488"><div class="t-icon">'+topicIcon(selectedTopic)+'</div><div><h2 style="margin:0">'+escapeHtml(heroTitle)+'</h2><div style="opacity:.9">'+escapeHtml(heroDesc)+'</div></div></div><section class="question-select-card"><div class="question-select-heading"><span class="question-select-icon">'+icon("activity")+'</span><div><h3>'+escapeHtml(tr("randomQuestions"))+'</h3><p>'+escapeHtml(tr("chooseQuestionCount"))+'</p></div></div><label class="field">'+escapeHtml(tr("questionCountLabel"))+'</label><div class="sizes">'+sizes+'</div></section>'+allButton+'<label class="field">'+escapeHtml(tr("testMode"))+'</label><div class="seg"><button class="seg-btn '+(selectedMode==="exam"?"active":"")+'" onclick="setMode(\'exam\')">'+escapeHtml(tr("exam"))+'</button><button class="seg-btn '+(selectedMode==="practice"?"active":"")+'" onclick="setMode(\'practice\')">'+escapeHtml(tr("practice"))+'</button></div><p class="mode-help">'+escapeHtml(selectedMode==="exam"?tr("examHelp"):tr("practiceHelp"))+'</p><button class="btn ripple-host shine" onclick="startTest()">'+escapeHtml(tr("start"))+'</button>');
+  if(selectedQuestionSet!=="all")selectedQuestionSet="random";
+  const sizes=opts.map(n=>'<button class="size '+(selectedQuestionSet==="random"&&n===selectedCount?"active":"")+' ripple-host" onclick="setCount('+n+')">'+n+'<small>'+escapeHtml(tr("questionsLbl"))+'</small></button>').join("");
+  const randomSelected=selectedQuestionSet==="random";
+  const allSelected=selectedQuestionSet==="all";
+  const allButton='<button class="all-questions-cta '+(allSelected?'selected':'')+' ripple-host" aria-pressed="'+allSelected+'" onclick="setQuestionSet(\'all\')"><span class="all-questions-icon">'+icon("layers")+'</span><span class="all-questions-copy"><strong>'+escapeHtml(tr("allQuestions"))+'</strong><small>'+escapeHtml(tr("allQuestionsHelp",{n:cnt}))+'</small><em>'+escapeHtml(tr("fixedOrder"))+'</em></span><span class="all-questions-count">'+(allSelected?icon("check"):cnt)+'</span></button>';
+  shell('<button class="back-btn ripple-host" onclick="backFromLength()">'+icon("back")+escapeHtml(backLabel)+'</button><div class="len-hero" style="--tc:#0d9488"><div class="t-icon">'+topicIcon(selectedTopic)+'</div><div><h2 style="margin:0">'+escapeHtml(heroTitle)+'</h2><div style="opacity:.9">'+escapeHtml(heroDesc)+'</div></div></div><section class="question-select-card"><div class="question-select-heading"><span class="question-select-icon">'+icon("activity")+'</span><div><h3>'+escapeHtml(tr("randomQuestions"))+'</h3><p>'+escapeHtml(tr("chooseQuestionCount"))+'</p></div></div><label class="field">'+escapeHtml(tr("randomBadge"))+'</label><div class="sizes">'+sizes+'</div></section>'+allButton+'<label class="field">'+escapeHtml(tr("testMode"))+'</label><div class="seg"><button class="seg-btn '+(selectedMode==="exam"?"active":"")+'" onclick="setMode(\'exam\')">'+escapeHtml(tr("exam"))+'</button><button class="seg-btn '+(selectedMode==="practice"?"active":"")+'" onclick="setMode(\'practice\')">'+escapeHtml(tr("practice"))+'</button></div><p class="mode-help">'+escapeHtml(selectedMode==="exam"?tr("examHelp"):tr("practiceHelp"))+'</p><button class="btn ripple-host shine" onclick="startTest()">'+escapeHtml(tr("start"))+'</button>');
 }
-function openAllQuestions(){selectedQuestionSet="all";selectedMode=null;renderAllQuestionsSetup();}
-function backFromAllQuestions(){selectedQuestionSet="random";selectedMode="exam";renderLength();}
-function renderAllQuestionsSetup(){
-  currentView="all-questions";selectedQuestionSet="all";
-  const cnt=topicPool(selectedTopic,selectedChapter).length,t=topicText(selectedTopic,cnt);
-  const chapterName=selectedChapter?chapterLabel(selectedTopic,selectedChapter):"";
-  const heroTitle=chapterName||t.title,heroDesc=chapterName?t.title:t.desc;
-  shell('<button class="back-btn ripple-host" onclick="backFromAllQuestions()">'+icon("back")+escapeHtml(tr("back"))+'</button><div class="len-hero" style="--tc:#0d9488"><div class="t-icon">'+topicIcon(selectedTopic)+'</div><div><h2 style="margin:0">'+escapeHtml(heroTitle)+'</h2><div style="opacity:.9">'+escapeHtml(heroDesc)+'</div></div></div><div class="all-setup-card"><div class="all-setup-icon">'+icon("layers")+'</div><div class="all-setup-copy"><strong>'+escapeHtml(tr("allQuestions"))+'</strong><p>'+escapeHtml(tr("allQuestionsHelp",{n:cnt}))+'</p><span>'+escapeHtml(tr("fixedOrder"))+' · '+escapeHtml(tr("sameOrderHelp"))+'</span></div><b class="all-setup-count">'+cnt+'</b></div><label class="field">'+escapeHtml(tr("selectTestMode"))+'</label><div class="seg"><button class="seg-btn '+(selectedMode==="exam"?"active":"")+'" onclick="setMode(\'exam\')">'+escapeHtml(tr("exam"))+'</button><button class="seg-btn '+(selectedMode==="practice"?"active":"")+'" onclick="setMode(\'practice\')">'+escapeHtml(tr("practice"))+'</button></div><p class="mode-help">'+escapeHtml(selectedMode===null?tr("selectTestMode"):(selectedMode==="exam"?tr("examHelp"):tr("practiceHelp")))+'</p><button class="btn ripple-host shine" onclick="startTest()" '+(!selectedMode?"disabled":"")+'>'+escapeHtml(tr("start"))+'</button>');
-}
+function setQuestionSet(set){selectedQuestionSet=set==="all"?"all":"random";renderLength();}
 function renderChapterIndex(){
   currentView="index";applyLanguage();
   const counts=getAllTopicCounts();
@@ -380,8 +375,8 @@ function renderChapterIndex(){
 function openIndexTopic(topic){selectedTopic=topic;selectedChapter=null;selectedCount=null;selectedQuestionSet="random";selectedMode="exam";renderLength();}
 function openIndexChapter(topic,chapter){selectedTopic=topic;selectedChapter=chapter;selectedCount=null;selectedQuestionSet="random";selectedMode="exam";renderLength();}
 
-function setCount(n){selectedCount=n;renderLength();}
-function setMode(m){selectedMode=m;if(currentView==="all-questions")renderAllQuestionsSetup();else renderLength();}
+function setCount(n){selectedCount=n;selectedQuestionSet="random";renderLength();}
+function setMode(m){selectedMode=m;renderLength();}
 function startTest(){
   try{
     const sourceTopic=selectedTopic,sourceChapter=selectedChapter;
@@ -470,5 +465,5 @@ async function loadQuestions(){
     applyLanguage();renderWelcome();
   }catch(e){shell('<div class="error"><h2>'+escapeHtml(tr("loadErr"))+'</h2><p>'+escapeHtml(e.message)+'</p><button class="btn" onclick="location.reload()">Retry</button></div>');}
 }
-Object.assign(window,{openLanguage,setLang,toggleSound,renderHome,renderTips,renderChapterIndex,openIndexTopic,openIndexChapter,enterApp,chooseTopic,chooseChapter,renderChapters,backFromLength,openAllQuestions,renderAllQuestionsSetup,backFromAllQuestions,setCount,setMode,startTest,pickAnswer,nextQuestion,prevQuestion,confirmExit,confirmRestart,finishTest,restartTest});
+Object.assign(window,{openLanguage,setLang,toggleSound,renderHome,renderTips,renderChapterIndex,openIndexTopic,openIndexChapter,enterApp,chooseTopic,chooseChapter,renderChapters,backFromLength,openAllQuestions,renderAllQuestionsSetup,backFromAllQuestions,setQuestionSet,setCount,setMode,startTest,pickAnswer,nextQuestion,prevQuestion,confirmExit,confirmRestart,finishTest,restartTest});
 document.addEventListener("DOMContentLoaded",loadQuestions);
