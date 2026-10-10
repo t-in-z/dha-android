@@ -53,3 +53,8 @@ html[dir="ltr"] .rev-exp[dir="rtl"]{text-align:right}
 /* Tips page: keep the content away from the screen edges (the page had no side padding at all on phones). */
 .card.plain{padding:var(--pad)}
 .card.plain .tips-top{margin-top:2px}
+
+/* Home screen: main topic cards show the heading and question count only (no description text). */
+.search-wrap ~ #topicList .t-text p{display:none}
+.search-wrap ~ #topicList .topic{min-height:92px}
+.search-wrap ~ #topicList .t-count{margin-top:6px}
