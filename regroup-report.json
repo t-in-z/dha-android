@@ -1,0 +1,436 @@
+{
+  "dryRun": false,
+  "totalQuestions": 2000,
+  "movedToAnotherMainTopic": 207,
+  "howPlaced": {
+    "existing": 1195,
+    "keywords": 755,
+    "fallback": 50,
+    "unknown-category": 0
+  },
+  "byTopic": {
+    "Medical-Surgical Nursing": {
+      "total": 616,
+      "chapters": {
+        "Cardiac System": 113,
+        "Neurology System": 112,
+        "Respiratory System": 113,
+        "Renal System": 112,
+        "Appendicitis, Tonsillectomy & Tracheostomy": 100,
+        "Pyloric Stenosis & Vaccinations": 50,
+        "General Medical-Surgical Nursing": 15,
+        "GCS & Burns": 1
+      }
+    },
+    "Fundamentals": {
+      "total": 448,
+      "chapters": {
+        "Infection Control": 102,
+        "Pressure Injury & Electrolytes": 38,
+        "Diabetes & Wounds": 55,
+        "Emergency & Critical Nursing": 49,
+        "ABG, CPR & Chest Tube": 103,
+        "Patient Safety & Quality Improvement": 51,
+        "Health Assessment": 50
+      }
+    },
+    "Pharmacology": {
+      "total": 76,
+      "chapters": {
+        "General Pharmacology": 76
+      }
+    },
+    "Medications": {
+      "total": 74,
+      "chapters": {
+        "Medication - General": 22,
+        "Medication Dose & Calculations": 52
+      }
+    },
+    "Research": {
+      "total": 299,
+      "chapters": {
+        "Research, Leadership & Delegation": 50,
+        "Ethics & Legal Aspects of Nursing": 50,
+        "Leadership & Management": 49,
+        "Delegation & Supervision": 50,
+        "Research & Evidence-Based Practice": 50,
+        "Documentation & Medical Records": 50
+      }
+    },
+    "Maternity & Child Nursing": {
+      "total": 117,
+      "chapters": {
+        "Maternity": 30,
+        "Child Health": 38,
+        "Growth & Development": 49
+      }
+    },
+    "Pediatrics": {
+      "total": 181,
+      "chapters": {
+        "Neonatal Nursing": 56,
+        "Pediatrics": 73,
+        "Neonatal & Pediatrics": 52
+      }
+    },
+    "Community Health Nursing": {
+      "total": 50,
+      "chapters": {
+        "General Community Nursing": 50
+      }
+    },
+    "Mental Health & Psychiatric Nursing": {
+      "total": 92,
+      "chapters": {
+        "General Mental Health & Psychiatric Nursing": 40,
+        "Communication & Therapeutic": 52
+      }
+    },
+    "Nutrition": {
+      "total": 47,
+      "chapters": {
+        "General Nutrition": 47
+      }
+    }
+  },
+  "originalCategorySubcategoryPairs": {
+    "Medical-Surgical Nursing | Cardiology System": 100,
+    "Medical-Surgical Nursing | Neurology System": 100,
+    "Medical-Surgical Nursing | Respiratory System": 100,
+    "Medical-Surgical Nursing | Renal System": 100,
+    "Fundamentals | Infection Control": 100,
+    "Medical-Surgical Nursing | Appendicitis, Tonsillectomy & Tracheostomy": 100,
+    "Medications | Medication Administration": 100,
+    "Fundamentals | ABG, CPR & Chest Tube": 98,
+    "Fundamentals | Diabetes, Wounds, Fluids & Electrolytes": 59,
+    "Medications | Medication Calculation": 50,
+    "Research | Research, Leadership & Delegation": 50,
+    "Pediatrics | Child Health": 50,
+    "Maternity & Child Nursing | Maternity & Child Health": 50,
+    "Maternity & Child Nursing | Neonatal Nursing": 50,
+    "Pediatrics | Neonatal & Pediatrics": 50,
+    "Medical-Surgical Nursing | Pyloric Stenosis & Vaccinations": 50,
+    "Pediatrics | Pediatrics": 50,
+    "Fundamentals | Emergency & Critical Care Nursing": 50,
+    "Community Health Nursing | Community Health Nursing": 50,
+    "Fundamentals | Health Assessment": 50,
+    "Mental Health & Psychiatric Nursing | Therapeutic Communication": 50,
+    "Fundamentals | Nutrition & Diet Therapy": 50,
+    "Research | Delegation & Supervision": 50,
+    "Research | Research & Evidence-Based Practice": 50,
+    "Fundamentals | Patient Safety & Quality Improvement": 50,
+    "Research | Documentation & Medical Records": 50,
+    "Medical-Surgical Nursing | General Medical-Surgical": 49,
+    "Mental Health & Psychiatric Nursing | Mental Health & Psychiatric Nursing": 49,
+    "Maternity & Child Nursing | Growth & Development": 49,
+    "Research | Leadership & Management": 49,
+    "Research | Ethics & Legal Aspects of Nursing": 49,
+    "Pharmacology | Pharmacology": 48
+  },
+  "placedInGeneralChapter": {
+    "count": 50,
+    "first200": [
+      {
+        "index": 312,
+        "topic": "Medications",
+        "chapter": "Medication - General",
+        "question": "Which medication reverses benzodiazepine effects?"
+      },
+      {
+        "index": 327,
+        "topic": "Medications",
+        "chapter": "Medication - General",
+        "question": "A patient taking nitrates should be taught to change position slowly because of the risk of:"
+      },
+      {
+        "index": 329,
+        "topic": "Medications",
+        "chapter": "Medication - General",
+        "question": "A patient taking atorvastatin reports severe muscle pain and weakness. What should the nurse suspect?"
+      },
+      {
+        "index": 332,
+        "topic": "Medications",
+        "chapter": "Medication - General",
+        "question": "A patient taking aspirin should be monitored for:"
+      },
+      {
+        "index": 333,
+        "topic": "Medications",
+        "chapter": "Medication - General",
+        "question": "Which medication is a proton-pump inhibitor?"
+      },
+      {
+        "index": 334,
+        "topic": "Medications",
+        "chapter": "Medication - General",
+        "question": "Which medication is commonly used to prevent/treat chemotherapy-associated nausea and vomiting?"
+      },
+      {
+        "index": 335,
+        "topic": "Medications",
+        "chapter": "Medication - General",
+        "question": "Which adverse effect is particularly important with ondansetron?"
+      },
+      {
+        "index": 339,
+        "topic": "Medications",
+        "chapter": "Medication - General",
+        "question": "What is an important nursing action when administering IV vancomycin?"
+      },
+      {
+        "index": 344,
+        "topic": "Medications",
+        "chapter": "Medication - General",
+        "question": "Which adverse effect is commonly associated with salbutamol?"
+      },
+      {
+        "index": 345,
+        "topic": "Medications",
+        "chapter": "Medication - General",
+        "question": "Which medication is a corticosteroid?"
+      },
+      {
+        "index": 346,
+        "topic": "Medications",
+        "chapter": "Medication - General",
+        "question": "A patient receiving long-term corticosteroid therapy should NOT stop the medication abruptly because of the risk of:"
+      },
+      {
+        "index": 914,
+        "topic": "Medical-Surgical Nursing",
+        "chapter": "General Medical-Surgical Nursing",
+        "question": "Which action should be avoided on the arm containing an AV fistula?"
+      },
+      {
+        "index": 919,
+        "topic": "Medical-Surgical Nursing",
+        "chapter": "General Medical-Surgical Nursing",
+        "question": "Which finding is associated with hyperthyroidism?"
+      },
+      {
+        "index": 920,
+        "topic": "Medical-Surgical Nursing",
+        "chapter": "General Medical-Surgical Nursing",
+        "question": "Which finding is expected in hypothyroidism?"
+      },
+      {
+        "index": 921,
+        "topic": "Medical-Surgical Nursing",
+        "chapter": "General Medical-Surgical Nursing",
+        "question": "A patient vomits bright-red blood and is hypotensive. What is the priority?"
+      },
+      {
+        "index": 924,
+        "topic": "Medical-Surgical Nursing",
+        "chapter": "General Medical-Surgical Nursing",
+        "question": "A patient with acute pancreatitis has severe epigastric pain radiating to the back. Which condition is suspected?"
+      },
+      {
+        "index": 925,
+        "topic": "Medical-Surgical Nursing",
+        "chapter": "General Medical-Surgical Nursing",
+        "question": "During the acute phase of severe pancreatitis, why may oral intake initially be restricted?"
+      },
+      {
+        "index": 926,
+        "topic": "Medical-Surgical Nursing",
+        "chapter": "General Medical-Surgical Nursing",
+        "question": "A patient with a leg fracture develops severe pain out of proportion to the injury, paresthesia and increasing tightness. What should the nu"
+      },
+      {
+        "index": 927,
+        "topic": "Medical-Surgical Nursing",
+        "chapter": "General Medical-Surgical Nursing",
+        "question": "What is the priority when compartment syndrome is suspected?"
+      },
+      {
+        "index": 928,
+        "topic": "Medical-Surgical Nursing",
+        "chapter": "General Medical-Surgical Nursing",
+        "question": "A postoperative patient develops unilateral calf swelling, warmth and pain. What should the nurse suspect?"
+      },
+      {
+        "index": 929,
+        "topic": "Medical-Surgical Nursing",
+        "chapter": "General Medical-Surgical Nursing",
+        "question": "A patient is suspected of having DVT. Which action should the nurse avoid?"
+      },
+      {
+        "index": 931,
+        "topic": "Medical-Surgical Nursing",
+        "chapter": "General Medical-Surgical Nursing",
+        "question": "Fifteen minutes after a blood transfusion begins, the patient develops fever, chills and back pain. What should the nurse do first?"
+      },
+      {
+        "index": 932,
+        "topic": "Medical-Surgical Nursing",
+        "chapter": "General Medical-Surgical Nursing",
+        "question": "A chemotherapy patient has severe neutropenia. Which finding requires immediate attention?"
+      },
+      {
+        "index": 933,
+        "topic": "Medical-Surgical Nursing",
+        "chapter": "General Medical-Surgical Nursing",
+        "question": "A patient receiving chemotherapy has a very low platelet count. Which intervention is appropriate?"
+      },
+      {
+        "index": 936,
+        "topic": "Medical-Surgical Nursing",
+        "chapter": "General Medical-Surgical Nursing",
+        "question": "A patient presents with fever, severe headache, photophobia and neck stiffness. Which condition is suspected?"
+      },
+      {
+        "index": 944,
+        "topic": "Medical-Surgical Nursing",
+        "chapter": "General Medical-Surgical Nursing",
+        "question": "Who should the nurse see first? The nurse receives four patients:"
+      },
+      {
+        "index": 1047,
+        "topic": "Mental Health & Psychiatric Nursing",
+        "chapter": "General Mental Health & Psychiatric Nursing",
+        "question": "A 31-year-old man says, “Someone is putting thoughts into my brain.” Which symptom is this?"
+      },
+      {
+        "index": 1048,
+        "topic": "Mental Health & Psychiatric Nursing",
+        "chapter": "General Mental Health & Psychiatric Nursing",
+        "question": "A patient says, “Everyone around me knows exactly what I'm thinking.” The nurse identifies this as:"
+      },
+      {
+        "index": 1051,
+        "topic": "Mental Health & Psychiatric Nursing",
+        "chapter": "General Mental Health & Psychiatric Nursing",
+        "question": "A 35-year-old patient says, “The voices are commanding me to stab my roommate.” What is the nurse's priority?"
+      },
+      {
+        "index": 1061,
+        "topic": "Mental Health & Psychiatric Nursing",
+        "chapter": "General Mental Health & Psychiatric Nursing",
+        "question": "A 25-year-old woman suddenly develops palpitations, chest tightness, trembling and intense fear. The symptoms peak rapidly. What is the nurs"
+      },
+      {
+        "index": 1062,
+        "topic": "Mental Health & Psychiatric Nursing",
+        "chapter": "General Mental Health & Psychiatric Nursing",
+        "question": "A 32-year-old man experiences intense fear whenever he sees a spider and avoids places where spiders might be present. This is most consiste"
+      },
+      {
+        "index": 1066,
+        "topic": "Mental Health & Psychiatric Nursing",
+        "chapter": "General Mental Health & Psychiatric Nursing",
+        "question": "Which adverse effect is commonly associated with ECT?"
+      },
+      {
+        "index": 1068,
+        "topic": "Mental Health & Psychiatric Nursing",
+        "chapter": "General Mental Health & Psychiatric Nursing",
+        "question": "A patient taking an SSRI develops agitation, sweating, tremor, hyperreflexia and fever after another serotonergic medication is added. What "
+      },
+      {
+        "index": 1076,
+        "topic": "Mental Health & Psychiatric Nursing",
+        "chapter": "General Mental Health & Psychiatric Nursing",
+        "question": "A 52-year-old man with chronic alcohol-use disorder presents with confusion, ataxia and abnormal eye movements. Which condition should the n"
+      },
+      {
+        "index": 1079,
+        "topic": "Mental Health & Psychiatric Nursing",
+        "chapter": "General Mental Health & Psychiatric Nursing",
+        "question": "A patient with dementia repeatedly asks, “When is my daughter coming?” What is the best nursing response?"
+      },
+      {
+        "index": 1082,
+        "topic": "Mental Health & Psychiatric Nursing",
+        "chapter": "General Mental Health & Psychiatric Nursing",
+        "question": "A 25-year-old patient rapidly shifts between idealizing and devaluing people and has recurrent self-harm behavior. Which disorder is most co"
+      },
+      {
+        "index": 1084,
+        "topic": "Mental Health & Psychiatric Nursing",
+        "chapter": "General Mental Health & Psychiatric Nursing",
+        "question": "A 30-year-old patient begins treating the nurse as if she were his mother and becomes angry when the nurse sets limits. This may represent:"
+      },
+      {
+        "index": 1086,
+        "topic": "Mental Health & Psychiatric Nursing",
+        "chapter": "General Mental Health & Psychiatric Nursing",
+        "question": "A person who feels intense hostility toward another person behaves excessively friendly toward that person. This is:"
+      },
+      {
+        "index": 1089,
+        "topic": "Mental Health & Psychiatric Nursing",
+        "chapter": "General Mental Health & Psychiatric Nursing",
+        "question": "A person deliberately reports false symptoms to obtain financial compensation after an accident. This is:"
+      },
+      {
+        "index": 1903,
+        "topic": "Medications",
+        "chapter": "Medication - General",
+        "question": "In routine nursing practice, which medication reverses benzodiazepine effects?"
+      },
+      {
+        "index": 1918,
+        "topic": "Medications",
+        "chapter": "Medication - General",
+        "question": "In routine nursing practice, a patient taking nitrates should be taught to change position slowly because of the risk of:"
+      },
+      {
+        "index": 1920,
+        "topic": "Medications",
+        "chapter": "Medication - General",
+        "question": "In routine nursing practice, a patient taking atorvastatin reports severe muscle pain and weakness. What should the nurse suspect?"
+      },
+      {
+        "index": 1923,
+        "topic": "Medications",
+        "chapter": "Medication - General",
+        "question": "In routine nursing practice, a patient taking aspirin should be monitored for:"
+      },
+      {
+        "index": 1924,
+        "topic": "Medications",
+        "chapter": "Medication - General",
+        "question": "In routine nursing practice, which medication is a proton-pump inhibitor?"
+      },
+      {
+        "index": 1925,
+        "topic": "Medications",
+        "chapter": "Medication - General",
+        "question": "In routine nursing practice, which medication is commonly used to prevent/treat chemotherapy-associated nausea and vomiting?"
+      },
+      {
+        "index": 1926,
+        "topic": "Medications",
+        "chapter": "Medication - General",
+        "question": "In routine nursing practice, which adverse effect is particularly important with ondansetron?"
+      },
+      {
+        "index": 1930,
+        "topic": "Medications",
+        "chapter": "Medication - General",
+        "question": "In routine nursing practice, what is an important nursing action when administering IV vancomycin?"
+      },
+      {
+        "index": 1935,
+        "topic": "Medications",
+        "chapter": "Medication - General",
+        "question": "In routine nursing practice, which adverse effect is commonly associated with salbutamol?"
+      },
+      {
+        "index": 1936,
+        "topic": "Medications",
+        "chapter": "Medication - General",
+        "question": "In routine nursing practice, which medication is a corticosteroid?"
+      },
+      {
+        "index": 1937,
+        "topic": "Medications",
+        "chapter": "Medication - General",
+        "question": "In routine nursing practice, a patient receiving long-term corticosteroid therapy should NOT stop the medication abruptly because of the ris"
+      }
+    ]
+  }
+}
