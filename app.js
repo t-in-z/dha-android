@@ -31,7 +31,8 @@ function extendGN() {
       randomQuestions: "Take random questions", chooseQuestionCount: "Choose how many random questions you want.",
       allQuestions: "All questions", fixedOrder: "Fixed question order", sameOrderHelp: "Questions stay in the same order every time.",
       allQuestionsHelp: "Answer all {n} questions in this selection.", selectTestMode: "Choose exam or practice", questionCountLabel: "Question count",
-      topicTotal: "TOTAL QUESTIONS", indexEmpty: "No subchapters are mapped for this topic yet.", randomBadge: "RANDOM"
+      topicTotal: "TOTAL QUESTIONS", indexEmpty: "No subchapters are mapped for this topic yet.", randomBadge: "RANDOM",
+      searchTopics: "Search topics", noTopics: "No topics match your search."
     },
     ar: {
       back: "رجوع", allChapters: "جميع الفصول", chooseChapter: "اختر فصلًا للتدرّب", w9: "10 مواضيع",
@@ -39,7 +40,8 @@ function extendGN() {
       randomQuestions: "أسئلة عشوائية", chooseQuestionCount: "اختر عدد الأسئلة العشوائية التي تريدها.",
       allQuestions: "جميع الأسئلة", fixedOrder: "ترتيب ثابت للأسئلة", sameOrderHelp: "ستظهر الأسئلة بالترتيب نفسه في كل مرة.",
       allQuestionsHelp: "أجب عن جميع الأسئلة وعددها {n} في هذا الاختيار.", selectTestMode: "اختر الاختبار أو التدريب", questionCountLabel: "عدد الأسئلة",
-      topicTotal: "إجمالي الأسئلة", indexEmpty: "لا توجد فصول فرعية لهذا الموضوع حتى الآن.", randomBadge: "عشوائي"
+      topicTotal: "إجمالي الأسئلة", indexEmpty: "لا توجد فصول فرعية لهذا الموضوع حتى الآن.", randomBadge: "عشوائي",
+      searchTopics: "ابحث في المواضيع", noTopics: "لا توجد مواضيع مطابقة لبحثك."
     },
     hi: {
       back: "वापस", allChapters: "सभी अध्याय", chooseChapter: "अभ्यास के लिए अध्याय चुनें", w9: "10 विषय",
@@ -47,7 +49,8 @@ function extendGN() {
       randomQuestions: "रैंडम प्रश्न लें", chooseQuestionCount: "रैंडम टेस्ट के लिए प्रश्नों की संख्या चुनें।",
       allQuestions: "सभी प्रश्न", fixedOrder: "प्रश्नों का निश्चित क्रम", sameOrderHelp: "हर बार प्रश्न इसी क्रम में दिखाई देंगे।",
       allQuestionsHelp: "इस चयन के सभी {n} प्रश्नों के उत्तर दें।", selectTestMode: "परीक्षा या अभ्यास चुनें", questionCountLabel: "प्रश्नों की संख्या",
-      topicTotal: "कुल प्रश्न", indexEmpty: "इस विषय के लिए अभी उप-अध्याय मैप नहीं किए गए हैं।", randomBadge: "रैंडम"
+      topicTotal: "कुल प्रश्न", indexEmpty: "इस विषय के लिए अभी उप-अध्याय मैप नहीं किए गए हैं।", randomBadge: "रैंडम",
+      searchTopics: "विषय खोजें", noTopics: "आपकी खोज से कोई विषय मेल नहीं खाता।"
     }
   };
   Object.keys(S).forEach(l => { if (G.STR[l]) Object.assign(G.STR[l], S[l]); });
@@ -131,10 +134,18 @@ function prepare(q) {
 function escapeHtml(v) {
   return String(v ?? "").replace(/[&<>"']/g, m => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[m]));
 }
+// Safe value for an inline onclick="fn(...)" attribute (handles quotes, apostrophes and & in topic / chapter names).
+function jsArg(v) { return escapeHtml(JSON.stringify(v)); }
+// Reading direction of a piece of question text, so Arabic questions are right-aligned and English ones left-aligned.
+function dirOf(text) {
+  const m = String(text ?? "").match(/\p{L}/u);
+  return m && /[\u0590-\u08FF\uFB1D-\uFDFF\uFE70-\uFEFF]/.test(m[0]) ? "rtl" : "ltr";
+}
 function icon(name) {
   const p = {
     arrow:'<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>',
     back:'<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>',
+    check:'<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>',
     rotate:'<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 11a8 8 0 1 0 1 4"/><path d="M20 4v7h-7"/></svg>',
     x:'<svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 6l12 12M18 6L6 18"/></svg>',
     globe:'<svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.7 3.5 6 3.5 9S14.5 18.3 12 21c-2.5-2.7-3.5-6-3.5-9S9.5 5.7 12 3z"/></svg>',
@@ -292,10 +303,11 @@ function chapterLabel(topic, key) {
   return e ? getSubcategoryLabel(e.sample) || key : key;
 }
 function renderWelcome() {
-  shell('<section class="welcome" id="welcome"><button class="hbtn lang-btn on-welcome" onclick="openLanguage()">'+icon("globe")+'<span>'+escapeHtml(tr("langBtn"))+'</span></button><button class="sound-btn on-welcome '+(soundOn?"":"off")+'" onclick="toggleSound()" title="'+escapeHtml(tr("sound"))+'">'+icon(soundOn?"volume":"mute")+'</button><div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div><div class="w-inner"><div class="w-mark"><div class="ring"></div><div class="ring r2"></div><img class="w-logo" src="logo.svg" alt="'+escapeHtml(tr("logoAlt"))+'"></div><h1 class="w-title"><span>G</span><span>U</span><span>L</span><span>F</span> <span>N</span><span>U</span><span>R</span><span>S</span><span>E</span></h1><p class="w-sub">'+escapeHtml(tr("wSub"))+'</p><p class="w-tag">'+escapeHtml(tr("wTag"))+'</p><div class="w-chips"><span class="chip"><b>'+questions.length+'</b>'+escapeHtml(tr("wQuestions"))+'</span><span class="chip">'+escapeHtml(tr("w9"))+'</span><span class="chip">'+escapeHtml(tr("wOffline"))+'</span></div><button class="w-btn ripple-host" onclick="enterApp()">'+escapeHtml(tr("wGo"))+' '+icon("arrow")+'</button></div></section>');
+  shell('<section class="welcome" id="welcome"><button class="hbtn lang-btn on-welcome" onclick="openLanguage()">'+icon("globe")+'<span>'+escapeHtml(tr("langBtn"))+'</span></button><button class="sound-btn on-welcome '+(soundOn?"":"off")+'" onclick="toggleSound()" title="'+escapeHtml(tr("sound"))+'" aria-label="'+escapeHtml(tr("sound"))+'">'+icon(soundOn?"volume":"mute")+'</button><div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div><div class="w-inner"><div class="w-mark"><div class="ring"></div><div class="ring r2"></div><img class="w-logo" src="logo.svg" alt="'+escapeHtml(tr("logoAlt"))+'"></div><h1 class="w-title"><span>G</span><span>U</span><span>L</span><span>F</span> <span>N</span><span>U</span><span>R</span><span>S</span><span>E</span></h1><p class="w-sub">'+escapeHtml(tr("wSub"))+'</p><p class="w-tag">'+escapeHtml(tr("wTag"))+'</p><div class="w-chips"><span class="chip"><b>'+questions.length+'</b>'+escapeHtml(tr("wQuestions"))+'</span><span class="chip">'+escapeHtml(tr("w9"))+'</span><span class="chip">'+escapeHtml(tr("wOffline"))+'</span></div><button class="w-btn ripple-host" onclick="enterApp()">'+escapeHtml(tr("wGo"))+' '+icon("arrow")+'</button></div></section>');
 }
 function enterApp(){const el=$("#welcome");if(el){el.classList.add("leaving");setTimeout(()=>renderHome(true),420);}else renderHome(true);}
-const TOPIC_COLORS=["#0ea5e9","#0d9488","#6366f1","#8b5cf6","#f97316","#ef4444","#14b8a6","#0891b2","#a855f7","#22c55e","#e11d48"];
+// Slightly deeper tones than before so the white card text stays readable on every colour.
+const TOPIC_COLORS=["#0284c7","#0d9488","#4f46e5","#7c3aed","#ea580c","#dc2626","#0e7490","#0369a1","#9333ea","#16a34a","#e11d48"];
 function renderHome(animate=false){
   currentView="home";applyLanguage();
   const counts=getAllTopicCounts();
@@ -305,14 +317,20 @@ function renderHome(animate=false){
   const cards=ordered.map((name,i)=>{
     const t=topicText(name,name==="Random"?questions.length:counts[name]);
     const tc=TOPIC_COLORS[i%TOPIC_COLORS.length];
-    return '<button class="topic ripple-host" style="--tc:'+tc+';--i:'+i+'" onclick=\'chooseTopic('+JSON.stringify(name)+')\'><div class="t-text"><h3>'+escapeHtml(t.title)+'</h3><p>'+escapeHtml(t.desc)+'</p><span class="t-count">'+escapeHtml(t.count)+'</span></div><div class="t-icon">'+topicIcon(name)+'</div></button>';
+    return '<button class="topic ripple-host" style="--tc:'+tc+';--i:'+i+'" onclick="chooseTopic('+jsArg(name)+')"><div class="t-text"><h3>'+escapeHtml(t.title)+'</h3><p>'+escapeHtml(t.desc)+'</p><span class="t-count">'+escapeHtml(t.count)+'</span></div><div class="t-icon">'+topicIcon(name)+'</div></button>';
   }).join("");
-  shell('<div class="home-head"><div class="brand"><img class="brand-logo" src="logo.svg" alt="">'+escapeHtml(tr("brand"))+'</div><div class="head-actions"><button class="hbtn index-btn ripple-host" onclick="renderChapterIndex()">'+icon("index")+'<span>'+escapeHtml(tr("chapterIndex"))+'</span></button><button class="hbtn tips-btn ripple-host" onclick="renderTips()">'+icon("light")+'<span>'+escapeHtml(tr("tipsBtn"))+'</span></button><button class="hbtn lang-btn ripple-host" onclick="openLanguage()">'+icon("globe")+'<span>'+escapeHtml(tr("langBtn"))+'</span></button></div></div><div class="search-wrap"><svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg><input id="topicSearch" class="topic-search" type="search" autocomplete="off" placeholder="'+escapeHtml(tr("homeTitle"))+'"></div><h1 class="h-title">'+escapeHtml(tr("homeTitle"))+'</h1><p class="h-sub">'+escapeHtml(tr("homeSub"))+'</p><div id="topicList">'+cards+'</div>');
+  shell('<div class="home-head"><div class="brand"><img class="brand-logo" src="logo.svg" alt="">'+escapeHtml(tr("brand"))+'</div><div class="head-actions"><button class="hbtn index-btn ripple-host" onclick="renderChapterIndex()" aria-label="'+escapeHtml(tr("chapterIndex"))+'">'+icon("index")+'<span>'+escapeHtml(tr("chapterIndex"))+'</span></button><button class="hbtn tips-btn ripple-host" onclick="renderTips()" aria-label="'+escapeHtml(tr("tipsBtn"))+'">'+icon("light")+'<span>'+escapeHtml(tr("tipsBtn"))+'</span></button><button class="hbtn lang-btn ripple-host" onclick="openLanguage()" aria-label="'+escapeHtml(tr("langBtn"))+'">'+icon("globe")+'<span>'+escapeHtml(tr("langBtn"))+'</span></button></div></div><h1 class="h-title">'+escapeHtml(tr("homeTitle"))+'</h1><p class="h-sub">'+escapeHtml(tr("homeSub"))+'</p><div class="search-wrap"><svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg><input id="topicSearch" class="topic-search" type="search" autocomplete="off" enterkeyhint="search" aria-label="'+escapeHtml(tr("searchTopics"))+'" placeholder="'+escapeHtml(tr("searchTopics"))+'"></div><div id="topicList">'+cards+'</div><p id="topicEmpty" class="topic-empty" hidden>'+escapeHtml(tr("noTopics"))+'</p>');
   if(animate)requestAnimationFrame(()=>app().classList.add("swap"));
-  const input=$("#topicSearch"), list=$("#topicList");
+  const input=$("#topicSearch"), list=$("#topicList"), empty=$("#topicEmpty");
   if(input&&list) input.addEventListener("input",()=>{
     const needle=input.value.trim().toLocaleLowerCase();
-    list.querySelectorAll(".topic").forEach(card=>{card.hidden=needle && !card.textContent.toLocaleLowerCase().includes(needle);});
+    let shown=0;
+    list.querySelectorAll(".topic").forEach(card=>{
+      const hide=!!needle&&!card.textContent.toLocaleLowerCase().includes(needle);
+      card.hidden=hide;
+      if(!hide)shown++;
+    });
+    if(empty)empty.hidden=shown>0;
   });
 }
 // A main topic opens like a folder: its chapters are shown first. "Random" goes straight to the test setup.
@@ -333,7 +351,7 @@ function renderChapters(topic){
     const cardIcon=c.isAll?icon("layers"):chapterIcon(topic,c.key);
     const color=c.isAll?"#0a2540":TOPIC_COLORS[i%TOPIC_COLORS.length];
     const meta=c.isAll?tr("topicTotal"):t.title;
-    return '<button class="topic ripple-host'+cls+'" style="--tc:'+color+';--i:'+i+'" onclick=\'chooseChapter('+JSON.stringify(c.key)+')\'><div class="t-text"><h3>'+escapeHtml(c.title)+'</h3><p>'+escapeHtml(meta)+'</p><span class="t-count">'+escapeHtml(tr("nQuestions",{n:c.count}))+'</span></div><div class="t-icon">'+cardIcon+'</div></button>';
+    return '<button class="topic ripple-host'+cls+'" style="--tc:'+color+';--i:'+i+'" onclick="chooseChapter('+jsArg(c.key)+')"><div class="t-text"><h3>'+escapeHtml(c.title)+'</h3><p>'+escapeHtml(meta)+'</p><span class="t-count">'+escapeHtml(tr("nQuestions",{n:c.count}))+'</span></div><div class="t-icon">'+cardIcon+'</div></button>';
   }).join("");
   shell('<button class="back-btn ripple-host" onclick="renderHome()">'+icon("back")+escapeHtml(tr("home"))+'</button><h1 class="h-title">'+escapeHtml(t.title)+'</h1><p class="h-sub">'+escapeHtml(tr("chooseChapter"))+'</p><div id="topicList">'+cards+'</div>');
 }
@@ -367,8 +385,8 @@ function renderChapterIndex(){
   const names=preferred.filter(name=>counts[name]>0).concat(Object.keys(counts).filter(name=>name!=="Random"&&!preferred.includes(name)));
   const sections=names.map((name,i)=>{
     const t=topicText(name,counts[name]||0),chapters=getChapterCounts(name);
-    const rows=chapters.map(c=>'<button class="index-chapter ripple-host" onclick=\'openIndexChapter('+JSON.stringify(name)+','+JSON.stringify(c.key)+')\'><span class="index-chapter-icon">'+chapterIcon(name,c.key)+'</span><span class="index-chapter-copy"><strong>'+escapeHtml(chapterLabel(name,c.key))+'</strong><small>'+escapeHtml(tr("nQuestions",{n:c.count}))+'</small></span><span class="index-arrow">'+icon("arrow")+'</span></button>').join("");
-    return '<section class="index-topic" style="--index-color:'+TOPIC_COLORS[i%TOPIC_COLORS.length]+'"><button class="index-topic-head ripple-host" onclick=\'openIndexTopic('+JSON.stringify(name)+')\'><span class="index-topic-icon">'+topicIcon(name)+'</span><span class="index-topic-copy"><strong>'+escapeHtml(t.title)+'</strong><small>'+escapeHtml(tr("nQuestions",{n:counts[name]||0}))+'</small></span><span class="index-total">'+(counts[name]||0)+'</span><span class="index-arrow">'+icon("arrow")+'</span></button>'+(rows||'<p class="index-empty">'+escapeHtml(tr("indexEmpty"))+'</p>')+'</section>';
+    const rows=chapters.map(c=>'<button class="index-chapter ripple-host" onclick="openIndexChapter('+jsArg(name)+','+jsArg(c.key)+')"><span class="index-chapter-icon">'+chapterIcon(name,c.key)+'</span><span class="index-chapter-copy"><strong>'+escapeHtml(chapterLabel(name,c.key))+'</strong><small>'+escapeHtml(tr("nQuestions",{n:c.count}))+'</small></span><span class="index-arrow">'+icon("arrow")+'</span></button>').join("");
+    return '<section class="index-topic" style="--index-color:'+TOPIC_COLORS[i%TOPIC_COLORS.length]+'"><button class="index-topic-head ripple-host" onclick="openIndexTopic('+jsArg(name)+')"><span class="index-topic-icon">'+topicIcon(name)+'</span><span class="index-topic-copy"><strong>'+escapeHtml(t.title)+'</strong><small>'+escapeHtml(tr("nQuestions",{n:counts[name]||0}))+'</small></span><span class="index-total">'+(counts[name]||0)+'</span><span class="index-arrow">'+icon("arrow")+'</span></button>'+(rows||'<p class="index-empty">'+escapeHtml(tr("indexEmpty"))+'</p>')+'</section>';
   }).join("");
   shell('<button class="back-btn ripple-host" onclick="renderHome()">'+icon("back")+escapeHtml(tr("home"))+'</button><div class="index-hero"><div class="index-hero-icon">'+icon("index")+'</div><div><h1>'+escapeHtml(tr("chapterIndexTitle"))+'</h1><p>'+escapeHtml(tr("chapterIndexSub"))+'</p></div></div><div class="index-summary"><strong>'+questions.length+'</strong><span>'+escapeHtml(tr("nQuestions",{n:questions.length}))+'</span></div><div class="index-list">'+sections+'</div>');
 }
@@ -393,9 +411,9 @@ function startTimer(){clearInterval(quiz?.timer);quiz.timer=setInterval(()=>{if(
 function formatTime(s){return String(Math.floor(s/60)).padStart(2,"0")+":"+String(s%60).padStart(2,"0");}
 function renderQuiz(dir="right"){
   const q=quiz.items[quiz.index],n=quiz.items.length,answered=quiz.items.filter(x=>x.picked!=null).length;
-  const choices=q.choices.map((c,i)=>{let cls="";if(q.picked===i)cls+=" selected";if(quiz.mode==="practice"&&q.picked!=null)cls+=c.correct?" correct":(q.picked===i?" wrong":"");return '<button class="choice ripple-host'+cls+'" '+(quiz.mode==="practice"&&q.picked!=null?"disabled":"")+' onclick="pickAnswer('+i+')"><span class="l">'+String.fromCharCode(65+i)+'</span><span dir="auto">'+escapeHtml(c.text)+'</span></button>';}).join("");
-  const explain=(quiz.mode==="practice"&&q.picked!=null)?'<div class="explain" dir="auto"><b>'+escapeHtml(q.choices[q.picked]?.correct?tr("sCorrect"):tr("sIncorrect"))+'</b><br>'+escapeHtml(q.explanation)+'</div>':"";
-  shell('<div class="qbar"><div class="qbar-l"><button class="exit-btn ripple-host" onclick="confirmExit()">'+icon("x")+'<span>'+escapeHtml(tr("exit"))+'</span></button><button class="restart-btn ripple-host" onclick="confirmRestart()">'+icon("rotate")+'<span class="lbl">'+escapeHtml(tr("restart"))+'</span></button></div><div class="qbar-r"><div class="timer" id="timer">'+formatTime(quiz.elapsed)+'</div><button class="lang-mini ripple-host" onclick="openLanguage()" title="'+escapeHtml(tr("langBtn"))+'" aria-label="'+escapeHtml(tr("langBtn"))+'">'+icon("globe")+'</button><button class="sound-btn sm '+(soundOn?"":"off")+'" onclick="toggleSound()" title="'+escapeHtml(tr("sound"))+'">'+icon(soundOn?"volume":"mute")+'</button></div></div><div class="qmeta"><span>'+escapeHtml(tr("qOf",{i:quiz.index+1,n}))+'</span><span class="score-chip">'+escapeHtml(tr("answered",{d:answered,n}))+'</span></div><div class="bar"><div style="width:'+((quiz.index+1)/n*100).toFixed(1)+'%"></div></div><div class="qbody from-'+dir+'">'+(q.category?'<span class="tag">'+escapeHtml(q.category)+'</span>':"")+'<p class="q" dir="auto">'+escapeHtml(q.question)+'</p>'+choices+explain+'<div class="navrow"><button class="btn secondary" onclick="prevQuestion()" '+(quiz.index===0?"disabled":"")+'>'+escapeHtml(tr("prev"))+'</button><button class="btn" onclick="'+(quiz.index===n-1?"finishTest()":"nextQuestion()")+'">'+escapeHtml(quiz.index===n-1?tr("finish"):tr("next"))+'</button></div></div>');
+  const choices=q.choices.map((c,i)=>{let cls="";if(q.picked===i)cls+=" selected";if(quiz.mode==="practice"&&q.picked!=null)cls+=c.correct?" correct":(q.picked===i?" wrong":"");return '<button class="choice ripple-host'+cls+'" '+(quiz.mode==="practice"&&q.picked!=null?"disabled":"")+' onclick="pickAnswer('+i+')"><span class="l">'+String.fromCharCode(65+i)+'</span><span dir="'+dirOf(c.text)+'">'+escapeHtml(c.text)+'</span></button>';}).join("");
+  const explain=(quiz.mode==="practice"&&q.picked!=null)?'<div class="explain" dir="'+dirOf(q.explanation)+'"><b>'+escapeHtml(q.choices[q.picked]?.correct?tr("sCorrect"):tr("sIncorrect"))+'</b><br>'+escapeHtml(q.explanation)+'</div>':"";
+  shell('<div class="qbar"><div class="qbar-l"><button class="exit-btn ripple-host" onclick="confirmExit()">'+icon("x")+'<span>'+escapeHtml(tr("exit"))+'</span></button><button class="restart-btn ripple-host" onclick="confirmRestart()" aria-label="'+escapeHtml(tr("restart"))+'">'+icon("rotate")+'<span class="lbl">'+escapeHtml(tr("restart"))+'</span></button></div><div class="qbar-r"><div class="timer" id="timer">'+formatTime(quiz.elapsed)+'</div><button class="lang-mini ripple-host" onclick="openLanguage()" title="'+escapeHtml(tr("langBtn"))+'" aria-label="'+escapeHtml(tr("langBtn"))+'">'+icon("globe")+'</button><button class="sound-btn sm '+(soundOn?"":"off")+'" onclick="toggleSound()" title="'+escapeHtml(tr("sound"))+'" aria-label="'+escapeHtml(tr("sound"))+'">'+icon(soundOn?"volume":"mute")+'</button></div></div><div class="qmeta"><span>'+escapeHtml(tr("qOf",{i:quiz.index+1,n}))+'</span><span class="score-chip">'+escapeHtml(tr("answered",{d:answered,n}))+'</span></div><div class="bar"><div style="width:'+((quiz.index+1)/n*100).toFixed(1)+'%"></div></div><div class="qbody from-'+dir+'">'+(q.category?'<span class="tag" dir="'+dirOf(q.category)+'">'+escapeHtml(q.category)+'</span>':"")+'<p class="q" dir="'+dirOf(q.question)+'">'+escapeHtml(q.question)+'</p>'+choices+explain+'<div class="navrow"><button class="btn secondary" onclick="prevQuestion()" '+(quiz.index===0?"disabled":"")+'>'+escapeHtml(tr("prev"))+'</button><button class="btn" onclick="'+(quiz.index===n-1?"finishTest()":"nextQuestion()")+'">'+escapeHtml(quiz.index===n-1?tr("finish"):tr("next"))+'</button></div></div>');
 }
 function pickAnswer(i){const q=quiz.items[quiz.index];if(q.picked!=null&&(quiz.mode==="practice"||q.picked===i))return;q.picked=i;updateQuizAnswerUI(q,i);if(quiz.mode==="practice")say(q.choices[i].correct?tr("sCorrect"):tr("sIncorrect"));}
 function updateQuizAnswerUI(q,picked){
@@ -414,7 +432,7 @@ function updateQuizAnswerUI(q,picked){
   if(chip) chip.textContent=tr("answered",{d:answered,n:quiz.items.length});
   if(quiz.mode==="practice"&&!document.querySelector(".explain")){
     const qbody=document.querySelector(".qbody");
-    if(qbody) qbody.insertAdjacentHTML("beforeend",'<div class="explain" dir="auto"><b>'+escapeHtml(q.choices[picked]?.correct?tr("sCorrect"):tr("sIncorrect"))+'</b><br>'+escapeHtml(q.explanation)+'</div>');
+    if(qbody) qbody.insertAdjacentHTML("beforeend",'<div class="explain" dir="'+dirOf(q.explanation)+'"><b>'+escapeHtml(q.choices[picked]?.correct?tr("sCorrect"):tr("sIncorrect"))+'</b><br>'+escapeHtml(q.explanation)+'</div>');
   }
 }
 function nextQuestion(){if(quiz.index<quiz.items.length-1){quiz.index++;renderQuiz("right");}else finishTest();}
@@ -434,26 +452,47 @@ function finishTest(){const unanswered=quiz.items.length-quiz.items.filter(q=>q.
 function showResult(){
   clearInterval(quiz.timer);const items=quiz.items,correct=items.reduce((a,q)=>a+(q.picked!=null&&q.choices[q.picked]?.correct?1:0),0),answered=items.filter(q=>q.picked!=null).length,skipped=items.length-answered,pct=Math.round(correct/items.length*100);
   const wrongCount=items.filter(q=>q.picked!=null&&!q.choices[q.picked]?.correct).length,bad=items.filter(q=>q.picked==null||!q.choices[q.picked]?.correct),cls=pct>=80?"great":pct>=50?"":"keep";
-  shell('<div class="result '+cls+'"><div class="r-hero"><h2 class="r-title">'+escapeHtml(pct>=80?tr("congrats"):tr("complete"))+'</h2><p class="r-note">'+escapeHtml(pct>=80?tr("noteGreat"):pct>=50?tr("noteGood"):tr("noteKeep"))+'</p><p class="r-topic">'+escapeHtml(items[0]?.category||"")+'</p><div class="r-pct" data-pct="'+pct+'">'+pct+'%</div><div class="ring-wrap"><svg class="score-ring" viewBox="0 0 120 120"><circle class="ring-bg" cx="60" cy="60" r="48"></circle><circle class="ring-fg" cx="60" cy="60" r="48" stroke="currentColor" stroke-dasharray="301.59" stroke-dashoffset="'+(301.59-(301.59*pct/100))+'"></circle><circle class="ring-spin" cx="60" cy="60" r="48"></circle></svg><div class="ring-center"><div class="ring-pct'+(String(correct+"/"+items.length).length>=8?" xs":String(correct+"/"+items.length).length>=6?" sm":"")+'" data-correct="'+correct+'" data-total="'+items.length+'">'+correct+'/'+items.length+'</div><div class="ring-label">'+escapeHtml(tr("sCorrect"))+'</div></div></div></div><div class="stats" style="--n:3"><div class="stat good"><div class="stat-val">'+correct+'</div><div class="stat-label">'+escapeHtml(tr("sCorrect"))+'</div></div><div class="stat bad"><div class="stat-val">'+wrongCount+'</div><div class="stat-label">'+escapeHtml(tr("sIncorrect"))+'</div></div><div class="stat skip"><div class="stat-val">'+skipped+'</div><div class="stat-label">'+escapeHtml(tr("sSkipped"))+'</div></div></div><div class="time-card"><span class="time-ic">'+icon("clock")+'</span><span class="time-lbl">'+escapeHtml(tr("sTime"))+'</span><span class="time-val">'+formatTime(quiz.elapsed)+'</span></div><div class="r-actions"><button class="btn ripple-host" onclick="renderHome()">'+icon("home")+'<span>'+escapeHtml(tr("home"))+'</span></button><button class="btn secondary ripple-host" onclick="startTest()">'+icon("rotate")+'<span>'+escapeHtml(tr("again"))+'</span></button></div>'+(bad.length?'<div class="review"><h3>'+escapeHtml(tr("review",{n:bad.length}))+'</h3>'+bad.map(q=>'<div class="rev-item"><div class="rev-q" dir="auto">'+escapeHtml(q.question)+'</div><div class="'+(q.picked==null?"skipd":"you")+'">'+escapeHtml(q.picked==null?tr("notAnswered"):tr("yourAns")+q.choices[q.picked].text)+'</div><div class="right">'+escapeHtml(tr("correctAns")+q.choices.find(c=>c.correct)?.text)+'</div><div class="rev-exp" dir="auto">'+escapeHtml(q.explanation)+'</div></div>').join("")+'</div>':'<div class="perfect">'+escapeHtml(tr("perfect"))+'</div>')+'</div>');
+  // Heading under the result title: the topic (and chapter) that was actually practised, e.g. "Random" for a mixed test.
+  const resultTopic=topicText(quiz.sourceTopic,0).title+(quiz.sourceChapter?" · "+chapterLabel(quiz.sourceTopic,quiz.sourceChapter):"");
+  shell('<div class="result '+cls+'"><div class="r-hero"><h2 class="r-title">'+escapeHtml(pct>=80?tr("congrats"):tr("complete"))+'</h2><p class="r-note">'+escapeHtml(pct>=80?tr("noteGreat"):pct>=50?tr("noteGood"):tr("noteKeep"))+'</p><p class="r-topic">'+escapeHtml(resultTopic)+'</p><div class="r-pct" data-pct="'+pct+'">'+pct+'%</div><div class="ring-wrap"><svg class="score-ring" viewBox="0 0 120 120"><circle class="ring-bg" cx="60" cy="60" r="48"></circle><circle class="ring-fg" cx="60" cy="60" r="48" stroke="currentColor" stroke-dasharray="301.59" stroke-dashoffset="'+(301.59-(301.59*pct/100))+'"></circle><circle class="ring-spin" cx="60" cy="60" r="48"></circle></svg><div class="ring-center"><div class="ring-pct'+(String(correct+"/"+items.length).length>=8?" xs":String(correct+"/"+items.length).length>=6?" sm":"")+'" data-correct="'+correct+'" data-total="'+items.length+'">'+correct+'/'+items.length+'</div><div class="ring-label">'+escapeHtml(tr("sCorrect"))+'</div></div></div></div><div class="stats" style="--n:3"><div class="stat good"><div class="stat-val">'+correct+'</div><div class="stat-label">'+escapeHtml(tr("sCorrect"))+'</div></div><div class="stat bad"><div class="stat-val">'+wrongCount+'</div><div class="stat-label">'+escapeHtml(tr("sIncorrect"))+'</div></div><div class="stat skip"><div class="stat-val">'+skipped+'</div><div class="stat-label">'+escapeHtml(tr("sSkipped"))+'</div></div></div><div class="time-card"><span class="time-ic">'+icon("clock")+'</span><span class="time-lbl">'+escapeHtml(tr("sTime"))+'</span><span class="time-val">'+formatTime(quiz.elapsed)+'</span></div><div class="r-actions"><button class="btn ripple-host" onclick="renderHome()">'+icon("home")+'<span>'+escapeHtml(tr("home"))+'</span></button><button class="btn secondary ripple-host" onclick="startTest()">'+icon("rotate")+'<span>'+escapeHtml(tr("again"))+'</span></button></div>'+(bad.length?'<div class="review"><h3>'+escapeHtml(tr("review",{n:bad.length}))+'</h3>'+bad.map(q=>'<div class="rev-item"><div class="rev-q" dir="'+dirOf(q.question)+'">'+escapeHtml(q.question)+'</div><div class="'+(q.picked==null?"skipd":"you")+'">'+escapeHtml(q.picked==null?tr("notAnswered"):tr("yourAns")+q.choices[q.picked].text)+'</div><div class="right">'+escapeHtml(tr("correctAns")+q.choices.find(c=>c.correct)?.text)+'</div><div class="rev-exp" dir="'+dirOf(q.explanation)+'">'+escapeHtml(q.explanation)+'</div></div>').join("")+'</div>':'<div class="perfect">'+escapeHtml(tr("perfect"))+'</div>')+'</div>');
   quiz=null;
 }
 function modal(title,msg,ok,action){
-  const el=document.createElement("div");el.className="modal";el.innerHTML='<div class="modal-box"><h3>'+escapeHtml(title)+'</h3><p>'+escapeHtml(msg)+'</p><div class="modal-row"><button class="btn secondary" id="mCancel">'+escapeHtml(tr("cancel"))+'</button><button class="btn" id="mOk">'+escapeHtml(ok)+'</button></div></div>';
+  const el=document.createElement("div");el.className="modal";el.setAttribute("role","dialog");el.setAttribute("aria-modal","true");el.innerHTML='<div class="modal-box"><h3>'+escapeHtml(title)+'</h3><p>'+escapeHtml(msg)+'</p><div class="modal-row"><button class="btn secondary" id="mCancel">'+escapeHtml(tr("cancel"))+'</button><button class="btn" id="mOk">'+escapeHtml(ok)+'</button></div></div>';
   document.body.appendChild(el);el.querySelector("#mCancel").onclick=()=>el.remove();el.querySelector("#mOk").onclick=()=>{el.remove();action();};
 }
 function openLanguage(){
-  const langs=window.GN?.LANGS||[],el=document.createElement("div");el.className="modal";
+  const langs=window.GN?.LANGS||[],el=document.createElement("div");el.className="modal";el.setAttribute("role","dialog");el.setAttribute("aria-modal","true");
   el.innerHTML='<div class="modal-box"><h3>'+escapeHtml(tr("langTitle"))+'</h3><div class="lang-list">'+langs.map(l=>'<button class="lang-opt '+(l.id===lang?"active":"")+'" onclick="setLang(\''+l.id+'\')"><span>'+escapeHtml(l.label)+'</span><small>'+l.short+'</small></button>').join("")+'</div></div>';
   document.body.appendChild(el);el.addEventListener("click",e=>{if(e.target===el)el.remove();});
 }
-function setLang(l){lang=l;savePrefs();applyLanguage();if(quiz)quiz.items.forEach(localize);document.querySelector(".modal")?.remove();if(currentView==="home")renderHome();else if(currentView==="chapters")renderChapters(selectedTopic);else if(currentView==="length")renderLength();else if(currentView==="all-questions")renderAllQuestionsSetup();else if(currentView==="index")renderChapterIndex();else if(currentView==="quiz"&&quiz){renderQuiz();document.querySelector(".qbody")?.classList.remove("from-right");}else if(currentView==="tips")renderTips();}
+function setLang(l){lang=l;savePrefs();applyLanguage();if(quiz)quiz.items.forEach(localize);document.querySelector(".modal")?.remove();if(currentView==="home")renderHome();else if(currentView==="chapters")renderChapters(selectedTopic);else if(currentView==="length")renderLength();else if(currentView==="index")renderChapterIndex();else if(currentView==="quiz"&&quiz){renderQuiz();document.querySelector(".qbody")?.classList.remove("from-right");}else if(currentView==="tips")renderTips();}
 function toggleSound(){
   soundOn=!soundOn;savePrefs();
   if(!soundOn&&("speechSynthesis" in window))window.speechSynthesis.cancel();
   document.querySelectorAll(".sound-btn").forEach(b=>{b.classList.toggle("off",!soundOn);b.innerHTML=icon(soundOn?"volume":"mute");});
 }
 function renderTips(){currentView="tips";const T=window.GN?.TIPS?.[lang]||window.GN?.TIPS?.en;const items=(T?.items||[]).map((x,i)=>'<li class="tip-item"><span class="tip-num">'+(i+1)+'</span><div class="tip-tx"><b>'+escapeHtml(x[0])+'</b><span>'+escapeHtml(x[1])+'</span></div></li>').join("");shell('<div class="tips-top"><button class="back-btn ripple-host" onclick="renderHome()">'+icon("back")+escapeHtml(tr("home"))+'</button><button class="hbtn lang-btn" onclick="openLanguage()">'+icon("globe")+'<span>'+escapeHtml(tr("langBtn"))+'</span></button></div><div class="tips-hero"><div class="tips-hero-ic">'+icon("light")+'</div><div><h1>'+escapeHtml(tr("tipsTitle"))+'</h1><p>'+escapeHtml(tr("tipsSub"))+'</p></div></div><section class="tip-sec"><div class="tip-head"><div class="tip-ic" style="--tc:#0ea5e9">'+icon("light")+'</div><h2>'+escapeHtml(T.s1)+'</h2></div><ul class="tip-list">'+items+'</ul></section>',true);}
+
+// Android hardware / gesture back button.
+// Returns "exit" when the app is on its first screen (so the caller may close the app), otherwise handles the step itself.
+function goBack(){
+  const open=document.querySelector(".modal");
+  if(open){open.remove();return "handled";}
+  switch(currentView){
+    case "quiz": if(quiz)confirmExit();else renderHome();return "handled";
+    case "length": backFromLength();return "handled";
+    case "chapters": case "index": case "tips": renderHome();return "handled";
+    default: return "exit";
+  }
+}
+function setupBackButton(){
+  const App=window.Capacitor?.Plugins?.App;
+  if(!App||typeof App.addListener!=="function")return; // plain browser, or @capacitor/app not installed
+  App.addListener("backButton",()=>{ if(goBack()==="exit"&&typeof App.exitApp==="function")App.exitApp(); });
+}
 async function loadQuestions(){
+  setupBackButton();
   try{
     extendGN();
     const res=await fetch("questions.json",{cache:"no-store"});if(!res.ok)throw new Error("HTTP "+res.status);
@@ -465,5 +504,7 @@ async function loadQuestions(){
     applyLanguage();renderWelcome();
   }catch(e){shell('<div class="error"><h2>'+escapeHtml(tr("loadErr"))+'</h2><p>'+escapeHtml(e.message)+'</p><button class="btn" onclick="location.reload()">Retry</button></div>');}
 }
-Object.assign(window,{openLanguage,setLang,toggleSound,renderHome,renderTips,renderChapterIndex,openIndexTopic,openIndexChapter,enterApp,chooseTopic,chooseChapter,renderChapters,backFromLength,openAllQuestions,renderAllQuestionsSetup,backFromAllQuestions,setQuestionSet,setCount,setMode,startTest,pickAnswer,nextQuestion,prevQuestion,confirmExit,confirmRestart,finishTest,restartTest});
+// NOTE: every name listed here must exist as a function above. A name that does not exist throws a ReferenceError
+// at load time, which stops this script before DOMContentLoaded is registered and leaves a blank screen.
+Object.assign(window,{openLanguage,setLang,toggleSound,renderHome,renderTips,renderChapterIndex,openIndexTopic,openIndexChapter,enterApp,chooseTopic,chooseChapter,renderChapters,backFromLength,setQuestionSet,setCount,setMode,startTest,pickAnswer,nextQuestion,prevQuestion,confirmExit,confirmRestart,finishTest,restartTest,goBack});
 document.addEventListener("DOMContentLoaded",loadQuestions);
