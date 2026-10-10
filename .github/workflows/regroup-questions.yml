@@ -1,0 +1,47 @@
+name: Regroup Question Bank
+
+# Sorts every question into the main topics and chapters (see scripts/regroup-questions.mjs).
+# Step 1: run with "Dry run" ticked (default) -> only a report, nothing changes.
+# Step 2: if the numbers look right, run again with "Dry run" un-ticked -> questions.json is updated.
+
+on:
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Dry run (report only, do not change questions.json)"
+        type: boolean
+        default: true
+
+permissions:
+  contents: write
+
+jobs:
+  regroup:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Regroup questions
+        env:
+          DRY_RUN: ${{ inputs.dry_run && '1' || '0' }}
+        run: node scripts/regroup-questions.mjs
+
+      - name: Upload report
+        uses: actions/upload-artifact@v4
+        with:
+          name: regroup-report
+          path: regroup-report.json
+
+      - name: Commit regrouped questions
+        if: ${{ !inputs.dry_run }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add questions.json regroup-report.json
+          git diff --cached --quiet && echo "Nothing to commit" && exit 0
+          git commit -m "Regroup questions into main topics and chapters"
+          git push
