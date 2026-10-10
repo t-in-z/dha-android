@@ -1,0 +1,32 @@
+/* Gulf Nurse — polish layer. Loaded after style.css, so it only needs to hold small overrides. */
+
+/* Use the real visible height on Android WebView (the old 100vh includes the hidden address/gesture bar area). */
+@supports (height:100dvh){
+  body{min-height:100dvh}
+  .card{min-height:calc(100dvh - 28px)}
+  @media(max-width:520px){.card{min-height:100dvh}}
+}
+
+/* Arabic / RTL: question text is now tagged dir="rtl" or dir="ltr" per text, so Arabic content reads
+   right-to-left and right-aligned (style.css forced everything to left-aligned LTR). */
+html[dir="rtl"] body .q[dir="rtl"],
+html[dir="rtl"] body .choice span[dir="rtl"],
+html[dir="rtl"] body .rev-q[dir="rtl"],
+html[dir="rtl"] body .explain[dir="rtl"],
+html[dir="rtl"] body .rev-exp[dir="rtl"],
+html[dir="rtl"] body .tag[dir="rtl"]{direction:rtl;text-align:right}
+html[dir="ltr"] .q[dir="rtl"],
+html[dir="ltr"] .choice span[dir="rtl"],
+html[dir="ltr"] .rev-q[dir="rtl"],
+html[dir="ltr"] .explain[dir="rtl"],
+html[dir="ltr"] .rev-exp[dir="rtl"]{text-align:right}
+
+/* Topic search: empty state */
+.topic-empty{margin:28px 8px;text-align:center;color:var(--muted);font-weight:650;line-height:1.5}
+
+/* Selected "All questions" button gets a clear selected look (it only changed the count badge before). */
+.all-questions-cta.selected{box-shadow:0 0 0 3px rgba(242,184,75,.9),0 14px 26px -13px rgba(180,83,9,.8)}
+.all-questions-cta.selected .all-questions-count{background:#f2b84b;color:#7c2d12}
+
+/* Slightly larger touch targets for the small round buttons in the quiz bar */
+.lang-mini,.sound-btn.sm{min-width:40px;min-height:40px}

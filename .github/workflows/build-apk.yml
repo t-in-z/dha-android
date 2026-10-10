@@ -23,7 +23,7 @@ jobs:
       - name: Arrange web files into www folder
         run: |
           mkdir -p www
-          for f in index.html style.css i18n.js app.js ui-enhancements.js logo.svg questions.json; do
+          for f in index.html style.css polish.css i18n.js app.js ui-enhancements.js logo.svg questions.json; do
             if [ -f "$f" ]; then cp "$f" www/; fi
           done
           ls -la www
