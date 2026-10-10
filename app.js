@@ -383,7 +383,7 @@ function chooseTopic(name){
 function renderChapters(topic){
   selectedTopic=topic;selectedChapter=null;
   const list=getChapterCounts(topic);
-  if(!list.length){selectedCount=null;selectedQuestionSet="random";renderLength();return;}
+  if(!list.length){selectedCount=null;selectedQuestionSet="all";renderLength();return;}
   currentView="chapters";
   const total=topicPool(topic).length,t=topicText(topic,total);
   const items=list.map(c=>({key:c.key,title:chapterLabel(topic,c.key),count:c.count}));
