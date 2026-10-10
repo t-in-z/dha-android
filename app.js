@@ -32,7 +32,7 @@ function extendGN() {
       allQuestions: "All questions", fixedOrder: "Fixed question order", sameOrderHelp: "Questions stay in the same order every time.",
       allQuestionsHelp: "Answer all {n} questions in this selection.", selectTestMode: "Choose exam or practice", questionCountLabel: "Question count",
       topicTotal: "TOTAL QUESTIONS", indexEmpty: "No subchapters are mapped for this topic yet.", randomBadge: "RANDOM",
-      searchTopics: "Search topics", noTopics: "No topics match your search."
+      searchTopics: "Search topics", noTopics: "No topics match your search.", mockTitle: "Take a Real Mock Test", mockSubtitle: "150 random questions · 3 hours · exam-style experience", mockStart: "Start mock test", mockStarting: "Preparing your mock exam…", mockTopic: "Real Mock Test", mockExpired: "Time is up. Your mock test has been submitted.", mockTwoHours: "2 hours remaining", mockOneHour: "1 hour remaining", mockThirty: "30 minutes remaining", mockFive: "5 minutes remaining", mockOne: "1 minute remaining"
     },
     ar: {
       back: "رجوع", allChapters: "جميع الفصول", chooseChapter: "اختر فصلًا للتدرّب", w9: "10 مواضيع",
@@ -41,7 +41,7 @@ function extendGN() {
       allQuestions: "جميع الأسئلة", fixedOrder: "ترتيب ثابت للأسئلة", sameOrderHelp: "ستظهر الأسئلة بالترتيب نفسه في كل مرة.",
       allQuestionsHelp: "أجب عن جميع الأسئلة وعددها {n} في هذا الاختيار.", selectTestMode: "اختر الاختبار أو التدريب", questionCountLabel: "عدد الأسئلة",
       topicTotal: "إجمالي الأسئلة", indexEmpty: "لا توجد فصول فرعية لهذا الموضوع حتى الآن.", randomBadge: "عشوائي",
-      searchTopics: "ابحث في المواضيع", noTopics: "لا توجد مواضيع مطابقة لبحثك."
+      searchTopics: "ابحث في المواضيع", noTopics: "لا توجد مواضيع مطابقة لبحثك.", mockTitle: "خض اختبارًا تجريبيًا حقيقيًا", mockSubtitle: "150 سؤالًا عشوائيًا · 3 ساعات", mockStart: "ابدأ الاختبار التجريبي", mockStarting: "جارٍ تجهيز الاختبار…", mockTopic: "اختبار تجريبي", mockExpired: "انتهى الوقت. تم تسليم الاختبار.", mockTwoHours: "تبقّت ساعتان", mockOneHour: "تبقّت ساعة واحدة", mockThirty: "تبقّت 30 دقيقة", mockFive: "تبقّت 5 دقائق", mockOne: "تبقّت دقيقة واحدة"
     },
     hi: {
       back: "वापस", allChapters: "सभी अध्याय", chooseChapter: "अभ्यास के लिए अध्याय चुनें", w9: "10 विषय",
@@ -50,7 +50,7 @@ function extendGN() {
       allQuestions: "सभी प्रश्न", fixedOrder: "प्रश्नों का निश्चित क्रम", sameOrderHelp: "हर बार प्रश्न इसी क्रम में दिखाई देंगे।",
       allQuestionsHelp: "इस चयन के सभी {n} प्रश्नों के उत्तर दें।", selectTestMode: "परीक्षा या अभ्यास चुनें", questionCountLabel: "प्रश्नों की संख्या",
       topicTotal: "कुल प्रश्न", indexEmpty: "इस विषय के लिए अभी उप-अध्याय मैप नहीं किए गए हैं।", randomBadge: "रैंडम",
-      searchTopics: "विषय खोजें", noTopics: "आपकी खोज से कोई विषय मेल नहीं खाता।"
+      searchTopics: "विषय खोजें", noTopics: "आपकी खोज से कोई विषय मेल नहीं खाता।", mockTitle: "असली मॉक टेस्ट दें", mockSubtitle: "150 रैंडम प्रश्न · 3 घंटे", mockStart: "मॉक टेस्ट शुरू करें", mockStarting: "मॉक परीक्षा तैयार हो रही है…", mockTopic: "मॉक टेस्ट", mockExpired: "समय समाप्त। आपका टेस्ट जमा कर दिया गया है।", mockTwoHours: "2 घंटे शेष", mockOneHour: "1 घंटा शेष", mockThirty: "30 मिनट शेष", mockFive: "5 मिनट शेष", mockOne: "1 मिनट शेष"
     }
   };
   Object.keys(S).forEach(l => { if (G.STR[l]) Object.assign(G.STR[l], S[l]); });
@@ -361,7 +361,7 @@ function renderHome(animate=false){
     return '<button class="topic compact ripple-host" style="--tc:'+tc+';--i:'+i+'" onclick="chooseTopic('+jsArg(name)+')"><div class="t-text"><h3>'+escapeHtml(t.title)+'</h3><span class="t-count">'+escapeHtml(t.count)+'</span></div><div class="t-icon">'+topicIcon(name)+'</div></button>';
   }).join("");
   // Header buttons, in this order: Language, Tips, Chapters (index).
-  shell('<div class="home-head"><div class="brand"><img class="brand-logo" src="logo.svg" alt="">'+escapeHtml(tr("brand"))+'</div><div class="head-actions"><button class="sound-btn home-sound-btn ripple-host '+(soundOn?"":"off")+'" onclick="toggleSound()" title="'+escapeHtml(tr("sound"))+'" aria-label="'+escapeHtml(tr("sound"))+'" aria-pressed="'+soundOn+'">'+icon(soundOn?"volume":"mute")+'</button><button class="hbtn lang-btn ripple-host" onclick="openLanguage()" aria-label="'+escapeHtml(tr("langBtn"))+'">'+icon("globe")+'<span>'+escapeHtml(tr("langBtn"))+'</span></button><button class="hbtn tips-btn ripple-host" onclick="renderTips()" aria-label="'+escapeHtml(tr("tipsBtn"))+'">'+icon("light")+'<span>'+escapeHtml(tr("tipsBtn"))+'</span></button><button class="hbtn index-btn ripple-host" onclick="renderChapterIndex()" aria-label="'+escapeHtml(tr("chapterIndex"))+'">'+icon("index")+'<span>'+escapeHtml(tr("chapterIndex"))+'</span></button></div></div><h1 class="h-title">'+escapeHtml(tr("homeTitle"))+'</h1><p class="h-sub">'+escapeHtml(tr("homeSub"))+'</p><div class="search-wrap"><svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg><input id="topicSearch" class="topic-search" type="search" autocomplete="off" enterkeyhint="search" aria-label="'+escapeHtml(tr("searchTopics"))+'" placeholder="'+escapeHtml(tr("searchTopics"))+'"></div><div id="topicList">'+cards+'</div><p id="topicEmpty" class="topic-empty" hidden>'+escapeHtml(tr("noTopics"))+'</p>');
+  shell('<div class="home-head"><div class="brand"><img class="brand-logo" src="logo.svg" alt="">'+escapeHtml(tr("brand"))+'</div><div class="head-actions"><button class="sound-btn home-sound-btn ripple-host '+(soundOn?"":"off")+'" onclick="toggleSound()" title="'+escapeHtml(tr("sound"))+'" aria-label="'+escapeHtml(tr("sound"))+'" aria-pressed="'+soundOn+'">'+icon(soundOn?"volume":"mute")+'</button><button class="hbtn lang-btn ripple-host" onclick="openLanguage()" aria-label="'+escapeHtml(tr("langBtn"))+'">'+icon("globe")+'<span>'+escapeHtml(tr("langBtn"))+'</span></button><button class="hbtn tips-btn ripple-host" onclick="renderTips()" aria-label="'+escapeHtml(tr("tipsBtn"))+'">'+icon("light")+'<span>'+escapeHtml(tr("tipsBtn"))+'</span></button><button class="hbtn index-btn ripple-host" onclick="renderChapterIndex()" aria-label="'+escapeHtml(tr("chapterIndex"))+'">'+icon("index")+'<span>'+escapeHtml(tr("chapterIndex"))+'</span></button></div></div><h1 class="h-title">'+escapeHtml(tr("homeTitle"))+'</h1><p class="h-sub">'+escapeHtml(tr("homeSub"))+'</p><div class="search-wrap"><svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg><input id="topicSearch" class="topic-search" type="search" autocomplete="off" enterkeyhint="search" aria-label="'+escapeHtml(tr("searchTopics"))+'" placeholder="'+escapeHtml(tr("searchTopics"))+'"></div><button class="mock-test-card ripple-host" onclick="startMockTest()"><span class="mock-card-icon">'+icon("clipboard-check")+'</span><span class="mock-card-copy"><strong>'+escapeHtml(tr("mockTitle"))+'</strong><small>'+escapeHtml(tr("mockSubtitle"))+'</small><em>'+escapeHtml(tr("mockStart"))+'</em></span><span class="mock-card-arrow">'+icon("arrow") +'</span></button><div id="topicList">'+cards+'</div><p id="topicEmpty" class="topic-empty" hidden>'+escapeHtml(tr("noTopics"))+'</p>');
   if(animate)requestAnimationFrame(()=>app().classList.add("swap"));
   const input=$("#topicSearch"), list=$("#topicList"), empty=$("#topicEmpty");
   if(input&&list) input.addEventListener("input",()=>{
@@ -437,6 +437,16 @@ function openIndexChapter(topic,chapter){selectedTopic=topic;selectedChapter=cha
 
 function setCount(n){selectedCount=n;selectedQuestionSet="random";renderLength();}
 function setMode(m){selectedMode=m;renderLength();}
+function startMockTest(){
+  try{
+    clearInterval(quiz?.timer);
+    if(!Array.isArray(questions)||questions.length<1)throw new Error("No questions are available.");
+    const pool=questions.slice();shuffle(pool);
+    const count=Math.min(150,pool.length);
+    quiz={items:pool.slice(0,count).map(prepare),index:0,started:Date.now(),elapsed:0,timer:null,mode:"exam",selectedTopic:"Mock Test",sourceTopic:"Mock Test",sourceChapter:null,questionSet:"random",questionCount:count,mockTest:true,timeLimit:10800,mockWarnings:[]};
+    currentView="quiz";renderQuiz();startTimer();
+  }catch(e){shell('<p class="error">'+escapeHtml(tr("startErr")+e.message)+'</p><button class="btn" onclick="renderHome()">'+escapeHtml(tr("home"))+'</button>');}
+}
 function startTest(){
   try{
     const sourceTopic=selectedTopic,sourceChapter=selectedChapter;
@@ -449,13 +459,50 @@ function startTest(){
     currentView="quiz";renderQuiz();startTimer();
   }catch(e){shell('<p class="error">'+escapeHtml(tr("startErr")+e.message)+'</p><button class="btn" onclick="renderHome()">'+escapeHtml(tr("home"))+'</button>');}
 }
-function startTimer(){clearInterval(quiz?.timer);quiz.timer=setInterval(()=>{if(!quiz)return;quiz.elapsed=Math.floor((Date.now()-quiz.started)/1000);const el=$("#timer");if(el)el.textContent=formatTime(quiz.elapsed);},1000);}
+function startTimer(){
+  clearInterval(quiz?.timer);
+  quiz.timer=setInterval(()=>{
+    if(!quiz)return;
+    quiz.elapsed=Math.floor((Date.now()-quiz.started)/1000);
+    const el=$("#timer");
+    if(quiz.mockTest){
+      const remaining=Math.max(0,quiz.timeLimit-quiz.elapsed);
+      if(el)el.textContent=formatCountdown(remaining);
+      checkMockWarnings(remaining);
+      if(remaining<=0){clearInterval(quiz.timer);quiz.elapsed=quiz.timeLimit;showResult();return;}
+    }else if(el)el.textContent=formatTime(quiz.elapsed);
+  },1000);
+}
 function formatTime(s){return String(Math.floor(s/60)).padStart(2,"0")+":"+String(s%60).padStart(2,"0");}
+function formatCountdown(s){return String(Math.floor(s/3600)).padStart(2,"0")+":"+String(Math.floor((s%3600)/60)).padStart(2,"0")+":"+String(s%60).padStart(2,"0");}
+function showMockWarning(message){
+  let toast=$("#mockWarningToast");
+  if(!toast){toast=document.createElement("div");toast.id="mockWarningToast";toast.className="mock-warning-toast";toast.setAttribute("role","status");toast.setAttribute("aria-live","polite");document.body.appendChild(toast);}
+  toast.textContent=message;toast.classList.remove("show");void toast.offsetWidth;toast.classList.add("show");
+  clearTimeout(toast._hideTimer);toast._hideTimer=setTimeout(()=>toast.classList.remove("show"),4200);
+  if(soundOn)playSoftNotice();
+}
+function playSoftNotice(){
+  try{
+    const Ctx=window.AudioContext||window.webkitAudioContext;if(!Ctx)return;
+    const ctx=new Ctx(),osc=ctx.createOscillator(),gain=ctx.createGain();
+    osc.type="sine";osc.frequency.value=660;gain.gain.setValueAtTime(0.0001,ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.035,ctx.currentTime+0.025);
+    gain.gain.exponentialRampToValueAtTime(0.0001,ctx.currentTime+0.16);
+    osc.connect(gain);gain.connect(ctx.destination);osc.start();osc.stop(ctx.currentTime+0.17);
+    osc.onended=()=>ctx.close();
+  }catch(_){}
+}
+function checkMockWarnings(remaining){
+  const warnings=[{at:7200,key:"mockTwoHours"},{at:3600,key:"mockOneHour"},{at:1800,key:"mockThirty"},{at:300,key:"mockFive"},{at:60,key:"mockOne"}];
+  if(!quiz.mockWarnings)quiz.mockWarnings=[];
+  for(const w of warnings){if(remaining<=w.at&&!quiz.mockWarnings.includes(w.at)){quiz.mockWarnings.push(w.at);showMockWarning(tr(w.key));}}
+}
 function renderQuiz(dir="right"){
   const q=quiz.items[quiz.index],n=quiz.items.length,answered=quiz.items.filter(x=>x.picked!=null).length;
   const choices=q.choices.map((c,i)=>{let cls="";if(q.picked===i)cls+=" selected";if(quiz.mode==="practice"&&q.picked!=null)cls+=c.correct?" correct":(q.picked===i?" wrong":"");return '<button class="choice ripple-host'+cls+'" '+(quiz.mode==="practice"&&q.picked!=null?"disabled":"")+' onclick="pickAnswer('+i+')"><span class="l">'+String.fromCharCode(65+i)+'</span><span dir="'+dirOf(c.text)+'">'+escapeHtml(c.text)+'</span></button>';}).join("");
   const explain=(quiz.mode==="practice"&&q.picked!=null)?'<div class="explain" dir="'+dirOf(q.explanation)+'"><b>'+escapeHtml(q.choices[q.picked]?.correct?tr("sCorrect"):tr("sIncorrect"))+'</b><br>'+escapeHtml(q.explanation)+'</div>':"";
-  shell('<div class="qbar"><div class="qbar-l"><button class="exit-btn ripple-host" onclick="confirmExit()">'+icon("x")+'<span>'+escapeHtml(tr("exit"))+'</span></button><button class="restart-btn ripple-host" onclick="confirmRestart()" aria-label="'+escapeHtml(tr("restart"))+'">'+icon("rotate")+'<span class="lbl">'+escapeHtml(tr("restart"))+'</span></button></div><div class="qbar-r"><div class="timer" id="timer">'+formatTime(quiz.elapsed)+'</div><button class="lang-mini ripple-host" onclick="openLanguage()" title="'+escapeHtml(tr("langBtn"))+'" aria-label="'+escapeHtml(tr("langBtn"))+'">'+icon("globe")+'</button><button class="sound-btn sm '+(soundOn?"":"off")+'" onclick="toggleSound()" title="'+escapeHtml(tr("sound"))+'" aria-label="'+escapeHtml(tr("sound"))+'">'+icon(soundOn?"volume":"mute")+'</button></div></div><div class="qmeta"><span>'+escapeHtml(tr("qOf",{i:quiz.index+1,n}))+'</span><span class="score-chip">'+escapeHtml(tr("answered",{d:answered,n}))+'</span></div><div class="bar"><div style="width:'+((quiz.index+1)/n*100).toFixed(1)+'%"></div></div><div class="qbody from-'+dir+'">'+(q.category?'<span class="tag" dir="'+dirOf(q.category)+'">'+escapeHtml(q.category)+'</span>':"")+'<p class="q" dir="'+dirOf(q.question)+'">'+escapeHtml(q.question)+'</p>'+choices+explain+'<div class="navrow"><button class="btn secondary" onclick="prevQuestion()" '+(quiz.index===0?"disabled":"")+'>'+escapeHtml(tr("prev"))+'</button><button class="btn" onclick="'+(quiz.index===n-1?"finishTest()":"nextQuestion()")+'">'+escapeHtml(quiz.index===n-1?tr("finish"):tr("next"))+'</button></div></div>');
+  shell('<div class="qbar"><div class="qbar-l"><button class="exit-btn ripple-host" onclick="confirmExit()">'+icon("x")+'<span>'+escapeHtml(tr("exit"))+'</span></button><button class="restart-btn ripple-host" onclick="confirmRestart()" aria-label="'+escapeHtml(tr("restart"))+'">'+icon("rotate")+'<span class="lbl">'+escapeHtml(tr("restart"))+'</span></button></div><div class="qbar-r"><div class="timer" id="timer">'+(quiz.mockTest?formatCountdown(Math.max(0,quiz.timeLimit-quiz.elapsed)):formatTime(quiz.elapsed))+'</div><button class="lang-mini ripple-host" onclick="openLanguage()" title="'+escapeHtml(tr("langBtn"))+'" aria-label="'+escapeHtml(tr("langBtn"))+'">'+icon("globe")+'</button><button class="sound-btn sm '+(soundOn?"":"off")+'" onclick="toggleSound()" title="'+escapeHtml(tr("sound"))+'" aria-label="'+escapeHtml(tr("sound"))+'">'+icon(soundOn?"volume":"mute")+'</button></div></div><div class="qmeta"><span>'+escapeHtml(tr("qOf",{i:quiz.index+1,n}))+'</span><span class="score-chip">'+escapeHtml(tr("answered",{d:answered,n}))+'</span></div><div class="bar"><div style="width:'+((quiz.index+1)/n*100).toFixed(1)+'%"></div></div><div class="qbody from-'+dir+'">'+(q.category?'<span class="tag" dir="'+dirOf(q.category)+'">'+escapeHtml(q.category)+'</span>':"")+'<p class="q" dir="'+dirOf(q.question)+'">'+escapeHtml(q.question)+'</p>'+choices+explain+'<div class="navrow"><button class="btn secondary" onclick="prevQuestion()" '+(quiz.index===0?"disabled":"")+'>'+escapeHtml(tr("prev"))+'</button><button class="btn" onclick="'+(quiz.index===n-1?"finishTest()":"nextQuestion()")+'">'+escapeHtml(quiz.index===n-1?tr("finish"):tr("next"))+'</button></div></div>');
 }
 function pickAnswer(i){const q=quiz.items[quiz.index];if(q.picked!=null&&(quiz.mode==="practice"||q.picked===i))return;q.picked=i;updateQuizAnswerUI(q,i);if(quiz.mode==="practice")say(q.choices[i].correct?tr("sCorrect"):tr("sIncorrect"));}
 function updateQuizAnswerUI(q,picked){
@@ -483,6 +530,7 @@ function confirmExit(){modal(tr("exitTitle"),tr("exitMsg"),tr("exit"),()=>{clear
 function confirmRestart(){modal(tr("restartTitle"),tr("restartMsg"),tr("restart"),()=>restartTest());}
 function restartTest(){
   if(!quiz)return;
+  if(quiz.mockTest){startMockTest();return;}
   clearInterval(quiz.timer);
   const sourceTopic=quiz.sourceTopic,sourceChapter=quiz.sourceChapter,questionSet=quiz.questionSet||"random",questionCount=quiz.questionCount||quiz.items.length;
   let pool=topicPool(sourceTopic,sourceChapter);
@@ -495,8 +543,8 @@ function showResult(){
   clearInterval(quiz.timer);const items=quiz.items,correct=items.reduce((a,q)=>a+(q.picked!=null&&q.choices[q.picked]?.correct?1:0),0),answered=items.filter(q=>q.picked!=null).length,skipped=items.length-answered,pct=Math.round(correct/items.length*100);
   const wrongCount=items.filter(q=>q.picked!=null&&!q.choices[q.picked]?.correct).length,bad=items.filter(q=>q.picked==null||!q.choices[q.picked]?.correct),cls=pct>=80?"great":pct>=50?"":"keep";
   // Heading under the result title: the topic (and chapter) that was actually practised, e.g. "Random" for a mixed test.
-  const resultTopic=topicText(quiz.sourceTopic,0).title+(quiz.sourceChapter?" · "+chapterLabel(quiz.sourceTopic,quiz.sourceChapter):"");
-  shell('<div class="result '+cls+'"><div class="r-hero"><h2 class="r-title">'+escapeHtml(pct>=80?tr("congrats"):tr("complete"))+'</h2><p class="r-note">'+escapeHtml(pct>=80?tr("noteGreat"):pct>=50?tr("noteGood"):tr("noteKeep"))+'</p><p class="r-topic">'+escapeHtml(resultTopic)+'</p><div class="r-pct" data-pct="'+pct+'">'+pct+'%</div><div class="ring-wrap"><svg class="score-ring" viewBox="0 0 120 120"><circle class="ring-bg" cx="60" cy="60" r="48"></circle><circle class="ring-fg" cx="60" cy="60" r="48" stroke="currentColor" stroke-dasharray="301.59" stroke-dashoffset="'+(301.59-(301.59*pct/100))+'"></circle><circle class="ring-spin" cx="60" cy="60" r="48"></circle></svg><div class="ring-center"><div class="ring-pct'+(String(correct+"/"+items.length).length>=8?" xs":String(correct+"/"+items.length).length>=6?" sm":"")+'" data-correct="'+correct+'" data-total="'+items.length+'">'+correct+'/'+items.length+'</div><div class="ring-label">'+escapeHtml(tr("sCorrect"))+'</div></div></div></div><div class="stats" style="--n:3"><div class="stat good"><div class="stat-val">'+correct+'</div><div class="stat-label">'+escapeHtml(tr("sCorrect"))+'</div></div><div class="stat bad"><div class="stat-val">'+wrongCount+'</div><div class="stat-label">'+escapeHtml(tr("sIncorrect"))+'</div></div><div class="stat skip"><div class="stat-val">'+skipped+'</div><div class="stat-label">'+escapeHtml(tr("sSkipped"))+'</div></div></div><div class="time-card"><span class="time-ic">'+icon("clock")+'</span><span class="time-lbl">'+escapeHtml(tr("sTime"))+'</span><span class="time-val">'+formatTime(quiz.elapsed)+'</span></div><div class="r-actions"><button class="btn ripple-host" onclick="renderHome()">'+icon("home")+'<span>'+escapeHtml(tr("home"))+'</span></button><button class="btn secondary ripple-host" onclick="startTest()">'+icon("rotate")+'<span>'+escapeHtml(tr("again"))+'</span></button></div>'+(bad.length?'<div class="review"><h3>'+escapeHtml(tr("review",{n:bad.length}))+'</h3>'+bad.map(q=>'<div class="rev-item"><div class="rev-q" dir="'+dirOf(q.question)+'">'+escapeHtml(q.question)+'</div><div class="'+(q.picked==null?"skipd":"you")+'">'+escapeHtml(q.picked==null?tr("notAnswered"):tr("yourAns")+q.choices[q.picked].text)+'</div><div class="right">'+escapeHtml(tr("correctAns")+q.choices.find(c=>c.correct)?.text)+'</div><div class="rev-exp" dir="'+dirOf(q.explanation)+'">'+escapeHtml(q.explanation)+'</div></div>').join("")+'</div>':'<div class="perfect">'+escapeHtml(tr("perfect"))+'</div>')+'</div>');
+  const resultTopic=quiz.mockTest?tr("mockTopic")+" · "+items.length+" questions":topicText(quiz.sourceTopic,0).title+(quiz.sourceChapter?" · "+chapterLabel(quiz.sourceTopic,quiz.sourceChapter):"");
+  shell('<div class="result '+cls+'"><div class="r-hero"><h2 class="r-title">'+escapeHtml(pct>=80?tr("congrats"):tr("complete"))+'</h2><p class="r-note">'+escapeHtml(pct>=80?tr("noteGreat"):pct>=50?tr("noteGood"):tr("noteKeep"))+'</p><p class="r-topic">'+escapeHtml(resultTopic)+'</p><div class="r-pct" data-pct="'+pct+'">'+pct+'%</div><div class="ring-wrap"><svg class="score-ring" viewBox="0 0 120 120"><circle class="ring-bg" cx="60" cy="60" r="48"></circle><circle class="ring-fg" cx="60" cy="60" r="48" stroke="currentColor" stroke-dasharray="301.59" stroke-dashoffset="'+(301.59-(301.59*pct/100))+'"></circle><circle class="ring-spin" cx="60" cy="60" r="48"></circle></svg><div class="ring-center"><div class="ring-pct'+(String(correct+"/"+items.length).length>=8?" xs":String(correct+"/"+items.length).length>=6?" sm":"")+'" data-correct="'+correct+'" data-total="'+items.length+'">'+correct+'/'+items.length+'</div><div class="ring-label">'+escapeHtml(tr("sCorrect"))+'</div></div></div></div><div class="stats" style="--n:3"><div class="stat good"><div class="stat-val">'+correct+'</div><div class="stat-label">'+escapeHtml(tr("sCorrect"))+'</div></div><div class="stat bad"><div class="stat-val">'+wrongCount+'</div><div class="stat-label">'+escapeHtml(tr("sIncorrect"))+'</div></div><div class="stat skip"><div class="stat-val">'+skipped+'</div><div class="stat-label">'+escapeHtml(tr("sSkipped"))+'</div></div></div><div class="time-card"><span class="time-ic">'+icon("clock")+'</span><span class="time-lbl">'+escapeHtml(tr("sTime"))+'</span><span class="time-val">'+formatTime(quiz.elapsed)+'</span></div><div class="r-actions"><button class="btn ripple-host" onclick="renderHome()">'+icon("home")+'<span>'+escapeHtml(tr("home"))+'</span></button><button class="btn secondary ripple-host" onclick="'+(quiz.mockTest?"startMockTest()":"startTest()")+'">'+icon("rotate")+'<span>'+escapeHtml(tr("again"))+'</span></button></div>'+(bad.length?'<div class="review"><h3>'+escapeHtml(tr("review",{n:bad.length}))+'</h3>'+bad.map(q=>'<div class="rev-item"><div class="rev-q" dir="'+dirOf(q.question)+'">'+escapeHtml(q.question)+'</div><div class="'+(q.picked==null?"skipd":"you")+'">'+escapeHtml(q.picked==null?tr("notAnswered"):tr("yourAns")+q.choices[q.picked].text)+'</div><div class="right">'+escapeHtml(tr("correctAns")+q.choices.find(c=>c.correct)?.text)+'</div><div class="rev-exp" dir="'+dirOf(q.explanation)+'">'+escapeHtml(q.explanation)+'</div></div>').join("")+'</div>':'<div class="perfect">'+escapeHtml(tr("perfect"))+'</div>')+'</div>');
   quiz=null;
 }
 function modal(title,msg,ok,action){
