@@ -30,3 +30,26 @@ html[dir="ltr"] .rev-exp[dir="rtl"]{text-align:right}
 
 /* Slightly larger touch targets for the small round buttons in the quiz bar */
 .lang-mini,.sound-btn.sm{min-width:40px;min-height:40px}
+
+/* Exam setup (question count) page: tighter spacing, and the Start button stays pinned to the bottom of the
+   screen so it is always visible without scrolling. */
+.card label.field{margin:14px 0 8px}
+.len-hero{padding:14px 16px 14px 18px}
+.len-hero .t-icon{width:52px;height:52px}
+.question-select-card{margin-top:14px;padding:14px 14px 12px}
+.question-select-card .field{margin-top:12px}
+.size{padding:10px 0}
+.all-questions-cta{margin-top:12px;padding:12px 14px}
+.seg-btn{padding:10px 0}
+.mode-help{margin:8px 2px 0}
+.card > .btn.shine{
+  position:sticky;
+  bottom:calc(env(safe-area-inset-bottom,0px) + 10px);
+  z-index:15;
+  margin-top:14px;
+  box-shadow:0 0 0 6px rgba(255,255,255,.92),0 12px 26px -10px rgba(15,118,110,.55);
+}
+
+/* Tips page: keep the content away from the screen edges (the page had no side padding at all on phones). */
+.card.plain{padding:var(--pad)}
+.card.plain .tips-top{margin-top:2px}

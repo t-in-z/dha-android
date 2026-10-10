@@ -226,9 +226,31 @@
     );
   };
 
+  /* ------------------------------------------------------------------ *
+   *  OPEN EVERY NEW SCREEN AT THE TOP. Without this, the scroll        *
+   *  position of the previous screen was carried over, so a new page   *
+   *  could open already scrolled down. Re-rendering the same screen    *
+   *  (e.g. changing the question count) keeps the scroll position.     *
+   * ------------------------------------------------------------------ */
+  let lastScreenKey = null;
+  function screenKey() {
+    let v = "", qi = "end";
+    try { v = currentView; } catch (_) {}
+    try { if (quiz) qi = String(quiz.index); } catch (_) {}
+    return v + ":" + qi;
+  }
+  function scrollToTopIfNewScreen() {
+    const key = screenKey();
+    if (key === lastScreenKey) return;
+    lastScreenKey = key;
+    window.scrollTo(0, 0);
+    if (document.scrollingElement) document.scrollingElement.scrollTop = 0;
+  }
+
   const observer = new MutationObserver(function () {
     const result = document.querySelector(".result");
     if (result) animateScore(result);
+    scrollToTopIfNewScreen();
   });
 
   function start() {
