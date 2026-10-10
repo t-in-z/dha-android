@@ -6,7 +6,7 @@ let currentView = "home";
 let selectedTopic = null;
 let selectedChapter = null; // null = all chapters of the topic
 let selectedCount = null;
-let selectedQuestionSet = "random"; // random selection or every question in its stable source order
+let selectedQuestionSet = "all"; // all questions is the default; random is opt-in
 let selectedMode = "exam";
 let quiz = null;
 let soundOn = localStorage.getItem("gn_sound") !== "0";
@@ -361,7 +361,7 @@ function renderHome(animate=false){
     return '<button class="topic compact ripple-host" style="--tc:'+tc+';--i:'+i+'" onclick="chooseTopic('+jsArg(name)+')"><div class="t-text"><h3>'+escapeHtml(t.title)+'</h3><span class="t-count">'+escapeHtml(t.count)+'</span></div><div class="t-icon">'+topicIcon(name)+'</div></button>';
   }).join("");
   // Header buttons, in this order: Language, Tips, Chapters (index).
-  shell('<div class="home-head"><div class="brand"><img class="brand-logo" src="logo.svg" alt="">'+escapeHtml(tr("brand"))+'</div><div class="head-actions"><button class="hbtn lang-btn ripple-host" onclick="openLanguage()" aria-label="'+escapeHtml(tr("langBtn"))+'">'+icon("globe")+'<span>'+escapeHtml(tr("langBtn"))+'</span></button><button class="hbtn tips-btn ripple-host" onclick="renderTips()" aria-label="'+escapeHtml(tr("tipsBtn"))+'">'+icon("light")+'<span>'+escapeHtml(tr("tipsBtn"))+'</span></button><button class="hbtn index-btn ripple-host" onclick="renderChapterIndex()" aria-label="'+escapeHtml(tr("chapterIndex"))+'">'+icon("index")+'<span>'+escapeHtml(tr("chapterIndex"))+'</span></button></div></div><h1 class="h-title">'+escapeHtml(tr("homeTitle"))+'</h1><p class="h-sub">'+escapeHtml(tr("homeSub"))+'</p><div class="search-wrap"><svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg><input id="topicSearch" class="topic-search" type="search" autocomplete="off" enterkeyhint="search" aria-label="'+escapeHtml(tr("searchTopics"))+'" placeholder="'+escapeHtml(tr("searchTopics"))+'"></div><div id="topicList">'+cards+'</div><p id="topicEmpty" class="topic-empty" hidden>'+escapeHtml(tr("noTopics"))+'</p>');
+  shell('<div class="home-head"><div class="brand"><img class="brand-logo" src="logo.svg" alt="">'+escapeHtml(tr("brand"))+'</div><div class="head-actions"><button class="sound-btn home-sound-btn ripple-host '+(soundOn?"":"off")+'" onclick="toggleSound()" title="'+escapeHtml(tr("sound"))+'" aria-label="'+escapeHtml(tr("sound"))+'" aria-pressed="'+soundOn+'">'+icon(soundOn?"volume":"mute")+'</button><button class="hbtn lang-btn ripple-host" onclick="openLanguage()" aria-label="'+escapeHtml(tr("langBtn"))+'">'+icon("globe")+'<span>'+escapeHtml(tr("langBtn"))+'</span></button><button class="hbtn tips-btn ripple-host" onclick="renderTips()" aria-label="'+escapeHtml(tr("tipsBtn"))+'">'+icon("light")+'<span>'+escapeHtml(tr("tipsBtn"))+'</span></button><button class="hbtn index-btn ripple-host" onclick="renderChapterIndex()" aria-label="'+escapeHtml(tr("chapterIndex"))+'">'+icon("index")+'<span>'+escapeHtml(tr("chapterIndex"))+'</span></button></div></div><h1 class="h-title">'+escapeHtml(tr("homeTitle"))+'</h1><p class="h-sub">'+escapeHtml(tr("homeSub"))+'</p><div class="search-wrap"><svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg><input id="topicSearch" class="topic-search" type="search" autocomplete="off" enterkeyhint="search" aria-label="'+escapeHtml(tr("searchTopics"))+'" placeholder="'+escapeHtml(tr("searchTopics"))+'"></div><div id="topicList">'+cards+'</div><p id="topicEmpty" class="topic-empty" hidden>'+escapeHtml(tr("noTopics"))+'</p>');
   if(animate)requestAnimationFrame(()=>app().classList.add("swap"));
   const input=$("#topicSearch"), list=$("#topicList"), empty=$("#topicEmpty");
   if(input&&list) input.addEventListener("input",()=>{
@@ -377,13 +377,13 @@ function renderHome(animate=false){
 }
 // A main topic opens like a folder: its chapters are shown first. "Random" goes straight to the test setup.
 function chooseTopic(name){
-  selectedTopic=name;selectedChapter=null;selectedCount=null;selectedQuestionSet="random";selectedMode="exam";
+  selectedTopic=name;selectedChapter=null;selectedCount=null;selectedQuestionSet="all";selectedMode="exam";
   if(name==="Random")renderLength();else renderChapters(name);
 }
 function renderChapters(topic){
   selectedTopic=topic;selectedChapter=null;
   const list=getChapterCounts(topic);
-  if(!list.length){selectedCount=null;selectedQuestionSet="random";renderLength();return;}
+  if(!list.length){selectedCount=null;selectedQuestionSet="all";renderLength();return;}
   currentView="chapters";
   const total=topicPool(topic).length,t=topicText(topic,total);
   const items=list.map(c=>({key:c.key,title:chapterLabel(topic,c.key),count:c.count}));
@@ -397,7 +397,7 @@ function renderChapters(topic){
   }).join("");
   shell('<button class="back-btn ripple-host" onclick="renderHome()">'+icon("back")+escapeHtml(tr("home"))+'</button><h1 class="h-title">'+escapeHtml(t.title)+'</h1><p class="h-sub">'+escapeHtml(tr("chooseChapter"))+'</p><div id="topicList">'+cards+'</div>');
 }
-function chooseChapter(key){selectedChapter=key||null;selectedCount=null;selectedQuestionSet="random";selectedMode="exam";renderLength();}
+function chooseChapter(key){selectedChapter=key||null;selectedCount=null;selectedQuestionSet="all";selectedMode="exam";renderLength();}
 function backFromLength(){
   if(selectedTopic==="Random")renderHome();
   else if(getChapterCounts(selectedTopic).length)renderChapters(selectedTopic);
@@ -432,8 +432,8 @@ function renderChapterIndex(){
   }).join("");
   shell('<button class="back-btn ripple-host" onclick="renderHome()">'+icon("back")+escapeHtml(tr("home"))+'</button><div class="index-hero"><div class="index-hero-icon">'+icon("index")+'</div><div><h1>'+escapeHtml(tr("chapterIndexTitle"))+'</h1><p>'+escapeHtml(tr("chapterIndexSub"))+'</p></div></div><div class="index-summary"><strong>'+questions.length+'</strong><span>'+escapeHtml(tr("nQuestions",{n:questions.length}))+'</span></div><div class="index-list">'+sections+'</div>');
 }
-function openIndexTopic(topic){selectedTopic=topic;selectedChapter=null;selectedCount=null;selectedQuestionSet="random";selectedMode="exam";renderLength();}
-function openIndexChapter(topic,chapter){selectedTopic=topic;selectedChapter=chapter;selectedCount=null;selectedQuestionSet="random";selectedMode="exam";renderLength();}
+function openIndexTopic(topic){selectedTopic=topic;selectedChapter=null;selectedCount=null;selectedQuestionSet="all";selectedMode="exam";renderLength();}
+function openIndexChapter(topic,chapter){selectedTopic=topic;selectedChapter=chapter;selectedCount=null;selectedQuestionSet="all";selectedMode="exam";renderLength();}
 
 function setCount(n){selectedCount=n;selectedQuestionSet="random";renderLength();}
 function setMode(m){selectedMode=m;renderLength();}
