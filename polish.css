@@ -57,3 +57,25 @@ html[dir="ltr"] .rev-exp[dir="rtl"]{text-align:right}
 /* Tips page: keep the content away from the screen edges (the page had no side padding at all on phones). */
 .card.plain{padding:var(--pad)}
 .card.plain .tips-top{margin-top:2px}
+
+
+/* Requested refinements: clear selected state for All questions and a speaker toggle in the home header. */
+.all-questions-cta.selected{
+  color:#fff;
+  background:linear-gradient(135deg,#0a2540,#0f766e);
+  border:2px solid #0f766e;
+  box-shadow:0 0 0 3px rgba(20,184,166,.28),0 14px 28px -12px rgba(10,37,64,.5);
+}
+.all-questions-cta.selected .all-questions-icon{
+  background:rgba(255,255,255,.16);
+  border-color:rgba(255,255,255,.4);
+}
+.all-questions-cta.selected .all-questions-count{
+  background:#f2b84b;
+  color:#0a2540;
+}
+.home-sound-btn{flex:none}
+.home-sound-btn.off{background:#f1f5f9;color:#64748b;border-color:#cbd5e1}
+@media(max-width:400px){
+  .home-sound-btn{width:40px;height:40px;padding:0}
+}
