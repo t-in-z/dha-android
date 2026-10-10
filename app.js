@@ -6,6 +6,7 @@ let currentView = "home";
 let selectedTopic = null;
 let selectedChapter = null; // null = all chapters of the topic
 let selectedCount = null;
+let selectedQuestionSet = "random"; // random selection or every question in its stable source order
 let selectedMode = "exam";
 let quiz = null;
 let soundOn = localStorage.getItem("gn_sound") !== "0";
@@ -24,9 +25,30 @@ function extendGN() {
   if (!G || G.__ext) return;
   G.__ext = true;
   const S = {
-    en: { back: "Back", allChapters: "All chapters", chooseChapter: "Choose a chapter to practise", w9: "10 topics" },
-    ar: { back: "رجوع", allChapters: "جميع الفصول", chooseChapter: "اختر فصلًا للتدرّب", w9: "10 مواضيع" },
-    hi: { back: "वापस", allChapters: "सभी अध्याय", chooseChapter: "अभ्यास के लिए अध्याय चुनें", w9: "10 विषय" }
+    en: {
+      back: "Back", allChapters: "All chapters", chooseChapter: "Choose a chapter to practise", w9: "10 topics",
+      chapterIndex: "Chapters", chapterIndexTitle: "Chapter index", chapterIndexSub: "Browse topics, chapters and the number of questions in each. Tap any row to start a test.",
+      randomQuestions: "Take random questions", chooseQuestionCount: "Choose how many random questions you want.",
+      allQuestions: "All questions", fixedOrder: "Fixed question order", sameOrderHelp: "Questions stay in the same order every time.",
+      allQuestionsHelp: "Answer all {n} questions in this selection.", selectTestMode: "Choose exam or practice", questionCountLabel: "Question count",
+      topicTotal: "TOTAL QUESTIONS", indexEmpty: "No subchapters are mapped for this topic yet.", randomBadge: "RANDOM"
+    },
+    ar: {
+      back: "رجوع", allChapters: "جميع الفصول", chooseChapter: "اختر فصلًا للتدرّب", w9: "10 مواضيع",
+      chapterIndex: "الفصول", chapterIndexTitle: "فهرس الفصول", chapterIndexSub: "تصفّح المواضيع والفصول وعدد الأسئلة في كل منها. اضغط على أي صف لبدء الاختبار.",
+      randomQuestions: "أسئلة عشوائية", chooseQuestionCount: "اختر عدد الأسئلة العشوائية التي تريدها.",
+      allQuestions: "جميع الأسئلة", fixedOrder: "ترتيب ثابت للأسئلة", sameOrderHelp: "ستظهر الأسئلة بالترتيب نفسه في كل مرة.",
+      allQuestionsHelp: "أجب عن جميع الأسئلة وعددها {n} في هذا الاختيار.", selectTestMode: "اختر الاختبار أو التدريب", questionCountLabel: "عدد الأسئلة",
+      topicTotal: "إجمالي الأسئلة", indexEmpty: "لا توجد فصول فرعية لهذا الموضوع حتى الآن.", randomBadge: "عشوائي"
+    },
+    hi: {
+      back: "वापस", allChapters: "सभी अध्याय", chooseChapter: "अभ्यास के लिए अध्याय चुनें", w9: "10 विषय",
+      chapterIndex: "अध्याय", chapterIndexTitle: "अध्याय सूची", chapterIndexSub: "विषय, अध्याय और हर अध्याय में प्रश्नों की संख्या देखें। टेस्ट शुरू करने के लिए किसी पंक्ति पर टैप करें।",
+      randomQuestions: "रैंडम प्रश्न लें", chooseQuestionCount: "रैंडम टेस्ट के लिए प्रश्नों की संख्या चुनें।",
+      allQuestions: "सभी प्रश्न", fixedOrder: "प्रश्नों का निश्चित क्रम", sameOrderHelp: "हर बार प्रश्न इसी क्रम में दिखाई देंगे।",
+      allQuestionsHelp: "इस चयन के सभी {n} प्रश्नों के उत्तर दें।", selectTestMode: "परीक्षा या अभ्यास चुनें", questionCountLabel: "प्रश्नों की संख्या",
+      topicTotal: "कुल प्रश्न", indexEmpty: "इस विषय के लिए अभी उप-अध्याय मैप नहीं किए गए हैं।", randomBadge: "रैंडम"
+    }
   };
   Object.keys(S).forEach(l => { if (G.STR[l]) Object.assign(G.STR[l], S[l]); });
   const N = {
@@ -120,7 +142,10 @@ function icon(name) {
     mute:'<svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M17 9l4 6M21 9l-4 6"/></svg>',
     clock:'<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2.5M9.5 2.5h5"/></svg>',
     home:'<svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9v12h14V9"/><path d="M10 21v-6h4v6"/></svg>',
-    light:'<svg viewBox="0 0 24 24" width="25" height="25" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18h6M10 21h4M8 14a6 6 0 1 1 8 0c-1 1-2 2-2 4h-4c0-2-1-3-2-4z"/></svg>'
+    light:'<svg viewBox="0 0 24 24" width="25" height="25" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18h6M10 21h4M8 14a6 6 0 1 1 8 0c-1 1-2 2-2 4h-4c0-2-1-3-2-4z"/></svg>',
+    index:'<svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 5h13M8 12h13M8 19h13"/><path d="M3 5h.01M3 12h.01M3 19h.01"/></svg>',
+    layers:'<svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3 9 5-9 5-9-5 9-5Z"/><path d="m3 12 9 5 9-5M3 16l9 5 9-5"/></svg>',
+    activity:'<svg viewBox="0 0 24 24" width="23" height="23" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h4l3-8 4 16 3-8h4"/></svg>'
   };
   return p[name] || "";
 }
@@ -142,6 +167,53 @@ TOPIC_ICONS.default = '<path d="M2 4h6a4 4 0 0 1 4 4v13a3 3 0 0 0-3-3H2z"/><path
 function topicIcon(name) {
   const body = TOPIC_ICONS[topicKey(name)] || TOPIC_ICONS.default;
   return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + body + '</svg>';
+}
+// Chapter cards use meaning-based SVGs so neighbouring subchapters don't all show the same topic icon.
+const CHAPTER_ICON_BODIES = {
+  heart: '<path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1.1L12 21l7.7-7.5 1.1-1.1a5.5 5.5 0 0 0 0-7.8Z"/><path d="M3.5 12h4l2-3 3.1 6 2-3h5.9"/>',
+  lungs: '<path d="M12 12V4"/><path d="M10 5c-2 1-3 4-4 7-1 2-2 3-2 5 0 2 2 3 4 2 3-1 4-4 4-7V8"/><path d="M14 5c2 1 3 4 4 7 1 2 2 3 2 5 0 2-2 3-4 2-3-1-4-4-4-7V8"/>',
+  brain: '<path d="M12 5a3 3 0 0 0-5.8-1 4 4 0 0 0-2.1 5.5 4 4 0 0 0 .4 6.4A3.5 3.5 0 0 0 12 18Z"/><path d="M12 5a3 3 0 0 1 5.8-1 4 4 0 0 1 2.1 5.5 4 4 0 0 1-.4 6.4A3.5 3.5 0 0 1 12 18Z"/><path d="M8 8c2 0 2 2 4 2m4 2c-2 0-2 2-4 2"/>',
+  kidney: '<path d="M9 3C5 3 3 7 4 12c.7 4 3 7 6 7 2 0 3-2 3-4V8c0-3-1-5-4-5Z"/><path d="M15 3c4 0 6 4 5 9-.7 4-3 7-6 7-2 0-3-2-3-4V8c0-3 1-5 4-5Z"/><path d="M12 10v8"/>',
+  shield: '<path d="M12 3 20 6v5c0 5-3.5 8-8 10-4.5-2-8-5-8-10V6Z"/><path d="m8 12 2.5 2.5L16 9"/>',
+  droplet: '<path d="M12 2.8S5 11 5 15.4a7 7 0 0 0 14 0C19 11 12 2.8 12 2.8Z"/><path d="M9 16a3 3 0 0 0 3 3"/>',
+  bandage: '<path d="m4 15 11-11a3 3 0 0 1 4 4L8 19a3 3 0 0 1-4-4Z"/><path d="m8 8 8 8"/><path d="M11 11h.01M14 14h.01"/>',
+  clipboard: '<rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4V2h6v2M8 10h8M8 14h8M8 18h5"/>',
+  stethoscope: '<path d="M6 3v5a4 4 0 0 0 8 0V3M4 3h4M12 3h4"/><path d="M10 12v2a6 6 0 0 0 12 0v-1"/><circle cx="20" cy="11" r="2"/>',
+  pill: '<path d="M8 3a5 5 0 0 0-5 5c0 1.3.5 2.6 1.5 3.5l7 7A5 5 0 0 0 19 11.5l-7-7A5 5 0 0 0 8 3Z"/><path d="m7 13 6-6"/>',
+  baby: '<circle cx="12" cy="12" r="9"/><path d="M8.5 14s1.3 2 3.5 2 3.5-2 3.5-2M9 9h.01M15 9h.01M7 4l2 2M17 6l2-2"/>',
+  calendar: '<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M7 3v4M17 3v4M3 10h18M8 14h3M8 17h3"/>',
+  users: '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>',
+  flask: '<path d="M9 3h6M10 3v6l-5.5 9A2 2 0 0 0 6.2 21h11.6a2 2 0 0 0 1.7-3L14 9V3"/><path d="M7 16h10"/>',
+  activity: '<path d="M3 12h4l3-8 4 16 3-8h4"/>',
+  book: '<path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H20v18H6.5A2.5 2.5 0 0 0 4 22Z"/><path d="M4 4.5v15A2.5 2.5 0 0 1 6.5 17H20M8 6h8M8 10h8"/>',
+  home: '<path d="m3 10 9-7 9 7M5 9v12h14V9M9 21v-6h6v6"/>',
+  cross: '<path d="M10 3h4v7h7v4h-7v7h-4v-7H3v-4h7Z"/>',
+  chart: '<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>'
+};
+const CHAPTER_ICON_RULES = [
+  [/cardiac|heart|vascular|circulat|ecg|ekg|blood pressure/, "heart"],
+  [/respirat|lung|airway|tracheostomy|chest tube/, "lungs"],
+  [/neuro|brain|gcs|seizure|stroke/, "brain"],
+  [/renal|kidney|urinary|dialysis/, "kidney"],
+  [/infection|sterili|isolation|patient safety|quality improvement|ethic|legal/, "shield"],
+  [/diabet|glucose|electrolyte|fluid|nutrition|diet|vitamin|mineral/, "droplet"],
+  [/wound|pressure injury|burn|dressing|injur/, "bandage"],
+  [/medication|pharmac|drug|dose|calculation|prescri|administr/, "pill"],
+  [/matern|pregnan|obstetric|lmp|newborn|neonatal|child|pediatr|growth|vaccin/, "baby"],
+  [/research|evidence|documentation|medical records|assessment|abg|cpr|emergency|critical|fundamental/, "clipboard"],
+  [/leadership|delegation|supervision|management|team/, "users"],
+  [/communication|therapeutic|mental|psychiatr|psycholog/, "brain"],
+  [/community|public health|environment|family planning/, "home"],
+  [/general|miscellaneous|other/, "book"]
+];
+function chapterIcon(topic, chapter) {
+  const label = String(chapter || "");
+  const match = CHAPTER_ICON_RULES.find(([pattern]) => pattern.test(label));
+  const fallback = ["activity", "stethoscope", "calendar", "flask", "chart", "cross", "book", "clipboard"];
+  let hash = 0;
+  for (let i = 0; i < label.length; i++) hash = (hash * 31 + label.charCodeAt(i)) >>> 0;
+  const name = match ? match[1] : fallback[hash % fallback.length];
+  return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + CHAPTER_ICON_BODIES[name] + '</svg>';
 }
 function applyLanguage() {
   document.documentElement.lang = lang;
@@ -235,7 +307,7 @@ function renderHome(animate=false){
     const tc=TOPIC_COLORS[i%TOPIC_COLORS.length];
     return '<button class="topic ripple-host" style="--tc:'+tc+';--i:'+i+'" onclick=\'chooseTopic('+JSON.stringify(name)+')\'><div class="t-text"><h3>'+escapeHtml(t.title)+'</h3><p>'+escapeHtml(t.desc)+'</p><span class="t-count">'+escapeHtml(t.count)+'</span></div><div class="t-icon">'+topicIcon(name)+'</div></button>';
   }).join("");
-  shell('<div class="home-head"><div class="brand"><img class="brand-logo" src="logo.svg" alt="">'+escapeHtml(tr("brand"))+'</div><div class="head-actions"><button class="hbtn tips-btn ripple-host" onclick="renderTips()">'+icon("light")+'<span>'+escapeHtml(tr("tipsBtn"))+'</span></button><button class="hbtn lang-btn ripple-host" onclick="openLanguage()">'+icon("globe")+'<span>'+escapeHtml(tr("langBtn"))+'</span></button></div></div><div class="search-wrap"><svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg><input id="topicSearch" class="topic-search" type="search" autocomplete="off" placeholder="'+escapeHtml(tr("homeTitle"))+'"></div><h1 class="h-title">'+escapeHtml(tr("homeTitle"))+'</h1><p class="h-sub">'+escapeHtml(tr("homeSub"))+'</p><div id="topicList">'+cards+'</div>');
+  shell('<div class="home-head"><div class="brand"><img class="brand-logo" src="logo.svg" alt="">'+escapeHtml(tr("brand"))+'</div><div class="head-actions"><button class="hbtn index-btn ripple-host" onclick="renderChapterIndex()">'+icon("index")+'<span>'+escapeHtml(tr("chapterIndex"))+'</span></button><button class="hbtn tips-btn ripple-host" onclick="renderTips()">'+icon("light")+'<span>'+escapeHtml(tr("tipsBtn"))+'</span></button><button class="hbtn lang-btn ripple-host" onclick="openLanguage()">'+icon("globe")+'<span>'+escapeHtml(tr("langBtn"))+'</span></button></div></div><div class="search-wrap"><svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg><input id="topicSearch" class="topic-search" type="search" autocomplete="off" placeholder="'+escapeHtml(tr("homeTitle"))+'"></div><h1 class="h-title">'+escapeHtml(tr("homeTitle"))+'</h1><p class="h-sub">'+escapeHtml(tr("homeSub"))+'</p><div id="topicList">'+cards+'</div>');
   if(animate)requestAnimationFrame(()=>app().classList.add("swap"));
   const input=$("#topicSearch"), list=$("#topicList");
   if(input&&list) input.addEventListener("input",()=>{
@@ -245,20 +317,27 @@ function renderHome(animate=false){
 }
 // A main topic opens like a folder: its chapters are shown first. "Random" goes straight to the test setup.
 function chooseTopic(name){
-  selectedTopic=name;selectedChapter=null;selectedCount=null;
+  selectedTopic=name;selectedChapter=null;selectedCount=null;selectedQuestionSet="random";selectedMode="exam";
   if(name==="Random")renderLength();else renderChapters(name);
 }
 function renderChapters(topic){
   selectedTopic=topic;selectedChapter=null;
   const list=getChapterCounts(topic);
-  if(!list.length){selectedCount=null;renderLength();return;} // topic without chapters: behave as before
+  if(!list.length){selectedCount=null;selectedQuestionSet="random";renderLength();return;}
   currentView="chapters";
   const total=topicPool(topic).length,t=topicText(topic,total);
-  const items=(list.length>1?[{key:null,title:tr("allChapters"),count:total}]:[]).concat(list.map(c=>({key:c.key,title:chapterLabel(topic,c.key),count:c.count})));
-  const cards=items.map((c,i)=>'<button class="topic ripple-host" style="--tc:'+TOPIC_COLORS[i%TOPIC_COLORS.length]+';--i:'+i+'" onclick=\'chooseChapter('+JSON.stringify(c.key)+')\'><div class="t-text"><h3>'+escapeHtml(c.title)+'</h3><p>'+escapeHtml(t.title)+'</p><span class="t-count">'+escapeHtml(tr("nQuestions",{n:c.count}))+'</span></div><div class="t-icon">'+topicIcon(topic)+'</div></button>').join("");
+  const items=list.map(c=>({key:c.key,title:chapterLabel(topic,c.key),count:c.count}));
+  if(list.length>1) items.push({key:null,title:tr("allChapters"),count:total,isAll:true});
+  const cards=items.map((c,i)=>{
+    const cls=c.isAll?" topic-total":"";
+    const cardIcon=c.isAll?icon("layers"):chapterIcon(topic,c.key);
+    const color=c.isAll?"#0a2540":TOPIC_COLORS[i%TOPIC_COLORS.length];
+    const meta=c.isAll?tr("topicTotal"):t.title;
+    return '<button class="topic ripple-host'+cls+'" style="--tc:'+color+';--i:'+i+'" onclick=\'chooseChapter('+JSON.stringify(c.key)+')\'><div class="t-text"><h3>'+escapeHtml(c.title)+'</h3><p>'+escapeHtml(meta)+'</p><span class="t-count">'+escapeHtml(tr("nQuestions",{n:c.count}))+'</span></div><div class="t-icon">'+cardIcon+'</div></button>';
+  }).join("");
   shell('<button class="back-btn ripple-host" onclick="renderHome()">'+icon("back")+escapeHtml(tr("home"))+'</button><h1 class="h-title">'+escapeHtml(t.title)+'</h1><p class="h-sub">'+escapeHtml(tr("chooseChapter"))+'</p><div id="topicList">'+cards+'</div>');
 }
-function chooseChapter(key){selectedChapter=key||null;selectedCount=null;renderLength();}
+function chooseChapter(key){selectedChapter=key||null;selectedCount=null;selectedQuestionSet="random";selectedMode="exam";renderLength();}
 function backFromLength(){
   if(selectedTopic==="Random")renderHome();
   else if(getChapterCounts(selectedTopic).length)renderChapters(selectedTopic);
@@ -266,21 +345,52 @@ function backFromLength(){
 }
 function renderLength(){
   currentView="length";
-  const cnt=topicPool(selectedTopic,selectedChapter).length,t=topicText(selectedTopic,cnt),max=Math.max(1,cnt);
+  const cnt=topicPool(selectedTopic,selectedChapter).length,t=topicText(selectedTopic,cnt),max=cnt;
   const chapterName=selectedChapter?chapterLabel(selectedTopic,selectedChapter):"";
   const heroTitle=chapterName||t.title,heroDesc=chapterName?t.title:t.desc;
   const backLabel=(selectedTopic==="Random"||!getChapterCounts(selectedTopic).length)?tr("home"):tr("back");
-  const opts=[5,10,20,30,40,50].filter(n=>n<=max);selectedCount=Math.min(max,selectedCount||opts[0]||max);
-  shell('<button class="back-btn ripple-host" onclick="backFromLength()">'+icon("back")+escapeHtml(backLabel)+'</button><div class="len-hero" style="--tc:#0d9488"><div class="t-icon">'+topicIcon(selectedTopic)+'</div><div><h2 style="margin:0">'+escapeHtml(heroTitle)+'</h2><div style="opacity:.9">'+escapeHtml(heroDesc)+'</div></div></div><label class="field">'+escapeHtml(tr("numQ"))+'</label><div class="sizes">'+opts.map(n=>'<button class="size '+(n===selectedCount?"active":"")+' ripple-host" onclick="setCount('+n+')">'+n+'<small>'+(n===max?escapeHtml(tr("allQ")):escapeHtml(tr("questionsLbl")))+'</small></button>').join("")+'</div><label class="field">'+escapeHtml(tr("testMode"))+'</label><div class="seg"><button class="seg-btn '+(selectedMode==="exam"?"active":"")+'" onclick="setMode(\'exam\')">'+escapeHtml(tr("exam"))+'</button><button class="seg-btn '+(selectedMode==="practice"?"active":"")+'" onclick="setMode(\'practice\')">'+escapeHtml(tr("practice"))+'</button></div><p class="mode-help">'+escapeHtml(selectedMode==="exam"?tr("examHelp"):tr("practiceHelp"))+'</p><button class="btn ripple-host shine" onclick="startTest()">'+escapeHtml(tr("start"))+'</button>');
+  const opts=[5,10,20,30,40,50].filter(n=>n<=max);
+  if(!opts.length&&max>0)opts.push(max);
+  selectedCount=opts.includes(Number(selectedCount))?Number(selectedCount):(opts[0]||max);
+  const sizes=opts.map(n=>'<button class="size '+(n===selectedCount?"active":"")+' ripple-host" onclick="setCount('+n+')">'+n+'<small>'+escapeHtml(tr("questionsLbl"))+'</small></button>').join("");
+  const allButton='<button class="all-questions-cta ripple-host" onclick="openAllQuestions()"><span class="all-questions-icon">'+icon("layers")+'</span><span class="all-questions-copy"><strong>'+escapeHtml(tr("allQuestions"))+'</strong><small>'+escapeHtml(tr("allQuestionsHelp",{n:cnt}))+'</small><em>'+escapeHtml(tr("fixedOrder"))+'</em></span><span class="all-questions-count">'+cnt+'</span></button>';
+  shell('<button class="back-btn ripple-host" onclick="backFromLength()">'+icon("back")+escapeHtml(backLabel)+'</button><div class="len-hero" style="--tc:#0d9488"><div class="t-icon">'+topicIcon(selectedTopic)+'</div><div><h2 style="margin:0">'+escapeHtml(heroTitle)+'</h2><div style="opacity:.9">'+escapeHtml(heroDesc)+'</div></div></div><section class="question-select-card"><div class="question-select-heading"><span class="question-select-icon">'+icon("activity")+'</span><div><h3>'+escapeHtml(tr("randomQuestions"))+'</h3><p>'+escapeHtml(tr("chooseQuestionCount"))+'</p></div></div><label class="field">'+escapeHtml(tr("questionCountLabel"))+'</label><div class="sizes">'+sizes+'</div></section>'+allButton+'<label class="field">'+escapeHtml(tr("testMode"))+'</label><div class="seg"><button class="seg-btn '+(selectedMode==="exam"?"active":"")+'" onclick="setMode(\'exam\')">'+escapeHtml(tr("exam"))+'</button><button class="seg-btn '+(selectedMode==="practice"?"active":"")+'" onclick="setMode(\'practice\')">'+escapeHtml(tr("practice"))+'</button></div><p class="mode-help">'+escapeHtml(selectedMode==="exam"?tr("examHelp"):tr("practiceHelp"))+'</p><button class="btn ripple-host shine" onclick="startTest()">'+escapeHtml(tr("start"))+'</button>');
 }
+function openAllQuestions(){selectedQuestionSet="all";selectedMode=null;renderAllQuestionsSetup();}
+function backFromAllQuestions(){selectedQuestionSet="random";selectedMode="exam";renderLength();}
+function renderAllQuestionsSetup(){
+  currentView="all-questions";selectedQuestionSet="all";
+  const cnt=topicPool(selectedTopic,selectedChapter).length,t=topicText(selectedTopic,cnt);
+  const chapterName=selectedChapter?chapterLabel(selectedTopic,selectedChapter):"";
+  const heroTitle=chapterName||t.title,heroDesc=chapterName?t.title:t.desc;
+  shell('<button class="back-btn ripple-host" onclick="backFromAllQuestions()">'+icon("back")+escapeHtml(tr("back"))+'</button><div class="len-hero" style="--tc:#0d9488"><div class="t-icon">'+topicIcon(selectedTopic)+'</div><div><h2 style="margin:0">'+escapeHtml(heroTitle)+'</h2><div style="opacity:.9">'+escapeHtml(heroDesc)+'</div></div></div><div class="all-setup-card"><div class="all-setup-icon">'+icon("layers")+'</div><div class="all-setup-copy"><strong>'+escapeHtml(tr("allQuestions"))+'</strong><p>'+escapeHtml(tr("allQuestionsHelp",{n:cnt}))+'</p><span>'+escapeHtml(tr("fixedOrder"))+' · '+escapeHtml(tr("sameOrderHelp"))+'</span></div><b class="all-setup-count">'+cnt+'</b></div><label class="field">'+escapeHtml(tr("selectTestMode"))+'</label><div class="seg"><button class="seg-btn '+(selectedMode==="exam"?"active":"")+'" onclick="setMode(\'exam\')">'+escapeHtml(tr("exam"))+'</button><button class="seg-btn '+(selectedMode==="practice"?"active":"")+'" onclick="setMode(\'practice\')">'+escapeHtml(tr("practice"))+'</button></div><p class="mode-help">'+escapeHtml(selectedMode===null?tr("selectTestMode"):(selectedMode==="exam"?tr("examHelp"):tr("practiceHelp")))+'</p><button class="btn ripple-host shine" onclick="startTest()" '+(!selectedMode?"disabled":"")+'>'+escapeHtml(tr("start"))+'</button>');
+}
+function renderChapterIndex(){
+  currentView="index";applyLanguage();
+  const counts=getAllTopicCounts();
+  const preferred=["Fundamentals","Medical-Surgical Nursing","Maternity & Child Nursing","Pediatrics","Community Health Nursing","Pharmacology","Research","Medications","Mental Health & Psychiatric Nursing","Nutrition"];
+  const names=preferred.filter(name=>counts[name]>0).concat(Object.keys(counts).filter(name=>name!=="Random"&&!preferred.includes(name)));
+  const sections=names.map((name,i)=>{
+    const t=topicText(name,counts[name]||0),chapters=getChapterCounts(name);
+    const rows=chapters.map(c=>'<button class="index-chapter ripple-host" onclick=\'openIndexChapter('+JSON.stringify(name)+','+JSON.stringify(c.key)+')\'><span class="index-chapter-icon">'+chapterIcon(name,c.key)+'</span><span class="index-chapter-copy"><strong>'+escapeHtml(chapterLabel(name,c.key))+'</strong><small>'+escapeHtml(tr("nQuestions",{n:c.count}))+'</small></span><span class="index-arrow">'+icon("arrow")+'</span></button>').join("");
+    return '<section class="index-topic" style="--index-color:'+TOPIC_COLORS[i%TOPIC_COLORS.length]+'"><button class="index-topic-head ripple-host" onclick=\'openIndexTopic('+JSON.stringify(name)+')\'><span class="index-topic-icon">'+topicIcon(name)+'</span><span class="index-topic-copy"><strong>'+escapeHtml(t.title)+'</strong><small>'+escapeHtml(tr("nQuestions",{n:counts[name]||0}))+'</small></span><span class="index-total">'+(counts[name]||0)+'</span><span class="index-arrow">'+icon("arrow")+'</span></button>'+(rows||'<p class="index-empty">'+escapeHtml(tr("indexEmpty"))+'</p>')+'</section>';
+  }).join("");
+  shell('<button class="back-btn ripple-host" onclick="renderHome()">'+icon("back")+escapeHtml(tr("home"))+'</button><div class="index-hero"><div class="index-hero-icon">'+icon("index")+'</div><div><h1>'+escapeHtml(tr("chapterIndexTitle"))+'</h1><p>'+escapeHtml(tr("chapterIndexSub"))+'</p></div></div><div class="index-summary"><strong>'+questions.length+'</strong><span>'+escapeHtml(tr("nQuestions",{n:questions.length}))+'</span></div><div class="index-list">'+sections+'</div>');
+}
+function openIndexTopic(topic){selectedTopic=topic;selectedChapter=null;selectedCount=null;selectedQuestionSet="random";selectedMode="exam";renderLength();}
+function openIndexChapter(topic,chapter){selectedTopic=topic;selectedChapter=chapter;selectedCount=null;selectedQuestionSet="random";selectedMode="exam";renderLength();}
+
 function setCount(n){selectedCount=n;renderLength();}
-function setMode(m){selectedMode=m;renderLength();}
+function setMode(m){selectedMode=m;if(currentView==="all-questions")renderAllQuestionsSetup();else renderLength();}
 function startTest(){
   try{
-    let pool=topicPool(selectedTopic,selectedChapter);
+    const sourceTopic=selectedTopic,sourceChapter=selectedChapter;
+    let pool=topicPool(sourceTopic,sourceChapter);
     if(!pool.length)throw new Error("No questions found for selected topic.");
-    shuffle(pool);const count=Math.min(Number(selectedCount)||pool.length,pool.length);
-    quiz={items:pool.slice(0,count).map(prepare),index:0,started:Date.now(),elapsed:0,timer:null,mode:selectedMode,selectedTopic};
+    const questionSet=selectedQuestionSet==="all"?"all":"random";
+    if(questionSet==="random")shuffle(pool); // all-questions mode follows questions.json order every time
+    const count=questionSet==="all"?pool.length:Math.min(Number(selectedCount)||pool.length,pool.length);
+    quiz={items:pool.slice(0,count).map(prepare),index:0,started:Date.now(),elapsed:0,timer:null,mode:selectedMode||"exam",selectedTopic:sourceTopic,questionSet,sourceTopic,sourceChapter,questionCount:count};
     currentView="quiz";renderQuiz();startTimer();
   }catch(e){shell('<p class="error">'+escapeHtml(tr("startErr")+e.message)+'</p><button class="btn" onclick="renderHome()">'+escapeHtml(tr("home"))+'</button>');}
 }
@@ -316,7 +426,15 @@ function nextQuestion(){if(quiz.index<quiz.items.length-1){quiz.index++;renderQu
 function prevQuestion(){if(quiz.index>0){quiz.index--;renderQuiz("left");}}
 function confirmExit(){modal(tr("exitTitle"),tr("exitMsg"),tr("exit"),()=>{clearInterval(quiz?.timer);quiz=null;renderHome();});}
 function confirmRestart(){modal(tr("restartTitle"),tr("restartMsg"),tr("restart"),()=>restartTest());}
-function restartTest(){if(!quiz)return;clearInterval(quiz.timer);let pool=topicPool(selectedTopic,selectedChapter);shuffle(pool);quiz.items=pool.slice(0,Math.min(selectedCount||pool.length,pool.length)).map(prepare);quiz.index=0;quiz.started=Date.now();quiz.elapsed=0;startTimer();renderQuiz("left");}
+function restartTest(){
+  if(!quiz)return;
+  clearInterval(quiz.timer);
+  const sourceTopic=quiz.sourceTopic,sourceChapter=quiz.sourceChapter,questionSet=quiz.questionSet||"random",questionCount=quiz.questionCount||quiz.items.length;
+  let pool=topicPool(sourceTopic,sourceChapter);
+  if(questionSet!=="all")shuffle(pool);
+  const count=questionSet==="all"?pool.length:Math.min(questionCount,pool.length);
+  quiz.items=pool.slice(0,count).map(prepare);quiz.index=0;quiz.started=Date.now();quiz.elapsed=0;quiz.questionCount=count;startTimer();renderQuiz("left");
+}
 function finishTest(){const unanswered=quiz.items.length-quiz.items.filter(q=>q.picked!=null).length;if(unanswered)modal(tr("finishTitle"),tr(unanswered===1?"finishOne":"finishMany",{n:unanswered}),tr("finishOk"),showResult);else showResult();}
 function showResult(){
   clearInterval(quiz.timer);const items=quiz.items,correct=items.reduce((a,q)=>a+(q.picked!=null&&q.choices[q.picked]?.correct?1:0),0),answered=items.filter(q=>q.picked!=null).length,skipped=items.length-answered,pct=Math.round(correct/items.length*100);
@@ -333,7 +451,7 @@ function openLanguage(){
   el.innerHTML='<div class="modal-box"><h3>'+escapeHtml(tr("langTitle"))+'</h3><div class="lang-list">'+langs.map(l=>'<button class="lang-opt '+(l.id===lang?"active":"")+'" onclick="setLang(\''+l.id+'\')"><span>'+escapeHtml(l.label)+'</span><small>'+l.short+'</small></button>').join("")+'</div></div>';
   document.body.appendChild(el);el.addEventListener("click",e=>{if(e.target===el)el.remove();});
 }
-function setLang(l){lang=l;savePrefs();applyLanguage();if(quiz)quiz.items.forEach(localize);document.querySelector(".modal")?.remove();if(currentView==="home")renderHome();else if(currentView==="chapters"){const keep=selectedChapter;renderChapters(selectedTopic);selectedChapter=keep;}else if(currentView==="length")renderLength();else if(currentView==="quiz"&&quiz){renderQuiz();document.querySelector(".qbody")?.classList.remove("from-right");}else if(currentView==="tips")renderTips();}
+function setLang(l){lang=l;savePrefs();applyLanguage();if(quiz)quiz.items.forEach(localize);document.querySelector(".modal")?.remove();if(currentView==="home")renderHome();else if(currentView==="chapters")renderChapters(selectedTopic);else if(currentView==="length")renderLength();else if(currentView==="all-questions")renderAllQuestionsSetup();else if(currentView==="index")renderChapterIndex();else if(currentView==="quiz"&&quiz){renderQuiz();document.querySelector(".qbody")?.classList.remove("from-right");}else if(currentView==="tips")renderTips();}
 function toggleSound(){
   soundOn=!soundOn;savePrefs();
   if(!soundOn&&("speechSynthesis" in window))window.speechSynthesis.cancel();
@@ -352,5 +470,5 @@ async function loadQuestions(){
     applyLanguage();renderWelcome();
   }catch(e){shell('<div class="error"><h2>'+escapeHtml(tr("loadErr"))+'</h2><p>'+escapeHtml(e.message)+'</p><button class="btn" onclick="location.reload()">Retry</button></div>');}
 }
-Object.assign(window,{openLanguage,setLang,toggleSound,renderHome,renderTips,enterApp,chooseTopic,chooseChapter,renderChapters,backFromLength,setCount,setMode,startTest,pickAnswer,nextQuestion,prevQuestion,confirmExit,confirmRestart,finishTest,restartTest});
+Object.assign(window,{openLanguage,setLang,toggleSound,renderHome,renderTips,renderChapterIndex,openIndexTopic,openIndexChapter,enterApp,chooseTopic,chooseChapter,renderChapters,backFromLength,openAllQuestions,renderAllQuestionsSetup,backFromAllQuestions,setCount,setMode,startTest,pickAnswer,nextQuestion,prevQuestion,confirmExit,confirmRestart,finishTest,restartTest});
 document.addEventListener("DOMContentLoaded",loadQuestions);
