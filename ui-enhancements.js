@@ -4,8 +4,12 @@
    *  SOUND ENGINE — everything is synthesized with Web Audio, so there  *
    *  are no audio files and it works fully offline. The speaker button  *
    *  (soundOn in app.js / "gn_sound" in localStorage) mutes all of it.  *
+   *                                                                    *
+   *  Sound design: soft, short, pure sine tones through a low-pass      *
+   *  filter (warm, never harsh). Correct / finish sounds use a gentle   *
+   *  "bell" (fundamental + quiet overtones). No buzzers, no sweeps.     *
    * ------------------------------------------------------------------ */
-  let ctx = null, master = null, noiseBuf = null;
+  let ctx = null, master = null;
 
   function enabled() {
     try { if (typeof soundOn === "boolean") return soundOn; } catch (_) {}
@@ -19,7 +23,7 @@
       ctx = new AC();
       const comp = ctx.createDynamicsCompressor();
       master = ctx.createGain();
-      master.gain.value = 0.9;
+      master.gain.value = 0.75;
       master.connect(comp);
       comp.connect(ctx.destination);
     }
@@ -27,69 +31,59 @@
     return ctx;
   }
 
-  // One synthesized note: {f, to?, dur, vol, type, at, lp?}
+  // One synthesized note: {f, to?, dur, vol, type, at, lp?}. Always low-passed so it sounds warm.
   function tone(o) {
     const c = ensure(); if (!c) return;
-    const t0 = c.currentTime + (o.at || 0), vol = o.vol || 0.25;
-    const osc = c.createOscillator(), g = c.createGain();
+    const t0 = c.currentTime + (o.at || 0), vol = o.vol || 0.1;
+    const osc = c.createOscillator(), g = c.createGain(), f = c.createBiquadFilter();
     osc.type = o.type || "sine";
     osc.frequency.setValueAtTime(o.f, t0);
     if (o.to) osc.frequency.exponentialRampToValueAtTime(o.to, t0 + o.dur);
     g.gain.setValueAtTime(0.0001, t0);
-    g.gain.exponentialRampToValueAtTime(vol, t0 + 0.008);
+    g.gain.exponentialRampToValueAtTime(vol, t0 + 0.012);
     g.gain.exponentialRampToValueAtTime(0.0001, t0 + o.dur);
-    if (o.lp) {
-      const f = c.createBiquadFilter(); f.type = "lowpass"; f.frequency.value = o.lp;
-      osc.connect(f); f.connect(g);
-    } else osc.connect(g);
-    g.connect(master);
+    f.type = "lowpass"; f.frequency.value = o.lp || 5000;
+    osc.connect(f); f.connect(g); g.connect(master);
     osc.start(t0); osc.stop(t0 + o.dur + 0.03);
   }
 
-  // Soft "swish" (filtered noise) used for next / previous.
-  function swish(vol, dur) {
-    const c = ensure(); if (!c) return;
-    if (!noiseBuf) {
-      noiseBuf = c.createBuffer(1, Math.floor(c.sampleRate * 0.3), c.sampleRate);
-      const d = noiseBuf.getChannelData(0);
-      for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
-    }
-    const t0 = c.currentTime;
-    const src = c.createBufferSource(); src.buffer = noiseBuf;
-    const bp = c.createBiquadFilter(); bp.type = "bandpass"; bp.Q.value = 1.2;
-    bp.frequency.setValueAtTime(500, t0);
-    bp.frequency.exponentialRampToValueAtTime(2600, t0 + dur);
-    const g = c.createGain();
-    g.gain.setValueAtTime(0.0001, t0);
-    g.gain.exponentialRampToValueAtTime(vol, t0 + dur * 0.4);
-    g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
-    src.connect(bp); bp.connect(g); g.connect(master);
-    src.start(t0); src.stop(t0 + dur + 0.03);
+  // Soft bell: fundamental plus two quiet, shorter overtones.
+  function bell(f, at, dur, vol) {
+    tone({ f: f, at: at, dur: dur, vol: vol });
+    tone({ f: f * 2, at: at, dur: dur * 0.5, vol: vol * 0.2 });
+    tone({ f: f * 3, at: at, dur: dur * 0.3, vol: vol * 0.06 });
   }
 
   const sfx = {
-    tap()    { tone({ f: 520, to: 820, dur: 0.07, vol: 0.3 }); tone({ f: 1040, to: 1240, dur: 0.045, vol: 0.08, type: "triangle" }); },
-    select() { tone({ f: 700, to: 920, dur: 0.07, vol: 0.28, type: "triangle" }); },
-    next()   { swish(0.14, 0.17); },
-    prev()   { swish(0.12, 0.14); },
-    start()  { [[523.25, 0], [659.25, 0.08], [783.99, 0.16], [1046.5, 0.24]].forEach(([f, at]) => tone({ f, at, dur: 0.24, vol: 0.22, type: "triangle" })); },
-    on()     { tone({ f: 660, to: 990, dur: 0.1, vol: 0.28 }); },
-    correct(){ [[659.25, 0], [880, 0.09], [1318.5, 0.18]].forEach(([f, at]) => { tone({ f, at, dur: 0.3, vol: 0.26 }); tone({ f: f * 2, at, dur: 0.18, vol: 0.05 }); }); },
-    wrong()  { tone({ f: 190, to: 120, dur: 0.28, vol: 0.3, type: "sawtooth", lp: 700 }); tone({ f: 150, to: 95, dur: 0.28, vol: 0.18, type: "square", lp: 500 }); },
-    loading(){ tone({ f: 300, to: 520, dur: 0.9, vol: 0.07, type: "sine" }); },
-    count(p) { tone({ f: 700 + p * 700, dur: 0.035, vol: 0.12 }); },
+    tap()    { tone({ f: 1100, to: 800, dur: 0.045, vol: 0.08 }); },
+    select() { tone({ f: 740, dur: 0.08, vol: 0.1 }); tone({ f: 1110, at: 0.035, dur: 0.08, vol: 0.05 }); },
+    next()   { tone({ f: 600, to: 520, dur: 0.06, vol: 0.07 }); },
+    prev()   { tone({ f: 480, to: 420, dur: 0.06, vol: 0.06 }); },
+    start()  { bell(523.25, 0, 0.5, 0.12); bell(783.99, 0.11, 0.75, 0.12); },
+    on()     { tone({ f: 784, dur: 0.1, vol: 0.1 }); },
+    correct(){ bell(783.99, 0, 0.45, 0.12); bell(1174.66, 0.1, 0.7, 0.12); },
+    wrong()  { tone({ f: 311.13, dur: 0.2, vol: 0.12, lp: 900 }); tone({ f: 246.94, at: 0.13, dur: 0.32, vol: 0.12, lp: 900 }); },
+    notice() { bell(880, 0, 0.5, 0.09); bell(659.25, 0.16, 0.75, 0.09); },   // mock-exam time warnings
+    loading(){},   // intentionally silent
+    count()  {},   // intentionally silent
     finishGreat() {
-      [[523.25, 0], [659.25, 0.1], [783.99, 0.2], [1046.5, 0.32]].forEach(([f, at]) => tone({ f, at, dur: 0.32, vol: 0.25, type: "triangle" }));
-      [523.25, 659.25, 783.99, 1046.5].forEach(f => tone({ f, at: 0.46, dur: 0.8, vol: 0.12 }));
+      [523.25, 659.25, 783.99, 1046.5].forEach((f, i) => bell(f, i * 0.11, 0.85, 0.11));
+      [523.25, 659.25, 783.99].forEach(f => tone({ f: f, at: 0.5, dur: 1.2, vol: 0.045 }));
     },
-    finishGood() { tone({ f: 783.99, dur: 0.26, vol: 0.24, type: "triangle" }); tone({ f: 1046.5, at: 0.13, dur: 0.45, vol: 0.24, type: "triangle" }); },
-    finishKeep() { tone({ f: 440, dur: 0.3, vol: 0.2, type: "triangle" }); tone({ f: 587.33, at: 0.14, dur: 0.45, vol: 0.2, type: "triangle" }); }
+    finishGood() { bell(659.25, 0, 0.5, 0.11); bell(880, 0.13, 0.85, 0.11); },
+    finishKeep() { bell(440, 0, 0.5, 0.1); bell(587.33, 0.14, 0.85, 0.1); }
   };
 
   function play(name, arg) {
     if (!enabled()) return;
     try { sfx[name](arg); } catch (_) {}
   }
+
+  // No robotic text-to-speech voice: the chimes above already tell the user right / wrong.
+  window.say = function () {};
+
+  // Mock-exam time warnings use the same soft bell instead of a plain beep.
+  window.playSoftNotice = function () { play("notice"); };
 
   // Wake the audio engine on the first touch so the first sound has no delay (Android WebView needs a gesture).
   document.addEventListener("pointerdown", function () { if (enabled()) ensure(); }, { capture: true, passive: true });
@@ -124,8 +118,21 @@
   }
 
   /* ------------------------------------------------------------------ *
+   *  ICONS missing from app.js. The home "Take a Real Mock Test" card   *
+   *  asks for icon("clipboard-check"), which did not exist, so the icon *
+   *  tile was empty. It is provided here.                               *
+   * ------------------------------------------------------------------ */
+  const EXTRA_ICONS = {
+    "clipboard-check": '<svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="m9 14 2 2 4-4"/></svg>'
+  };
+  const origIcon = window.icon;
+  if (typeof origIcon === "function") {
+    window.icon = function (name) { return EXTRA_ICONS[name] || origIcon(name); };
+  }
+
+  /* ------------------------------------------------------------------ *
    *  FINAL SCORE: loading ring -> ring fills from 0 while the number    *
-   *  counts up (with soft ticks) -> stats count up -> finish sound.     *
+   *  counts up -> stats count up -> finish sound.                       *
    *  The existing entrance animations (title, ring pop-in, stats, etc.) *
    *  are untouched.                                                     *
    * ------------------------------------------------------------------ */
