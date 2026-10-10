@@ -2,6 +2,6 @@
   "appId": "com.gulfnurse.app",
   "appName": "Gulf Nurse",
   "webDir": "www",
-  "backgroundColor": "#eef6fb",
+  "backgroundColor": "#e0f2fe",
   "android": { "allowMixedContent": false }
 }

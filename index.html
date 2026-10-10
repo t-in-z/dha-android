@@ -4,13 +4,61 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#0a3a5c">
+  <meta name="color-scheme" content="light">
   <title>Gulf Nurse – Nursing Exam Practice</title>
   <link rel="icon" href="logo.svg" type="image/svg+xml">
+  <!-- Launch screen styles are inline so they paint immediately, before any other file has loaded. -->
+  <style>
+    html,body{background:#e0f2fe}
+    #app:empty{display:none}
+    #boot{position:fixed;inset:0;z-index:200;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;text-align:center;
+      background:radial-gradient(70% 45% at 50% 0%,#f0f9ff 0%,transparent 70%),#e0f2fe;
+      font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+      transition:opacity .45s ease,visibility .45s}
+    #boot.hide{opacity:0;visibility:hidden;pointer-events:none}
+    .boot-logo{width:104px;height:104px;border-radius:28px;box-shadow:0 22px 44px -18px rgba(10,58,92,.55),0 2px 6px rgba(10,58,92,.1);animation:bootIn .7s cubic-bezier(.22,1,.36,1) both}
+    .boot-name{margin:22px 0 0;font-size:1.55rem;font-weight:850;letter-spacing:.14em;text-indent:.14em;color:#0a2540;animation:bootIn .7s cubic-bezier(.22,1,.36,1) .08s both}
+    .boot-tag{margin:6px 0 0;font-size:.92rem;font-weight:600;color:#526579;animation:bootIn .7s cubic-bezier(.22,1,.36,1) .16s both}
+    .boot-bar{position:relative;width:120px;height:3px;margin:30px auto 0;overflow:hidden;border-radius:99px;background:rgba(10,37,64,.1)}
+    .boot-bar span{position:absolute;inset:0 auto 0 0;width:40%;border-radius:99px;background:linear-gradient(90deg,#1d6fe0,#14b8a6);animation:bootBar 1.3s ease-in-out infinite}
+    @keyframes bootIn{from{opacity:0;transform:translateY(10px) scale(.96)}to{opacity:1;transform:none}}
+    @keyframes bootBar{0%{transform:translateX(-110%)}100%{transform:translateX(260%)}}
+    @media(prefers-reduced-motion:reduce){.boot-logo,.boot-name,.boot-tag,.boot-bar span{animation:none}}
+  </style>
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="polish.css">
 </head>
 <body>
+  <div id="boot" role="status" aria-label="Loading Gulf Nurse">
+    <img class="boot-logo" src="logo.svg" alt="">
+    <div class="boot-name">GULF NURSE</div>
+    <div class="boot-tag" id="bootTag">Nursing Exam Practice</div>
+    <div class="boot-bar"><span></span></div>
+  </div>
   <main id="app" class="card" aria-live="polite"></main>
+  <script>
+    /* Keeps the launch screen up until the first real screen has been drawn, then fades it out.
+       Without this the empty white card was visible while questions.json loaded. */
+    (function () {
+      var boot = document.getElementById("boot"), app = document.getElementById("app");
+      var t0 = Date.now(), done = false;
+      try {
+        var tags = { ar: "التدرّب على امتحانات التمريض", hi: "नर्सिंग परीक्षा अभ्यास" };
+        var l = localStorage.getItem("gn_lang");
+        if (tags[l]) document.getElementById("bootTag").textContent = tags[l];
+      } catch (e) {}
+      function hide() {
+        if (done) return; done = true;
+        var wait = Math.max(0, 500 - (Date.now() - t0));   // never flash by too quickly
+        setTimeout(function () {
+          boot.classList.add("hide");
+          setTimeout(function () { if (boot.parentNode) boot.parentNode.removeChild(boot); }, 600);
+        }, wait);
+      }
+      new MutationObserver(function () { if (app.firstChild) hide(); }).observe(app, { childList: true });
+      setTimeout(hide, 8000);                               // safety net: never get stuck on the launch screen
+    })();
+  </script>
   <script src="i18n.js"></script>
   <script src="app.js"></script>
   <script src="ui-enhancements.js"></script>
